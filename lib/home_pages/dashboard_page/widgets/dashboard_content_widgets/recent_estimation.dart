@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:typhoonista_thesis/entities/TyphoonDay.dart';
+import 'package:typhoonista_thesis/providers/TyphoonProvider.dart';
+import 'package:typhoonista_thesis/services/FirestoreService.dart';
 import '../../../../providers/sample_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:typhoonista_thesis/assets/themes/textStyles.dart';
@@ -44,37 +47,53 @@ class _recent_estimationState extends State<recent_estimation> {
                           builder: (context, constraints) {
                             double containerHeight = constraints.maxHeight;
                             double containerWidth = constraints.maxWidth;
-                            return Container(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: containerWidth * 0.04,
-                                  vertical: containerHeight * 0.15),
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(26),
-                                  color: Color(0xffe50202)),
-                              child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "Typhoon Skemberlu    |    Aklan    |    Day 5",
-                                    style: textStyles.lato_bold(
-                                        color: Colors.white, fontSize: 20),
-                                  ),
-                                  Text(
-                                    "₱ 4,212,543.23",
-                                    style: textStyles.lato_black(
-                                        color: Colors.white, fontSize: 45),
-                                  ),
-                                  Text(
-                                    "Estimated Total Damage to Rice Crops",
-                                    style: textStyles.lato_light(
-                                        color: Colors.white, fontSize: 15),
-                                  ),
-                                ],
-                              ),
-                            );
+                            return StreamBuilder<TyphoonDay>(
+                                stream:
+                                    FirestoreService().streamRecentEstimation(),
+                                builder: (context, snapshot) {
+                                  
+                                  if (snapshot.hasData) {
+                                    TyphoonDay recentEstimation = snapshot.data!;
+                                    return Container(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: containerWidth * 0.04,
+                                          vertical: containerHeight * 0.15),
+                                      width: double.infinity,
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(26),
+                                          color: Color(0xffe50202)),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceAround,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "Typhoon ${recentEstimation.typhoonName}    |    ${recentEstimation.location}    |    Day ${recentEstimation.day}",
+                                            style: textStyles.lato_bold(
+                                                color: Colors.white,
+                                                fontSize: 20),
+                                          ),
+                                          Text(
+                                            "₱ ${recentEstimation.damageCost.toStringAsFixed(2)}",
+                                            style: textStyles.lato_black(
+                                                color: Colors.white,
+                                                fontSize: 45),
+                                          ),
+                                          Text(
+                                            "Estimated Total Damage to Rice Crops",
+                                            style: textStyles.lato_light(
+                                                color: Colors.white,
+                                                fontSize: 15),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  }else{
+                                    return Text("EMPTY");
+                                  }
+                                });
                           },
                         ),
                       ),
@@ -108,37 +127,62 @@ class _recent_estimationState extends State<recent_estimation> {
                                               context: context,
                                               builder: (context) {
                                                 return AlertDialog(
-                                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                                    title: Text(
-                                                        "Delete confirmation",style:
-                                                          textStyles.lato_black(
-                                                              fontSize: 20) ),
-                                                    content: Text(
-                                                      "Are you sure you want to delete this computation?",
+                                                  shape: RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10)),
+                                                  title: Text(
+                                                      "Delete confirmation",
                                                       style:
-                                                          textStyles.lato_regular(
-                                                              fontSize: 20),
-                                                    
+                                                          textStyles.lato_black(
+                                                              fontSize: 20)),
+                                                  content: Text(
+                                                    "Are you sure you want to delete this computation?",
+                                                    style:
+                                                        textStyles.lato_regular(
+                                                            fontSize: 20),
+                                                  ),
+                                                  actions: [
+                                                    Container(
+                                                      height: 40,
+                                                      child: TextButton(
+                                                          style: TextButton.styleFrom(
+                                                              shape: RoundedRectangleBorder(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              10))),
+                                                          onPressed: (() {
+                                                            Navigator.pop(
+                                                                context);
+                                                          }),
+                                                          child: Text("Cancel",
+                                                              style: textStyles
+                                                                  .lato_regular(
+                                                                      fontSize:
+                                                                          16))),
                                                     ),
-                                                    actions: [
-                                                      Container(
-                                                        height: 40,
-                                                        child: TextButton(
-                                                          style: TextButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-                                                          onPressed: ((){
-                                                          Navigator.pop(context);
-                                                        }), child: Text("Cancel", style: textStyles.lato_regular(fontSize: 16))),
-                                                      ),
-                                                      Container(
-                                                        height: 40,
-                                                        child: TextButton(
-                                                          style: TextButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-                                                          onPressed: ((){
-                                                          Navigator.pop(context);
-                                                        }), child: Text("Delete", style: textStyles.lato_regular(fontSize: 16))),
-                                                      )
-                                                    ],
-                                                    );
+                                                    Container(
+                                                      height: 40,
+                                                      child: TextButton(
+                                                          style: TextButton.styleFrom(
+                                                              shape: RoundedRectangleBorder(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              10))),
+                                                          onPressed: (() {
+                                                            Navigator.pop(
+                                                                context);
+                                                          }),
+                                                          child: Text("Delete",
+                                                              style: textStyles
+                                                                  .lato_regular(
+                                                                      fontSize:
+                                                                          16))),
+                                                    )
+                                                  ],
+                                                );
                                               });
                                         }),
                                         child: Center(
@@ -195,8 +239,13 @@ class _recent_estimationState extends State<recent_estimation> {
                                             DamageCostBar("Bruh!", 8102934),
                                             DamageCostBar("Hulu", 2187659)
                                           ];
-                                          context.read<SampleProvider>().changeDamageCostBarsList(newDamageCosts);
-                                          print(context.read<SampleProvider>().damageCostBars);
+                                          context
+                                              .read<SampleProvider>()
+                                              .changeDamageCostBarsList(
+                                                  newDamageCosts);
+                                          print(context
+                                              .read<SampleProvider>()
+                                              .damageCostBars);
                                         }),
                                         borderRadius: BorderRadius.circular(10),
                                         child: Center(

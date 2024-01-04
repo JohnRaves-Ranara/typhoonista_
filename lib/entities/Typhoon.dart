@@ -1,18 +1,43 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 
-import 'Day.dart';
 
 class Typhoon {
   final String id;
-  final String name;  
-  final double? avg_winspeed;
-  final double? avg_rainfall;
+  final String typhoonName;
+  final double peakWindspeed;
+  final double peakRainfall;
   final String location;
-  final List<Day> days;
-  final DateTime startDate;
-  final DateTime? endDate;
+  final String startDate;
+  final String endDate;
   final double totalDamageCost;
 
-  Typhoon(this.id, this.name, this.avg_winspeed, this.avg_rainfall, this.location,
-      this.days, this.startDate, this.endDate, this.totalDamageCost);
+  Typhoon({required this.id, required this.typhoonName, required this.peakWindspeed, required this.peakRainfall, required this.location, 
+  required this.startDate, required this.endDate, required this.totalDamageCost
+  });
+
+  Map<String, dynamic> toJson(){
+    return {
+      "id" : id,
+      "typhoonName" : typhoonName, 
+      "peakWindspeed" : peakWindspeed, 
+      "peakRainfall" : peakRainfall,
+      "location" : location,
+      "startDate" : startDate,
+      "endDate" : endDate,
+      "totalDamageCost" : totalDamageCost
+    };
+  }
+
+  static Typhoon fromJson(Map<String,dynamic> json) {
+    return Typhoon(
+      id: json["id"],
+      typhoonName : json["typhoonName"] ,
+      peakWindspeed : json["peakWindspeed"], 
+      peakRainfall : json["peakRainfall"],
+      location : json["location"], 
+      startDate : json["startDate"],
+      endDate:  json["endDate"],
+      totalDamageCost: json["totalDamageCost"],
+    );
+  } 
 }
+

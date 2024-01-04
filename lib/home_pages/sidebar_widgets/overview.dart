@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:typhoonista_thesis/assets/themes/textStyles.dart';
+import 'package:typhoonista_thesis/providers/page_provider.dart';
 
 class overview extends StatelessWidget {
   overview({super.key});
@@ -76,7 +77,7 @@ class overview extends StatelessWidget {
                 height: 50,
                 child: InkWell(
                   onTap: ((){
-                    // context.read<page_provider>().changePage(index+1);
+                    context.read<page_provider>().changePage(index+1);
                   }),
                   child: Row(
                     children: [
