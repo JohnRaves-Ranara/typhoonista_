@@ -6,5 +6,6 @@ import 'package:typhoonista_thesis/services/FirestoreService.dart';
 class TyphoonProvider with ChangeNotifier{
 
   
+  
 
 }

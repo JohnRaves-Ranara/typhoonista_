@@ -9,9 +9,10 @@ class Typhoon {
   final String startDate;
   final String endDate;
   final double totalDamageCost;
+  final int currentDay;
 
   Typhoon({required this.id, required this.typhoonName, required this.peakWindspeed, required this.peakRainfall, required this.location, 
-  required this.startDate, required this.endDate, required this.totalDamageCost
+  required this.startDate, required this.endDate, required this.totalDamageCost, required this.currentDay
   });
 
   Map<String, dynamic> toJson(){
@@ -23,7 +24,8 @@ class Typhoon {
       "location" : location,
       "startDate" : startDate,
       "endDate" : endDate,
-      "totalDamageCost" : totalDamageCost
+      "totalDamageCost" : totalDamageCost,
+      "currentDay" : currentDay
     };
   }
 
@@ -37,6 +39,7 @@ class Typhoon {
       startDate : json["startDate"],
       endDate:  json["endDate"],
       totalDamageCost: json["totalDamageCost"],
+      currentDay: json["currentDay"]
     );
   } 
 }

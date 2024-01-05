@@ -9,7 +9,10 @@ class SampleProvider with ChangeNotifier {
   List<DamageCostBar> _damageCostBars = [
     DamageCostBar("Agaton", 1652374),
     DamageCostBar("Yolandie", 2398746),
-    DamageCostBar("Fufu", 5872635)
+    DamageCostBar("Fufu", 5872635),
+    DamageCostBar("Zebra", 10000000),
+    DamageCostBar("Zebra", 10000000),
+    DamageCostBar("Zebra", 10000000)
   ];
 
   //todo TEST ONLY

@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:typhoonista_thesis/entities/Typhoon.dart';
-import 'package:typhoonista_thesis/services/FirestoreService.dart';
-import 'package:typhoonista_thesis/entities/TyphoonDay.dart';
 
 class idk extends StatefulWidget {
   const idk({super.key});
@@ -16,59 +13,27 @@ class _idkState extends State<idk> {
     return Scaffold(
       body: Center(
         child: Container(
-            child: Center(
-          child:
-          StreamBuilder<TyphoonDay>(
-            stream: FirestoreService().streamRecentEstimation(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                TyphoonDay recentEstimation = snapshot.data!;
-                return Text(
-                  recentEstimation.typhoonName
-                );
-              }
-              else{
-                return Text("WALAY DATA");
-              }
-            },
+          height: 200,
+          color: Colors.teal,
+          child: Center(
+            child: Container(
+                decoration: BoxDecoration(color: Colors.white, boxShadow: [
+                  BoxShadow(
+                    color: Colors.black,
+                    blurRadius: 10.0,
+                    spreadRadius: -5.0,
+                    offset: Offset(0, 5),
+                  )
+                ]),
+                width: 200,
+                child: TextField(
+                  decoration: InputDecoration(
+                    hintText: 'Enter text',
+                    border: InputBorder.none,
+                  ),
+                )),
           ),
-          // StreamBuilder<List<TyphoonDay>>(
-          //   stream: FirestoreService().streamAllDays(),
-          //   builder: (context, snapshot) {
-          //     if (snapshot.hasData) {
-          //       List<TyphoonDay> allDays = snapshot.data!;
-          //       return ListView(
-          //         children: allDays
-          //             .map((day) => ListTile(
-          //                   title: Text(day.damageCost.toString()),
-          //                 ))
-          //             .toList(),
-          //       );
-          //     }
-          //     else{
-          //       return Text("WALAY DATA");
-          //     }
-          //   },
-          // ),
-          // StreamBuilder<List<Typhoon>>(
-          //   stream: FirestoreService().streamAllTyphoons(),
-          //   builder: (context, snapshot) {
-          //     if (snapshot.hasData) {
-          //       List<Typhoon> allDays = snapshot.data!;
-          //       return ListView(
-          //         children: allDays
-          //             .map((day) => ListTile(
-          //                   title: Text(day.totalDamageCost.toString()),
-          //                 ))
-          //             .toList(),
-          //       );
-          //     }
-          //     else{
-          //       return Text("WALAY DATA");
-          //     }
-          //   },
-          // ),
-        )),
+        ),
       ),
     );
   }
