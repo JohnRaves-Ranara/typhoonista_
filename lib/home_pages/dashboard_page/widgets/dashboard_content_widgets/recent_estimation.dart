@@ -1,3 +1,5 @@
+import 'dart:html';
+
 import 'package:flutter/material.dart';
 import 'package:typhoonista_thesis/entities/Typhoon.dart';
 import 'package:typhoonista_thesis/entities/TyphoonDay.dart';
@@ -20,6 +22,8 @@ class _recent_estimationState extends State<recent_estimation> {
   final windspeedCtlr = TextEditingController();
   final rainfallCtlr = TextEditingController();
   final locationCtlr = TextEditingController();
+  TyphoonDay? newlyAddedDayInformation;
+  bool haveAdded = false;
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -37,7 +41,7 @@ class _recent_estimationState extends State<recent_estimation> {
                     Padding(
                         padding: EdgeInsets.only(left: 15),
                         child: Text(
-                          "RECENT ESTIMATION",
+                          "RECENT TYPHOON ESTIMATION",
                           style: textStyles.lato_bold(
                               color: Colors.black, fontSize: 15),
                         )),
@@ -75,7 +79,7 @@ class _recent_estimationState extends State<recent_estimation> {
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            "Typhoon ${recentEstimation.typhoonName}    |    ${recentEstimation.location}    |    Day ${recentEstimation.currentDay}",
+                                            "Typhoon ${recentEstimation.typhoonName}    |    Day ${recentEstimation.currentDay}",
                                             style: textStyles.lato_bold(
                                                 color: Colors.white,
                                                 fontSize: 20),
@@ -87,7 +91,7 @@ class _recent_estimationState extends State<recent_estimation> {
                                                 fontSize: 45),
                                           ),
                                           Text(
-                                            "Estimated Total Damage to Rice Crops",
+                                            "Estimated Total Damage to Rice Crops in the Philippines",
                                             style: textStyles.lato_light(
                                                 color: Colors.white,
                                                 fontSize: 15),
@@ -246,195 +250,35 @@ class _recent_estimationState extends State<recent_estimation> {
                                                       context: context,
                                                       builder: (context) {
                                                         return AlertDialog(
-                                                          content: Container(
-                                                            decoration: BoxDecoration(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
+                                                          content:
+                                                              StatefulBuilder(
+                                                            builder: (context,
+                                                                customState) {
+                                                              return Container(
+                                                                decoration: BoxDecoration(
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
                                                                             20)),
-                                                            height: MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .height *
-                                                                0.7,
-                                                            width: MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .width *
-                                                                0.6,
-                                                            child: Row(
-                                                              children: [
-                                                                Expanded(
-                                                                  child:
-                                                                      Container(
-                                                                    padding: EdgeInsets.symmetric(
-                                                                        horizontal:
-                                                                            40),
-                                                                    child:
-                                                                        Container(
-                                                                      child:
-                                                                          Column(
-                                                                        crossAxisAlignment:
-                                                                            CrossAxisAlignment.start,
-                                                                        children: [
-                                                                          Spacer(),
-                                                                          Text(
-                                                                            "Add Day",
-                                                                            style:
-                                                                                textStyles.lato_black(fontSize: 35),
-                                                                          ),
-                                                                          SizedBox(
-                                                                            height:
-                                                                                20,
-                                                                          ),
-                                                                          Container(
-                                                                            child:
-                                                                                Column(
-                                                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                                              children: [
-                                                                                TextField(
-                                                                                  controller: windspeedCtlr,
-                                                                                  decoration: InputDecoration(fillColor: Colors.white, labelStyle: textStyles.lato_light(color: Colors.grey.withOpacity(0.9)), border: OutlineInputBorder(), labelText: "Windspeed"),
-                                                                                ),
-                                                                                SizedBox(
-                                                                                  height: 15,
-                                                                                ),
-                                                                                TextField(
-                                                                                  controller: rainfallCtlr,
-                                                                                  decoration: InputDecoration(fillColor: Colors.white, labelStyle: textStyles.lato_light(color: Colors.grey.withOpacity(0.9)), border: OutlineInputBorder(), labelText: "Rainfall"),
-                                                                                ),
-                                                                                SizedBox(
-                                                                                  height: 15,
-                                                                                ),
-                                                                                TextField(
-                                                                                  controller: locationCtlr,
-                                                                                  decoration: InputDecoration(labelStyle: textStyles.lato_light(color: Colors.grey.withOpacity(0.9)), border: OutlineInputBorder(), labelText: "Location"),
-                                                                                ),
-                                                                              ],
-                                                                            ),
-                                                                          ),
-                                                                          SizedBox(
-                                                                            height:
-                                                                                20,
-                                                                          ),
-                                                                          ClipRRect(
-                                                                            borderRadius:
-                                                                                BorderRadius.circular(8),
-                                                                            child:
-                                                                                Material(
-                                                                              color: Colors.blue,
-                                                                              child: InkWell(
-                                                                                borderRadius: BorderRadius.circular(8),
-                                                                                onTap: (() async {
-                                                                                  FirestoreService().addDay(typhoonName: recentEstimation.typhoonName, windSpeed: double.parse(windspeedCtlr.text.trim()), rainfall: double.parse(rainfallCtlr.text.trim()), location: locationCtlr.text.trim(), isFirstDay: false, typhoonId: recentEstimation.id);
-                                                                                  windspeedCtlr.clear();
-                                                                                  rainfallCtlr.clear();
-                                                                                  locationCtlr.clear();
-                                                                                  Navigator.pop(context);
-                                                                                }),
-                                                                                child: Ink(
-                                                                                  padding: EdgeInsets.symmetric(horizontal: 30),
-                                                                                  width: double.maxFinite,
-                                                                                  height: 55,
-                                                                                  child: Row(
-                                                                                    children: [
-                                                                                      Text(
-                                                                                        "Estimate Damage Cost",
-                                                                                        style: textStyles.lato_bold(fontSize: 18, color: Colors.white),
-                                                                                      ),
-                                                                                      Spacer(),
-                                                                                      Icon(
-                                                                                        Icons.arrow_right_alt_sharp,
-                                                                                        size: 40,
-                                                                                        color: Colors.white,
-                                                                                      )
-                                                                                    ],
-                                                                                  ),
-                                                                                ),
-                                                                              ),
-                                                                            ),
-                                                                          ),
-                                                                          Spacer()
-                                                                        ],
-                                                                      ),
-                                                                    ),
-                                                                  ),
+                                                                height: MediaQuery.of(
+                                                                            context)
+                                                                        .size
+                                                                        .height *
+                                                                    0.8,
+                                                                width: MediaQuery.of(
+                                                                            context)
+                                                                        .size
+                                                                        .width *
+                                                                    0.6,
+                                                                child: Row(
+                                                                  children: [
+                                                                    add_day(
+                                                                        recentEstimation,
+                                                                        customState),
+                                                                    Information(customState)
+                                                                  ],
                                                                 ),
-                                                                Expanded(
-                                                                  child:
-                                                                      Container(
-                                                                    child:
-                                                                        Column(
-                                                                      mainAxisAlignment:
-                                                                          MainAxisAlignment
-                                                                              .center,
-                                                                      crossAxisAlignment:
-                                                                          CrossAxisAlignment
-                                                                              .start,
-                                                                      children: [
-                                                                        Text(
-                                                                          "Information",
-                                                                          style:
-                                                                              textStyles.lato_black(fontSize: 35),
-                                                                        ),
-                                                                        SizedBox(
-                                                                          height:
-                                                                              20,
-                                                                        ),
-                                                                        Container(
-                                                                          height:
-                                                                              MediaQuery.of(context).size.height * 0.3,
-                                                                          decoration:
-                                                                              BoxDecoration(
-                                                                            color:
-                                                                                Colors.white,
-                                                                            borderRadius:
-                                                                                BorderRadius.circular(20),
-                                                                          ),
-                                                                        ),
-                                                                        SizedBox(
-                                                                          height:
-                                                                              20,
-                                                                        ),
-                                                                        ClipRRect(
-                                                                          borderRadius:
-                                                                              BorderRadius.circular(8),
-                                                                          child:
-                                                                              Material(
-                                                                            color:
-                                                                                Colors.blue,
-                                                                            child:
-                                                                                InkWell(
-                                                                              borderRadius: BorderRadius.circular(8),
-                                                                              onTap: (() {}),
-                                                                              child: Ink(
-                                                                                padding: EdgeInsets.symmetric(horizontal: 30),
-                                                                                width: double.maxFinite,
-                                                                                height: 55,
-                                                                                child: Row(
-                                                                                  children: [
-                                                                                    Text(
-                                                                                      "Proceed",
-                                                                                      style: textStyles.lato_bold(fontSize: 18, color: Colors.white),
-                                                                                    ),
-                                                                                    Spacer(),
-                                                                                    Icon(
-                                                                                      Icons.arrow_right_alt_sharp,
-                                                                                      size: 40,
-                                                                                      color: Colors.white,
-                                                                                    )
-                                                                                  ],
-                                                                                ),
-                                                                              ),
-                                                                            ),
-                                                                          ),
-                                                                        ),
-                                                                      ],
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                            ),
+                                                              );
+                                                            },
                                                           ),
                                                         );
                                                       });
@@ -469,6 +313,261 @@ class _recent_estimationState extends State<recent_estimation> {
               return Text("EMPTY");
             }
           }),
+    );
+  }
+
+  Widget add_day(Typhoon recentEstimation, Function customState) {
+    return Expanded(
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 40),
+        child: Container(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Spacer(),
+              Text(
+                "Add Day",
+                style: textStyles.lato_black(fontSize: 35),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Container(
+                // color: Colors.purple,
+                height: MediaQuery.of(context).size.height * 0.28,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextField(
+                      enabled: !haveAdded,
+                      controller: windspeedCtlr,
+                      decoration: InputDecoration(
+                          fillColor: Colors.white,
+                          labelStyle: textStyles.lato_light(
+                              color: Colors.grey.withOpacity(0.9)),
+                          border: OutlineInputBorder(),
+                          labelText: "Windspeed"),
+                    ),
+                    TextField(
+                      enabled: !haveAdded,
+                      controller: rainfallCtlr,
+                      decoration: InputDecoration(
+                          fillColor: Colors.white,
+                          labelStyle: textStyles.lato_light(
+                              color: Colors.grey.withOpacity(0.9)),
+                          border: OutlineInputBorder(),
+                          labelText: "Rainfall"),
+                    ),
+                    TextField(
+                      enabled: !haveAdded,
+                      controller: locationCtlr,
+                      decoration: InputDecoration(
+                          labelStyle: textStyles.lato_light(
+                              color: Colors.grey.withOpacity(0.9)),
+                          border: OutlineInputBorder(),
+                          labelText: "Location"),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Material(
+                  color: (haveAdded) ? Colors.grey : Colors.blue,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(8),
+                    onTap: (haveAdded)
+                        ? null
+                        : (() async{
+                            final addDay = await FirestoreService().addDay(
+                                typhoonName: recentEstimation.typhoonName,
+                                windSpeed:
+                                    double.parse(windspeedCtlr.text.trim()),
+                                rainfall:
+                                    double.parse(rainfallCtlr.text.trim()),
+                                location: locationCtlr.text.trim(),
+                                isFirstDay: false,
+                                typhoonId: recentEstimation.id);
+                            windspeedCtlr.clear();
+                            rainfallCtlr.clear();
+                            locationCtlr.clear();
+                            customState(() {
+                              haveAdded = true;
+                              newlyAddedDayInformation = addDay;
+                            });
+                          }),
+                    child: Ink(
+                      padding: EdgeInsets.symmetric(horizontal: 30),
+                      width: double.maxFinite,
+                      height: 55,
+                      child: Row(
+                        children: [
+                          Text(
+                            "Estimate Damage Cost",
+                            style: textStyles.lato_bold(
+                                fontSize: 18, color: Colors.white),
+                          ),
+                          Spacer(),
+                          Icon(
+                            Icons.arrow_right_alt_sharp,
+                            size: 40,
+                            color: Colors.white,
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Spacer()
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget Information(Function customState) {
+    return Expanded(
+      child: Container(
+        // constraints: BoxConstraints(minHeight: 100),
+        padding: EdgeInsets.symmetric(horizontal: 40),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Information",
+              style: textStyles.lato_black(fontSize: 35),
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Container(
+                constraints: BoxConstraints(
+                    minHeight: MediaQuery.of(context).size.height * 0.28),
+                padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                width: double.maxFinite,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: (haveAdded)
+                    ? Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Typhoon Name::',
+                            style: textStyles.lato_light(fontSize: 12),
+                          ),
+                          Text(
+                            '${newlyAddedDayInformation!.typhoonName}',
+                            style: textStyles.lato_black(fontSize: 16),
+                          ),
+                          SizedBox(height: 10),
+                          Text(
+                            'Predicted Damage Cost:',
+                            style: textStyles.lato_light(fontSize: 12),
+                          ),
+                          Text(
+                            '${newlyAddedDayInformation!.damageCost}',
+                            style: textStyles.lato_black(fontSize: 16),
+                          ),
+                          SizedBox(height: 10),
+                          Text(
+                            'Day:',
+                            style: textStyles.lato_light(fontSize: 12),
+                          ),
+                          Text(
+                            '${newlyAddedDayInformation!.day}',
+                            style: textStyles.lato_black(fontSize: 16),
+                          ),
+                          SizedBox(height: 10),
+                          Text(
+                            'Date Recorded:',
+                            style: textStyles.lato_light(fontSize: 12),
+                          ),
+                          Text(
+                            '${newlyAddedDayInformation!.dateRecorded}',
+                            style: textStyles.lato_black(fontSize: 16),
+                          ),
+                          SizedBox(height: 10),
+                          Text(
+                            'Windspeed:',
+                            style: textStyles.lato_light(fontSize: 12),
+                          ),
+                          Text(
+                            '${newlyAddedDayInformation!.windSpeed}',
+                            style: textStyles.lato_black(fontSize: 16),
+                          ),
+                          SizedBox(height: 10),
+                          Text(
+                            'Rainfall:',
+                            style: textStyles.lato_light(fontSize: 12),
+                          ),
+                          Text(
+                            '${newlyAddedDayInformation!.rainfall}',
+                            style: textStyles.lato_black(fontSize: 16),
+                          ),
+                          SizedBox(height: 10),
+                          Text(
+                            'Location:',
+                            style: textStyles.lato_light(fontSize: 12),
+                          ),
+                          Text(
+                            '${newlyAddedDayInformation!.location}',
+                            style: textStyles.lato_black(fontSize: 16),
+                          ),
+                        ],
+                      )
+                    : SizedBox()),
+            SizedBox(
+              height: 20,
+            ),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Material(
+                color: (haveAdded) ? Colors.blue : Colors.grey,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(8),
+                  onTap: (haveAdded) ? (() {
+                    customState((){
+                      haveAdded = false;
+                      newlyAddedDayInformation = null;
+                    });
+                    Navigator.pop(context);
+                    
+                  }) : null,
+                  child: Ink(
+                    padding: EdgeInsets.symmetric(horizontal: 30),
+                    width: double.maxFinite,
+                    height: 55,
+                    child: Row(
+                      children: [
+                        Text(
+                          "Proceed",
+                          style: textStyles.lato_bold(
+                              fontSize: 18, color: Colors.white),
+                        ),
+                        Spacer(),
+                        Icon(
+                          Icons.arrow_right_alt_sharp,
+                          size: 40,
+                          color: Colors.white,
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -10,8 +10,7 @@ class logo extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           // Image.asset('assets/images/typhoonista_logo.png', height: 52, width: 52,),
-          Container(height: 52, width: 52, color: Colors.blue),
-          SizedBox(height: 10,),
+          Image.asset('lib/assets/images/typhoonista_logo.png'),
           Text("Typhoonista", style: textStyles.lato_bold(fontSize: 18, color: Colors.black),)
         ],
       ),

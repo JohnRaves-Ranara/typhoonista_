@@ -8,22 +8,22 @@ class overview extends StatelessWidget {
 
   List<Widget> icons = [
     Image.asset(
-      'assets/images/typhoonista_logo.png',
+      'lib/assets/images/dashboard.png',
       height: 22,
       width: 22,
     ),
     Image.asset(
-      'assets/images/estimator.png',
+      'lib/assets/images/estimator.png',
       height: 22,
       width: 22,
     ),
     Image.asset(
-      'assets/images/history.png',
+      'lib/assets/images/history.png',
       height: 22,
       width: 22,
     ),
     Image.asset(
-      'assets/images/documents.png',
+      'lib/assets/images/documents.png',
       height: 22,
       width: 22,
     ),
@@ -82,11 +82,7 @@ class overview extends StatelessWidget {
                   child: Row(
                     children: [
                       SizedBox(width: 20,),
-                      Container(
-                        height: 22,
-                        width: 22,
-                        color: Colors.black,
-                      ),
+                      icons[index],
                       SizedBox(
                         width: 16,
                       ),

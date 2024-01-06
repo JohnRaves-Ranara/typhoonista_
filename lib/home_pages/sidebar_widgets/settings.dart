@@ -8,12 +8,12 @@ class settings extends StatelessWidget {
 
   List<Widget> icons = [
     Image.asset(
-      'assets/images/typhoonista_logo.png',
+      'lib/assets/images/settings.png',
       height: 22,
       width: 22,
     ),
     Image.asset(
-      'assets/images/estimator.png',
+      'lib/assets/images/logout.png',
       height: 22,
       width: 22,
     ),
@@ -61,11 +61,7 @@ class settings extends StatelessWidget {
                   child: Row(
                     children: [
                       SizedBox(width: 20,),
-                      Container(
-                        height: 22,
-                        width: 22,
-                        color: (index==icons.length) ? Colors.red : Colors.black,
-                      ),
+                      icons[index],
                       SizedBox(
                         width: 16,
                       ),

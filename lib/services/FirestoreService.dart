@@ -14,26 +14,7 @@ class FirestoreService {
       .doc('test-user')
       .collection('typhoons');
 
-  // void addTyphoon(String typhName, double windspeed, double rainfall, String location) async{
-
-  //   DocumentReference docRef = typhColRef.doc();
-  //   final id = docRef.id;
-  //   final double dmgcost = estimatorModel().getEstimation();
-  //   final typhoon = {
-  //     "id" : id,
-  //     "typhoonName" : typhName,
-  //     "peakWindSpeed" : peakWindspeed,
-  //     "peakRainfall" : peakRainfall,
-  //     "location" : location,
-  //     "totalDamage" : dmgcost
-  //   };
-
-  //   addDay(id, typhName, )
-  //   await docRef.set(typhoon);
-
-  // }
-
-  void addDay(
+  Future<TyphoonDay> addDay(
       {String? typhoonId,
       required String typhoonName,
       required double windSpeed,
@@ -41,6 +22,8 @@ class FirestoreService {
       required String location,
       required bool isFirstDay}) async {
     final double damageCost = estimatorModel().getEstimation();
+    late TyphoonDay newlyAddedDay;
+    var dayJson;
     if (isFirstDay) {
       //line below creates a new typhoon document inside typhoons collection
       DocumentReference typhoonDocRef = typhColRef.doc();
@@ -66,7 +49,7 @@ class FirestoreService {
       final _dayId = daysDocRef.id;
       DocumentReference allEstimations =
           userRef.collection("allDays").doc(_dayId);
-      final day = {
+      dayJson = {
         "id": _dayId,
         "typhoonID": _typhoonId,
         "typhoonName": typhoonName,
@@ -77,37 +60,66 @@ class FirestoreService {
         "damageCost": damageCost,
         "dateRecorded": DateTime.now().toString()
       };
-      await daysDocRef.set(day);
-      await allEstimations.set(day);
+      await daysDocRef.set(dayJson);
+      await allEstimations.set(dayJson);
     } else {
+      // print("STARTSSSSSSSSSSSSSSSSS");
+      // final x = await FirebaseFirestore.instance
+      //     .collection('users')
+      //     .doc('test-user')
+      //     .collection('allDays')
+      //     .orderBy('creationDate', descending: true)
+      //     .limit(1)
+      //     .get();
+      // print("1111111111111111111111111");
+      // final v = x;
+
       DocumentSnapshot typhoonDocSnapshot =
           await typhColRef.doc(typhoonId!).get();
+      DateTime startDateOfSelectedTyphoon = DateTime.parse(typhoonDocSnapshot['startDate']);
       int currentDayOfTyphoon = typhoonDocSnapshot['currentDay'];
       double currentTotalDamageCost = typhoonDocSnapshot['totalDamageCost'];
       CollectionReference daysColRef =
           typhColRef.doc(typhoonId).collection("days");
       DocumentReference daysDocRef = daysColRef.doc();
       final dayId = daysDocRef.id;
-      DocumentReference allEstimations =
+      DocumentReference allDays =
           userRef.collection("allDays").doc(dayId);
-      final day = {
+
+      final currentDateTime = DateTime.now();
+      dayJson = {
         "id": dayId,
         "typhoonID": typhoonId,
         "typhoonName": typhoonName,
         "windSpeed": windSpeed,
         "rainfall": rainfall,
         "location": location,
-        "day": currentDayOfTyphoon + 1,
+        "day": (currentDateTime.day > startDateOfSelectedTyphoon.day) ? currentDayOfTyphoon++ : currentDayOfTyphoon,
         "damageCost": damageCost,
-        "dateRecorded": DateTime.now().toString()
+        "dateRecorded": currentDateTime.toString()
       };
       await typhColRef.doc(typhoonId).update({
-        "currentDay": currentDayOfTyphoon + 1,
+        "currentDay": (currentDateTime.day > startDateOfSelectedTyphoon.day) ? currentDayOfTyphoon++ : currentDayOfTyphoon,
         "totalDamageCost": currentTotalDamageCost + damageCost
       });
-      await daysDocRef.set(day);
-      await allEstimations.set(day);
+      await daysDocRef.set(dayJson);
+      await allDays.set(dayJson);
     }
+
+    newlyAddedDay = TyphoonDay.fromJson(dayJson);
+    return newlyAddedDay;
+  }
+
+  Future<TyphoonDay> getLastAddedDay() async {
+    final x = await FirebaseFirestore.instance
+        .collection('users')
+        .doc('test-user')
+        .collection('allDays')
+        .orderBy('dateRecorded')
+        .limit(1)
+        .get();
+
+    return TyphoonDay.fromJson(x.docs.first.data());
   }
 
   //FOR LIST
@@ -145,12 +157,15 @@ class FirestoreService {
       .map((doc) => Typhoon.fromJson(doc.data()));
 
   Stream<TyphoonDay> getRecentlyAddedDay() {
-    return FirebaseFirestore.instance.collection('users').doc('test-user').collection('allDays')
-    .orderBy('creationDate', descending: true)
-    .limit(1)
-    .snapshots()
-    .map((snapshot) => snapshot.docs.first)
-    .map((doc) => TyphoonDay.fromJson(doc.data()));
+    return FirebaseFirestore.instance
+        .collection('users')
+        .doc('test-user')
+        .collection('allDays')
+        .orderBy('creationDate', descending: true)
+        .limit(1)
+        .snapshots()
+        .map((snapshot) => snapshot.docs.first)
+        .map((doc) => TyphoonDay.fromJson(doc.data()));
   }
 
   // Future<List<TyphoonDay>> fetchAllDaysList() async {

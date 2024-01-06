@@ -29,7 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Row(
               children: [
                 Image(
-                  image: AssetImage("lib/assets/images/typhoonista_logo.png"),
+                  image: AssetImage("lib/assets/images/typhoonista_logo_white.png"),
                 ),
                 SizedBox(
                   width: 10,
