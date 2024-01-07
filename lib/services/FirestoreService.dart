@@ -141,7 +141,6 @@ class FirestoreService {
       .collection('allDays')
       .snapshots()
       .map((snapshot) => snapshot.docs.map((json) {
-            print("88888888888888");
             final v = TyphoonDay.fromJson(json.data());
             return v;
           }).toList());

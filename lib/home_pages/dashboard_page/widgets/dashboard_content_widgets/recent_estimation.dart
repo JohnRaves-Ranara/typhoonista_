@@ -86,7 +86,7 @@ class _recent_estimationState extends State<recent_estimation> {
                                           ),
                                           Text(
                                             "₱ ${recentEstimation.totalDamageCost.toStringAsFixed(2)}",
-                                            style: textStyles.lato_black(
+                                            style: textStyles.lato_bold(
                                                 color: Colors.white,
                                                 fontSize: 45),
                                           ),
