@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:typhoonista_thesis/entities/TyphoonDay.dart';
 import 'package:typhoonista_thesis/services/FirestoreService.dart';
+import 'package:typhoonista_thesis/entities/TyphoonDay.dart';
+import 'package:typhoonista_thesis/assets/themes/textStyles.dart';
 
 class idk extends StatefulWidget {
   const idk({super.key});
@@ -10,169 +12,203 @@ class idk extends StatefulWidget {
 }
 
 class _idkState extends State<idk> {
+  String selectedTyphoonName = 'All';
+  dynamic selectedDayNumber = 'All';
+  String selectedLocation = 'All';
+
   @override
   Widget build(BuildContext context) {
-    final List<DateTime> dates = [
-      DateTime.parse('2024-01-07 01:15:16.025'),
-      DateTime.parse('2024-01-05 22:05:11.212')
-    ];
-
-    final DateTime latest = dates.reduce((currentRecent, dateTime) =>
-        dateTime.isAfter(currentRecent) ? dateTime : currentRecent);
-
     return Scaffold(
-      body: Container(
-        height: MediaQuery.of(context).size.height*0.8,
-        width: MediaQuery.of(context).size.width*0.8,
-        color: Colors.teal.shade50,
-        child: StreamBuilder<List<TyphoonDay>>(
-          stream: FirestoreService().streamAllDays(),
-          builder: (context, snapshot) {
-
-            if (snapshot.hasData) {
-              final List<TyphoonDay> allDays = snapshot.data!;
-              final List<String> allTyphoonNames = allDays.map((day) => day.typhoonName).toList();
-            final List<dynamic> allDayNumbers = allDays.map((day) => day.day).toList();
-            final List<String> allLocations = allDays.map((day) => day.location).toList();
-
-            allTyphoonNames.insert(0, 'All');
-            allDayNumbers.insert(0, -1);
-            allLocations.insert(0, 'All');
-
-            var selectedTyphoonName = 'All';
-            var selectedDayNumber = -1;
-            var selectedLocation = 'All';
-
-            print(selectedTyphoonName);
-              return SingleChildScrollView(
-                child: Column(
-                  children: [
-                    Container(
-                      height: 50,
-                      width: double.maxFinite,
-                      padding: EdgeInsets.symmetric(horizontal: 20),
-                      color: Colors.grey.shade100,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(Icons.filter_alt),
-                              SizedBox(
-                                width: 10,
-                              ),
-                              Text('Filter'),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Text('Typhoon Name'),
-                              SizedBox(
-                                width: 10,
-                              ),
-                              DropdownButton(
-                                value: selectedTyphoonName,
-                                icon: Icon(Icons.arrow_drop_down),
-                                items: buildDropdownMenu(allTyphoonNames),
-                                onChanged: (newValue){
-                                  setState(() {
-                                    print("SETSTAT stgart");
-                                    selectedTyphoonName = newValue;
-                                    print("SETSTAT End");
-                                  });
-                                })
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Text('Day Number'),
-                              SizedBox(
-                                width: 10,
-                              ),
-                              Container(
-                                decoration: BoxDecoration(
-                                    border: Border.all(
-                                        color: Colors.black,
-                                        width: 1,
-                                        style: BorderStyle.solid)),
-                                child: Row(
-                                  children: [
-                                    Text('All'),
-                                    Icon(Icons.arrow_drop_down)
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Text('Location'),
-                              SizedBox(
-                                width: 10,
-                              ),
-                              Container(
-                                decoration: BoxDecoration(
-                                    border: Border.all(
-                                        color: Colors.black,
-                                        width: 1,
-                                        style: BorderStyle.solid)),
-                                child: Row(
-                                  children: [
-                                    Text('All'),
-                                    Icon(Icons.arrow_drop_down)
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      width: double.maxFinite,
-                      child: DataTable(
-                          border: TableBorder.symmetric(
-                              inside: BorderSide(
-                                  color: Colors.grey.shade200,
-                                  width: 1,
-                                  style: BorderStyle.solid)),
-                          showCheckboxColumn: false,
-                          columns: [
-                            DataColumn(label: Text('Typhoon Name')),
-                            DataColumn(label: Text('Day Number')),
-                            DataColumn(label: Text('Location')),
-                            DataColumn(label: Text('Estimated Damage Cost')),
+      body: Column(
+        children: [
+          Container(
+            height: 60,
+            width: double.maxFinite,
+            // color: Colors.teal,
+            child: StreamBuilder<List<TyphoonDay>>(
+                stream: FirebaseFirestore.instance
+                    .collection('users')
+                    .doc('test-user')
+                    .collection('allDays')
+                    .snapshots()
+                    .map((snapshot) => snapshot.docs
+                        .map((doc) => TyphoonDay.fromJson(doc.data()))
+                        .toList()),
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return Text("ERROR");
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return Text("No data.");
+                  } else {
+                    final List<TyphoonDay> days = snapshot.data!;
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Row(
+                          children: [
+                            Text('Filters', style: textStyles.lato_bold(),),
+                            SizedBox(width: 20,),
+                            Icon(Icons.filter_list_outlined)
                           ],
-                          rows: allDays
-                              .map((day) => DataRow(
-                                      onSelectChanged: (bool? newVal) {
-                                        //todo this functions must navigate to the day's information page
-                                        print(day.damageCost);
-                                      },
-                                      cells: [
-                                        DataCell(Text(day.typhoonName)),
-                                        DataCell(Text(day.day.toString())),
-                                        DataCell(Text(day.location)),
-                                        DataCell(
-                                            Text(day.damageCost.toString())),
-                                      ]))
-                              .toList()),
-                    ),
-                  ],
-                ),
-              );
-            } else {
-              return Text('empty');
-            }
-          },
-        ),
+                        ),
+                        Row(
+                          children: [
+                            Text('Typhoon Name', style: textStyles.lato_bold() ),
+                            SizedBox(width: 20,),
+                            Container(
+                              decoration: BoxDecoration(border: Border.all(color: Colors.grey, width: 1, style: BorderStyle.solid),borderRadius: BorderRadius.circular(10),),
+                              child: DropdownButton<dynamic>(
+                                  isDense: true,
+                                  padding: EdgeInsets.symmetric(horizontal: 8),
+                                  borderRadius: BorderRadius.circular(10),
+                                  value: selectedTyphoonName,
+                                  items: buildMenuItems(days, 'typhoonName'),
+                                  onChanged: (newValue) {
+                                    setState(() {
+                                      selectedTyphoonName = newValue!;
+                                    });
+                                  }),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Text('Day Number', style: textStyles.lato_bold() ),
+                            SizedBox(width: 20,),
+                            Container(
+                              decoration: BoxDecoration(border: Border.all(color: Colors.grey, width: 1, style: BorderStyle.solid),borderRadius: BorderRadius.circular(10),),
+                              child: DropdownButton<dynamic>(
+                                  isDense: true,
+                                  padding: EdgeInsets.symmetric(horizontal: 8),
+                                  borderRadius: BorderRadius.circular(10),
+                                  value: selectedDayNumber,
+                                  items: buildMenuItems(days, 'dayNumber'),
+                                  onChanged: (newValue) {
+                                    setState(() {
+                                      selectedDayNumber = newValue!;
+                                    });
+                                  }),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Text('Location', style: textStyles.lato_bold() ),
+                            SizedBox(width: 20,),
+                            Container(
+                              decoration: BoxDecoration(border: Border.all(color: Colors.grey, width: 1, style: BorderStyle.solid),borderRadius: BorderRadius.circular(10),),
+                              child: DropdownButton<dynamic>(
+                                  isDense: true,
+                                  padding: EdgeInsets.symmetric(horizontal: 8),
+                                  borderRadius: BorderRadius.circular(10),
+                                  value: selectedLocation,
+                                  items: buildMenuItems(days, 'location'),
+                                  onChanged: (newValue) {
+                                    setState(() {
+                                      selectedLocation = newValue!;
+                                    });
+                                  }),
+                            ),
+                          ],
+                        ),
+                        
+                      ],
+                    );
+                  }
+                }),
+          ),
+          Container(
+            color: Colors.amber.shade100,
+            width: double.maxFinite,
+            child: StreamBuilder<List<TyphoonDay>>(
+              stream: daysStream(),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return Text('ERROR');
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return Text('No data');
+                } else {
+                  final List<TyphoonDay> days = snapshot.data!;
+                  return DataTable(
+                    showCheckboxColumn: false,
+                    columns: 
+                  [
+                    DataColumn(label: Text('Typhoon Name', style: textStyles.lato_bold(),)),
+                    DataColumn(label: Text('Day Number', style: textStyles.lato_bold())),
+                    DataColumn(label: Text('Location', style: textStyles.lato_bold())),
+                    DataColumn(label: Text('Damage Cost', style: textStyles.lato_bold())),
+                  ]
+                  , rows: days.map((day) => DataRow(
+                    // selected: false,
+                    onSelectChanged: (isSelected) {
+                      //todo
+                      print(day.damageCost);
+                    },
+                    cells: [
+                      DataCell(Text(day.typhoonName, style: textStyles.lato_regular())),
+                      DataCell(Text(day.day.toString(), style: textStyles.lato_regular())),
+                      DataCell(Text(day.location, style: textStyles.lato_regular())),
+                      DataCell(Text(day.damageCost.toString(), style: textStyles.lato_regular()))
+                    ]
+                   )).toList());
+                }
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  List<DropdownMenuItem> buildDropdownMenu(List<String> list){
-    return list.map((item) => DropdownMenuItem(
-      value: item,
-      child: Text((item==-1) ? 'All' : item))).toList();
+  List<DropdownMenuItem<dynamic>> buildMenuItems(
+    List<TyphoonDay> days, String type) {
+    var list = [];
+    late List<DropdownMenuItem<dynamic>> returnList = [];
+    Set listSet;
+    switch (type) {
+      case "location":
+        listSet = Set.from(days.map((day) => day.location).toList());
+        listSet.forEach((day) { list.add(day); });
+        list.sort();
+        list.insert(0, 'All');
+        returnList = list.map((loc) => DropdownMenuItem(child: Text(loc, style: textStyles.lato_regular()), value: loc,)).toList();
+        
+      case "typhoonName":
+        listSet = Set.from(days.map((name) => name.typhoonName).toList());
+        listSet.forEach((name) { list.add(name); });
+        list.sort();
+        list.insert(0, 'All');
+        returnList = list.map((name) => DropdownMenuItem(child: Text(name, style: textStyles.lato_regular()), value: name,)).toList();
+
+      case "dayNumber":
+        listSet = Set.from(days.map((day) => day.day).toList());
+        listSet.forEach((day) { list.add(day); });
+        list.sort();
+        list.insert(0, 'All');
+        returnList = list.map((day) => DropdownMenuItem<dynamic>(child: Text(day.toString(), style: textStyles.lato_regular()), value: day,)).toList();
+    }
+
+    return returnList;
+  }
+
+  Stream<List<TyphoonDay>> daysStream() {
+    Query query = FirebaseFirestore.instance
+        .collection('users')
+        .doc('test-user')
+        .collection('allDays');
+
+    if (selectedDayNumber != 'All') {
+      query = query.where('day', isEqualTo: selectedDayNumber);
+    }
+    if (selectedLocation != 'All') {
+      query = query.where('location', isEqualTo: selectedLocation);
+    }
+    if (selectedTyphoonName != 'All') {
+      query = query.where('typhoonName', isEqualTo: selectedTyphoonName);
+    }
+
+    return query.snapshots().map((snapshot) => snapshot.docs
+        .map((doc) => TyphoonDay.fromJson(doc.data() as Map<String, dynamic>))
+        .toList());
   }
 }

@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:typhoonista_thesis/Home.dart';
+import 'package:typhoonista_thesis/LoginScreen.dart';
 import 'package:typhoonista_thesis/providers/TyphoonProvider.dart';
 import 'package:typhoonista_thesis/providers/page_provider.dart';
 import 'package:typhoonista_thesis/providers/sample_provider.dart';
@@ -46,7 +47,7 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
-        home: idk(),
+        home: Home(),
       ),
     );
   }

@@ -24,6 +24,7 @@ class FirestoreService {
     final double damageCost = estimatorModel().getEstimation();
     late TyphoonDay newlyAddedDay;
     var dayJson;
+    final currentDateTime = DateTime.now();
     if (isFirstDay) {
       //line below creates a new typhoon document inside typhoons collection
       DocumentReference typhoonDocRef = typhColRef.doc();
@@ -35,7 +36,8 @@ class FirestoreService {
         "peakRainfall": rainfall,
         "location": location,
         "totalDamageCost": damageCost,
-        "startDate": DateTime.now().toString(),
+        "startDate": currentDateTime.toString(),
+        "recentDayDateRecorded": currentDateTime.toString(),
         "endDate": "",
         "currentDay": 1
       };
@@ -58,35 +60,24 @@ class FirestoreService {
         "location": location,
         "day": 1,
         "damageCost": damageCost,
-        "dateRecorded": DateTime.now().toString()
+        "dateRecorded": currentDateTime.toString()
       };
       await daysDocRef.set(dayJson);
       await allEstimations.set(dayJson);
     } else {
-      // print("STARTSSSSSSSSSSSSSSSSS");
-      // final x = await FirebaseFirestore.instance
-      //     .collection('users')
-      //     .doc('test-user')
-      //     .collection('allDays')
-      //     .orderBy('creationDate', descending: true)
-      //     .limit(1)
-      //     .get();
-      // print("1111111111111111111111111");
-      // final v = x;
+      
+      await updateTyphoon(typhoonId!, currentDateTime, damageCost);
 
       DocumentSnapshot typhoonDocSnapshot =
-          await typhColRef.doc(typhoonId!).get();
-      DateTime startDateOfSelectedTyphoon = DateTime.parse(typhoonDocSnapshot['startDate']);
+          await typhColRef.doc(typhoonId).get();
+      DateTime typhoonRecentDay = DateTime.parse(typhoonDocSnapshot['recentDayDateRecorded']);
+      DateTime dateOfRecentDay = DateTime(typhoonRecentDay.year, typhoonRecentDay.month, typhoonRecentDay.day);
       int currentDayOfTyphoon = typhoonDocSnapshot['currentDay'];
-      double currentTotalDamageCost = typhoonDocSnapshot['totalDamageCost'];
-      CollectionReference daysColRef =
-          typhColRef.doc(typhoonId).collection("days");
+      CollectionReference daysColRef = typhColRef.doc(typhoonId).collection("days");
       DocumentReference daysDocRef = daysColRef.doc();
       final dayId = daysDocRef.id;
-      DocumentReference allDays =
-          userRef.collection("allDays").doc(dayId);
+      DocumentReference allDays = userRef.collection("allDays").doc(dayId);
 
-      final currentDateTime = DateTime.now();
       dayJson = {
         "id": dayId,
         "typhoonID": typhoonId,
@@ -94,20 +85,41 @@ class FirestoreService {
         "windSpeed": windSpeed,
         "rainfall": rainfall,
         "location": location,
-        "day": (currentDateTime.day > startDateOfSelectedTyphoon.day) ? currentDayOfTyphoon++ : currentDayOfTyphoon,
+        "day": (DateTime(currentDateTime.year, currentDateTime.month,
+                    currentDateTime.day)
+                .isAfter(dateOfRecentDay))
+            ? currentDayOfTyphoon + 1
+            : currentDayOfTyphoon,
         "damageCost": damageCost,
         "dateRecorded": currentDateTime.toString()
       };
-      await typhColRef.doc(typhoonId).update({
-        "currentDay": (currentDateTime.day > startDateOfSelectedTyphoon.day) ? currentDayOfTyphoon++ : currentDayOfTyphoon,
-        "totalDamageCost": currentTotalDamageCost + damageCost
-      });
+      
       await daysDocRef.set(dayJson);
       await allDays.set(dayJson);
     }
 
     newlyAddedDay = TyphoonDay.fromJson(dayJson);
     return newlyAddedDay;
+  }
+
+
+  Future<void> updateTyphoon(String typhoonId, DateTime currentDateTime, double damageCost) async{
+    DocumentSnapshot typhoonDocSnapshot =
+          await typhColRef.doc(typhoonId).get();
+      DateTime typhoonRecentDay = DateTime.parse(typhoonDocSnapshot['recentDayDateRecorded']);
+      DateTime dateOfRecentDay = DateTime(typhoonRecentDay.year, typhoonRecentDay.month, typhoonRecentDay.day);
+      int currentDayOfTyphoon = typhoonDocSnapshot['currentDay'];
+      double currentTotalDamageCost = typhoonDocSnapshot['totalDamageCost'];
+
+    await typhColRef.doc(typhoonId).update({
+        "recentDayDateRecorded": currentDateTime.toString(),
+        "currentDay": (DateTime(currentDateTime.year, currentDateTime.month,
+                    currentDateTime.day)
+                .isAfter(dateOfRecentDay))
+            ? currentDayOfTyphoon + 1
+            : currentDayOfTyphoon,
+        "totalDamageCost": currentTotalDamageCost + damageCost
+      });
   }
 
   Future<TyphoonDay> getLastAddedDay() async {

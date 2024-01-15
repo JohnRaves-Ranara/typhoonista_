@@ -3,12 +3,10 @@ import 'package:typhoonista_thesis/home_pages/documents_page/documents_page.dart
 import 'package:typhoonista_thesis/providers/page_provider.dart';
 import 'home_pages/sidebar.dart';
 import 'package:provider/provider.dart';
-import 'package:provider/provider.dart';
 import 'home_pages/settings_page/settings_page.dart';
 import 'home_pages/dashboard_page/dashboard_page.dart';
 import 'home_pages/estimator_page/estimator_page.dart';
 import 'home_pages/history_page/history_page.dart';
-import 'home_pages/dashboard_page/widgets/dashboard_content_widgets/history.dart';
 
 class Home extends StatefulWidget {
   Home({super.key});
