@@ -41,7 +41,7 @@ class _recent_estimationState extends State<recent_estimation> {
                     Padding(
                         padding: EdgeInsets.only(left: 15),
                         child: Text(
-                          "RECENT TYPHOON ESTIMATION",
+                          "ONGOING TYPHOON ESTIMATION",
                           style: textStyles.lato_bold(
                               color: Colors.black, fontSize: 15),
                         )),
@@ -133,68 +133,7 @@ class _recent_estimationState extends State<recent_estimation> {
                                                 borderRadius:
                                                     BorderRadius.circular(10),
                                                 onTap: (() {
-                                                  showDialog(
-                                                      context: context,
-                                                      builder: (context) {
-                                                        return AlertDialog(
-                                                          shape: RoundedRectangleBorder(
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          10)),
-                                                          title: Text(
-                                                              "Delete confirmation",
-                                                              style: textStyles
-                                                                  .lato_black(
-                                                                      fontSize:
-                                                                          20)),
-                                                          content: Text(
-                                                            "Are you sure you want to delete this computation?",
-                                                            style: textStyles
-                                                                .lato_regular(
-                                                                    fontSize:
-                                                                        20),
-                                                          ),
-                                                          actions: [
-                                                            Container(
-                                                              height: 40,
-                                                              child: TextButton(
-                                                                  style: TextButton.styleFrom(
-                                                                      shape: RoundedRectangleBorder(
-                                                                          borderRadius: BorderRadius.circular(
-                                                                              10))),
-                                                                  onPressed:
-                                                                      (() {
-                                                                    Navigator.pop(
-                                                                        context);
-                                                                  }),
-                                                                  child: Text(
-                                                                      "Cancel",
-                                                                      style: textStyles.lato_regular(
-                                                                          fontSize:
-                                                                              16))),
-                                                            ),
-                                                            Container(
-                                                              height: 40,
-                                                              child: TextButton(
-                                                                  style: TextButton.styleFrom(
-                                                                      shape: RoundedRectangleBorder(
-                                                                          borderRadius: BorderRadius.circular(
-                                                                              10))),
-                                                                  onPressed:
-                                                                      (() {
-                                                                    Navigator.pop(
-                                                                        context);
-                                                                  }),
-                                                                  child: Text(
-                                                                      "Delete",
-                                                                      style: textStyles.lato_regular(
-                                                                          fontSize:
-                                                                              16))),
-                                                            )
-                                                          ],
-                                                        );
-                                                      });
+                                                  showDeleteComputationDialog();
                                                 }),
                                                 child: Center(
                                                   child: Text(
@@ -219,7 +158,9 @@ class _recent_estimationState extends State<recent_estimation> {
                                             color: Colors.white,
                                             child: Ink(
                                               child: InkWell(
-                                                onTap: (() {}),
+                                                onTap: (() {
+                                                  showGenerateReportDialog();
+                                                }),
                                                 borderRadius:
                                                     BorderRadius.circular(10),
                                                 child: Center(
@@ -274,7 +215,8 @@ class _recent_estimationState extends State<recent_estimation> {
                                                                     add_day(
                                                                         recentEstimation,
                                                                         customState),
-                                                                    Information(customState)
+                                                                    Information(
+                                                                        customState)
                                                                   ],
                                                                 ),
                                                               );
@@ -314,6 +256,124 @@ class _recent_estimationState extends State<recent_estimation> {
             }
           }),
     );
+  }
+
+  showDeleteComputationDialog() {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            actionsPadding: EdgeInsets.only(left: 30, right: 30, bottom: 30),
+            content: Container(
+              width: MediaQuery.of(context).size.width * 0.1,
+              height: MediaQuery.of(context).size.height * 0.2,
+              child: Center(
+                  child: RichText(
+                                  textAlign: TextAlign.justify,
+                                  text: TextSpan(
+                    text: "Deleting a computation ",
+                    style: textStyles.lato_regular(
+                        fontSize: 20, color: Color(0xffAD0000)),
+                    children: [
+                      TextSpan(
+                          text:
+                              "will erase all of its estimations. Do you wish to proceed? ",
+                          style: textStyles.lato_regular(color: Colors.black)),
+                      TextSpan(
+                          text: "(You can generate a report instead)",
+                          style:
+                              textStyles.lato_regular(color: Color(0xffAD0000)))
+                    ]),
+                                )),
+            ),
+            actions: [
+              ButtonBar(
+                children: [
+                  InkWell(
+                    onTap: ((){
+                      Navigator.pop(context);
+                    }),
+                    child: Container(
+                      height: 60,
+                      width: 185,
+                      color: Color(0xff00109F),
+                      child: Center(child: Text("Cancel", style: textStyles.lato_regular(fontSize: 20, color: Colors.white),),),
+                    ),
+                  ),
+                  SizedBox(width:10,),
+                  InkWell(
+                    onTap: ((){}),
+                    child: Container(
+                      height: 60,
+                      width: 185,
+                      color: Color(0xffAD0000),
+                      child: Center(child: Text("Delete", style: textStyles.lato_regular(fontSize: 20, color: Colors.white),),),
+                    ),
+                  ),
+                ],
+              )
+            ],
+          );
+        });
+  }
+
+  showGenerateReportDialog(){
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            actionsPadding: EdgeInsets.only(left: 30, right: 30, bottom: 30),
+            content: Container(
+              width: MediaQuery.of(context).size.width * 0.1,
+              height: MediaQuery.of(context).size.height * 0.2,
+              child: Center(
+                  child: RichText(
+                                  textAlign: TextAlign.justify,
+                                  text: TextSpan(
+                    text: "Generating a report ",
+                    style: textStyles.lato_regular(
+                        fontSize: 20, color: Color(0xffAD0000)),
+                    children: [
+                      TextSpan(
+                          text:
+                              "will mark this typhoon as Finished. Would you like to continue? ",
+                          style: textStyles.lato_regular(color: Colors.black)),
+                      TextSpan(
+                          text: "(Please note that this action is irreversible and will remove the current typhoon that’s being estimated)",
+                          style:
+                              textStyles.lato_regular(color: Color(0xffAD0000)))
+                    ]),
+                                )),
+            ),
+            actions: [
+              ButtonBar(
+                children: [
+                  InkWell(
+                    onTap: ((){
+                      Navigator.pop(context);
+                    }),
+                    child: Container(
+                      height: 60,
+                      width: 185,
+                      color: Color(0xff00109F),
+                      child: Center(child: Text("Cancel", style: textStyles.lato_regular(fontSize: 20, color: Colors.white),),),
+                    ),
+                  ),
+                  SizedBox(width:10,),
+                  InkWell(
+                    onTap: ((){}),
+                    child: Container(
+                      height: 60,
+                      width: 185,
+                      color: Color(0xffAD0000),
+                      child: Center(child: Text("Generate", style: textStyles.lato_regular(fontSize: 20, color: Colors.white),),),
+                    ),
+                  ),
+                ],
+              )
+            ],
+          );
+        });
   }
 
   Widget add_day(Typhoon recentEstimation, Function customState) {
@@ -381,7 +441,7 @@ class _recent_estimationState extends State<recent_estimation> {
                     borderRadius: BorderRadius.circular(8),
                     onTap: (haveAdded)
                         ? null
-                        : (() async{
+                        : (() async {
                             final addDay = await FirestoreService().addDay(
                                 typhoonName: recentEstimation.typhoonName,
                                 windSpeed:
@@ -440,7 +500,7 @@ class _recent_estimationState extends State<recent_estimation> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Information",
+              "Estimation",
               style: textStyles.lato_black(fontSize: 35),
             ),
             SizedBox(
@@ -534,14 +594,15 @@ class _recent_estimationState extends State<recent_estimation> {
                 color: (haveAdded) ? Colors.blue : Colors.grey,
                 child: InkWell(
                   borderRadius: BorderRadius.circular(8),
-                  onTap: (haveAdded) ? (() {
-                    customState((){
-                      haveAdded = false;
-                      newlyAddedDayInformation = null;
-                    });
-                    Navigator.pop(context);
-                    
-                  }) : null,
+                  onTap: (haveAdded)
+                      ? (() {
+                          customState(() {
+                            haveAdded = false;
+                            newlyAddedDayInformation = null;
+                          });
+                          Navigator.pop(context);
+                        })
+                      : null,
                   child: Ink(
                     padding: EdgeInsets.symmetric(horizontal: 30),
                     width: double.maxFinite,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:typhoonista_thesis/home_pages/documents_page/documents_page.dart';
+import 'package:typhoonista_thesis/home_pages/typhoons_page/typhoons_page.dart';
 import 'package:typhoonista_thesis/providers/page_provider.dart';
 import 'home_pages/sidebar.dart';
 import 'package:provider/provider.dart';
@@ -39,9 +40,11 @@ class _HomeState extends State<Home> {
           pageToBeDisplayed = history_page();
           break;
           case(4):
+          pageToBeDisplayed = typhoons_page();
+          case(5):
           pageToBeDisplayed = documents_page();
           break;
-          case(5):
+          case(6):
           pageToBeDisplayed = settings_page();
           break;
           default:
@@ -57,9 +60,7 @@ class _HomeState extends State<Home> {
             child: Row(
               children: [
                 Expanded(flex: 15, child: sidebar()),
-
-                //todo: widget below is conditional based on sidebar page selection
-                //use provider and whistle
+                
                 Expanded(flex: 85, child: pageToBeDisplayed!)
               ],
             ),

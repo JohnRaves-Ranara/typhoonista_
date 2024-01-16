@@ -23,6 +23,11 @@ class overview extends StatelessWidget {
       width: 22,
     ),
     Image.asset(
+      'lib/assets/images/typhoons.png',
+      height: 22,
+      width: 22,
+    ),
+    Image.asset(
       'lib/assets/images/documents.png',
       height: 22,
       width: 22,
@@ -40,6 +45,10 @@ class overview extends StatelessWidget {
     ),
     Text(
       'History',
+      style: textStyles.lato_bold(color: Colors.black, fontSize: 18),
+    ),
+    Text(
+      'Typhoons',
       style: textStyles.lato_bold(color: Colors.black, fontSize: 18),
     ),
     Text(
@@ -76,6 +85,7 @@ class overview extends StatelessWidget {
                 // color: Colors.purple,
                 height: 50,
                 child: InkWell(
+                  splashFactory: NoSplash.splashFactory,
                   onTap: ((){
                     context.read<page_provider>().changePage(index+1);
                   }),

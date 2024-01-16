@@ -55,8 +55,8 @@ class settings extends StatelessWidget {
                 // color: Colors.green,
                 height: 50,
                 child: InkWell(
+                  splashFactory: NoSplash.splashFactory,
                   onTap: ((){
-                    context.read<page_provider>().changePage(5);
                   }),
                   child: Row(
                     children: [
