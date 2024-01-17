@@ -1,26 +1,50 @@
+import 'dart:convert';
 import 'dart:ui';
 
-import 'package:syncfusion_flutter_pdf/pdf.dart';
-import 'dart:convert';
-import 'dart:html';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart';
+import 'dart:html' as html;
 
 class pdfGeneratorService {
   Future<void> generateSamplePDF(String text) async {
-    PdfDocument document = PdfDocument();
 
-    document.pages.add().graphics.drawString(
-        text, PdfStandardFont(PdfFontFamily.helvetica, 20),
-        brush: PdfSolidBrush(PdfColor(0, 0, 0)),
-        bounds: Rect.fromLTWH(20, 60, 150, 30)); 
+    final pdf = Document();
 
-    List<int> bytes = await document.save();
-    //Dispose the document
-    document.dispose();
+    pdf.addPage(Page(
+        pageFormat: PdfPageFormat.a4,
+        build: (Context context) {
+          return Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  height: 200,
+                  width: 300,
+                  child: Center(child: Text("SAMPLE TEXT")),
+                  decoration: BoxDecoration(
+                    
+                    color: PdfColor(0, 1, 0,0),
+                    borderRadius: BorderRadius.circular(15)
+                  )
+                ),
+                Container(
+                  height: 200,
+                  width: 300,
+                  child: Center(child: Text("SAMPLE TEXT 2")),
+                  decoration: BoxDecoration(
+                    color: PdfColor(1,0, 0,0),
+                    borderRadius: BorderRadius.circular(15)
+                  )
+                )
+              ]);
+        }));
 
-    AnchorElement(
+    var savedFile = await pdf.save();
+    List<int> fileInts = List.from(savedFile);
+    html.AnchorElement(
         href:
-            "data:application/octet-stream;charset=utf-16le;base64,${base64.encode(bytes)}")
-      ..setAttribute("download", "output.pdf")
+            "data:application/octet-stream;charset=utf-16le;base64,${base64.encode(fileInts)}")
+      ..setAttribute("download", "sample.pdf")
       ..click();
   }
 }
