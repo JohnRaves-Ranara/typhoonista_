@@ -108,7 +108,7 @@ class _weather_forecastState extends State<weather_forecast> {
       final http.Response response = await http.get(uri);
 
       if (response.statusCode == 200) {
-        print("API Response: ${response.body}");
+        // print("API Response: ${response.body}");
         setState(() {
           final Map<String, dynamic> data = json.decode(response.body);
           weatherData = List<Map<String, dynamic>>.from(data['list']);

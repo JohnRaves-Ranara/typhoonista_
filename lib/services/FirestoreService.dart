@@ -180,6 +180,25 @@ class FirestoreService {
             snapshot.docs.map((doc) => Typhoon.fromJson(doc.data())).toList());
   }
 
+  Future<void> deleteTyphoon() async{
+    final snapshot = await FirebaseFirestore.instance.collection('users').doc('test-user').collection('typhoons').where('status', isEqualTo: 'ongoing').get();
+    
+    List<Typhoon> typhoons = snapshot.docs.map((doc) => Typhoon.fromJson(doc.data())).toList();
+
+    Typhoon ongoingTyphoon = typhoons.first;
+
+    await FirebaseFirestore.instance.collection('users').doc('test-user').collection('typhoons').doc(ongoingTyphoon.id).delete();
+
+    final snapshotDays = await FirebaseFirestore.instance.collection('users').doc('test-user').collection('allDays').where('typhoonID', isEqualTo: ongoingTyphoon.id).get();
+
+    for(QueryDocumentSnapshot doc in snapshotDays.docs){
+      final docRef = FirebaseFirestore.instance.collection('users').doc('test-user').collection('allDays').doc(doc.id);
+
+      await docRef.delete();
+    }
+
+  }
+
   // Future<List<TyphoonDay>> fetchAllDaysList() async {
   //   try {
   //     print("FLOWER");

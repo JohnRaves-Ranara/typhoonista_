@@ -12,7 +12,7 @@ class estimatorModel{
     final randomDouble = random.nextDouble();
 
     // Scale the random value to the desired range
-    return min + (randomDouble * (max - min));
+    return (min + (randomDouble * (max - min)) / 10).round() * 10;
   }
 
 }

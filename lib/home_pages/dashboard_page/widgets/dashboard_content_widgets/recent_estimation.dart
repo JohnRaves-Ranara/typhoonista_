@@ -6,6 +6,7 @@ import 'package:typhoonista_thesis/entities/TyphoonDay.dart';
 import 'package:typhoonista_thesis/main.dart';
 import 'package:typhoonista_thesis/providers/TyphoonProvider.dart';
 import 'package:typhoonista_thesis/services/FirestoreService.dart';
+import 'package:typhoonista_thesis/services/pdfGeneratorService.dart';
 import '../../../../providers/sample_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:typhoonista_thesis/assets/themes/textStyles.dart';
@@ -302,7 +303,10 @@ class _recent_estimationState extends State<recent_estimation> {
                   ),
                   SizedBox(width:10,),
                   InkWell(
-                    onTap: ((){}),
+                    onTap: (() async{
+                      await FirestoreService().deleteTyphoon();
+                      Navigator.pop(context);
+                    }),
                     child: Container(
                       height: 60,
                       width: 185,
@@ -361,7 +365,10 @@ class _recent_estimationState extends State<recent_estimation> {
                   ),
                   SizedBox(width:10,),
                   InkWell(
-                    onTap: ((){}),
+                    onTap: (() async{
+                      pdfGeneratorService().generateSamplePDF('HELLOOOO');
+                      Navigator.pop(context);
+                    }),
                     child: Container(
                       height: 60,
                       width: 185,
