@@ -22,7 +22,7 @@ class _allDaysTableState extends State<allDaysTable> {
               .collection('users')
               .doc('test-user')
               .collection('allDays')
-              .orderBy('dateRecorded')
+              .orderBy('dateRecorded', descending: true)
               .snapshots()
               .map((snapshot) => snapshot.docs
                   .map((doc) => TyphoonDay.fromJson(doc.data()))

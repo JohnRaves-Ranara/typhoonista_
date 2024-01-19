@@ -68,23 +68,21 @@ class _weather_forecastState extends State<weather_forecast> {
                                           DateFormat('h a').format(
                                               DateTime.parse(
                                                   forecastData['dt_txt'])),
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold),
+                                          style: textStyles.lato_bold(),
                                         ),
                                         // Format the date
                                         Text(
                                           DateFormat('E, MMM d').format(
                                               DateTime.parse(
                                                   forecastData['dt_txt'])),
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold),
+                                          style: textStyles.lato_bold(),
                                         ),
                                         Image.network(
                                             "https://openweathermap.org/img/wn/${forecastData['weather'][0]['icon']}.png"),
                                         Text(
-                                            "${temp.round()} °C"),
+                                            "${temp.round()} °C", style: textStyles.lato_regular(),),
                                         Text(
-                                            "${forecastData['weather'][0]['description']}"),
+                                            "${forecastData['weather'][0]['description']}", style: textStyles.lato_regular(),),
                                       ],
                                     ),
                                   ),

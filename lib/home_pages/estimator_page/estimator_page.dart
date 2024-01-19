@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:typhoonista_thesis/assets/themes/textStyles.dart';
 import 'package:typhoonista_thesis/services/FirestoreService.dart';
+import 'package:typhoonista_thesis/services/locations.dart';
 
 class estimator_page extends StatefulWidget {
   const estimator_page({super.key});
@@ -14,6 +15,9 @@ class _estimator_pageState extends State<estimator_page> {
   final windspeedCtlr = TextEditingController();
   final rainfallCtlr = TextEditingController();
   final locationCtlr = TextEditingController();
+
+  String selectedLocation = "Choose Location";
+  String selectedLocationCode = "";
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -97,13 +101,29 @@ class _estimator_pageState extends State<estimator_page> {
                           SizedBox(
                             height: 20,
                           ),
-                          TextField(
-                            controller: locationCtlr,
-                            decoration: InputDecoration(
-                                labelStyle: textStyles.lato_light(
-                                    color: Colors.grey.withOpacity(0.9)),
-                                border: OutlineInputBorder(),
-                                labelText: "Location"),
+                          InkWell(
+                            onTap: ((){
+                              showChooseLocationDialog();
+                            }),
+                            child: Container(
+                              width: double.maxFinite,
+                              height: 60,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(5),
+                                border: Border.all(width: 1, color: Colors.grey.shade600, style: BorderStyle.solid)
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 20),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Text(selectedLocation, style: textStyles.lato_regular(fontSize: 17),),
+                                    Icon(Icons.arrow_drop_down, size: 22, color: Colors.black,)
+                                  ],
+                                ),
+                              ),
+                            ),
                           ),
                           SizedBox(
                             height: 20,
@@ -120,9 +140,14 @@ class _estimator_pageState extends State<estimator_page> {
                                       typhoonName: typhoonNameCtlr.text.trim(),
                                       windSpeed: double.parse(windspeedCtlr.text.trim()),
                                       rainfall: double.parse(rainfallCtlr.text.trim()),
-                                      location: locationCtlr.text.trim(),
+                                      location: selectedLocation,
+                                      locationCode: selectedLocationCode,
                                       isFirstDay: true
                                       );
+                                  setState(() {
+                                    selectedLocation = "Choose Location";
+                                    selectedLocationCode = "";
+                                  });
                                   typhoonNameCtlr.clear();
                                   windspeedCtlr.clear();
                                   rainfallCtlr.clear();
@@ -160,7 +185,39 @@ class _estimator_pageState extends State<estimator_page> {
                     ))
                   ],
                 )),
+
           ],
         ));
+  }
+
+  showChooseLocationDialog(){
+    showDialog(
+      context: context,
+      builder: (context){
+        return AlertDialog(
+          content: Container(
+            height: MediaQuery.of(context).size.height*0.3,
+            width: MediaQuery.of(context).size.width*0.3,
+            child: ListView.builder(
+              itemCount: Locations().locationsJson.length,
+              itemBuilder: (context, index){
+                List<String> locationNames = Locations().locationsJson.map((loc) => loc.name!).toList();
+                List<String> locationCodes = Locations().locationsJson.map((loc) => loc.code!).toList();
+                return ListTile(
+                  title: Text("${locationNames[index]}"),
+                  onTap: ((){
+                    setState(() {
+                      selectedLocation = locationNames[index];
+                      selectedLocationCode = locationCodes[index];
+                    });
+                    Navigator.pop(context);
+                  }),
+                );
+              },
+            )
+          ),
+        );
+      }
+    );
   }
 }

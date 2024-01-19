@@ -1,17 +1,22 @@
-
+import 'package:typhoonista_thesis/entities/Location.dart';
 
 class Typhoon {
   final String id;
   final String typhoonName;
   final double peakWindspeed;
   final double peakRainfall;
-  final String location;
   final String startDate;
   final String endDate;
   final double totalDamageCost;
   final int currentDay;
+  List<Location>? locations;
+  String? status;
 
-  Typhoon({required this.id, required this.typhoonName, required this.peakWindspeed, required this.peakRainfall, required this.location, 
+
+  Typhoon({
+    this.status,
+    this.locations,
+    required this.id, required this.typhoonName, required this.peakWindspeed, required this.peakRainfall,
   required this.startDate, required this.endDate, required this.totalDamageCost, required this.currentDay
   });
 
@@ -21,11 +26,11 @@ class Typhoon {
       "typhoonName" : typhoonName, 
       "peakWindspeed" : peakWindspeed, 
       "peakRainfall" : peakRainfall,
-      "location" : location,
       "startDate" : startDate,
       "endDate" : endDate,
       "totalDamageCost" : totalDamageCost,
-      "currentDay" : currentDay
+      "currentDay" : currentDay,
+      "status" : status
     };
   }
 
@@ -35,11 +40,11 @@ class Typhoon {
       typhoonName : json["typhoonName"] ,
       peakWindspeed : json["peakWindspeed"], 
       peakRainfall : json["peakRainfall"],
-      location : json["location"], 
       startDate : json["startDate"],
       endDate:  json["endDate"],
       totalDamageCost: json["totalDamageCost"],
-      currentDay: json["currentDay"]
+      currentDay: json["currentDay"],
+      status: json["status"]
     );
   } 
 }

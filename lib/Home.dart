@@ -61,7 +61,11 @@ class _HomeState extends State<Home> {
               children: [
                 Expanded(flex: 15, child: sidebar()),
                 
-                Expanded(flex: 85, child: pageToBeDisplayed!)
+                Expanded(flex: 85, 
+                child: 
+                // estimator_page()
+                pageToBeDisplayed
+                !)
               ],
             ),
           ),

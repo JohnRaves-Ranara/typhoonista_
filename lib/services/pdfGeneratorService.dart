@@ -10,7 +10,16 @@ class pdfGeneratorService {
 
     final pdf = Document();
 
+    // pdf.addPage(
+    //   MultiPage(
+    //     pageFormat: PdfPageFormat.a4,
+    //     build: (context){
+    //       return z;
+    //     }
+    //   )
+    // );
     pdf.addPage(Page(
+        margin: EdgeInsets.all(10),
         pageFormat: PdfPageFormat.a4,
         build: (Context context) {
           return Column(

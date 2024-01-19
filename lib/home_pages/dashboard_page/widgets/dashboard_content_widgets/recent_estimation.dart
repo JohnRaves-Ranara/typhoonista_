@@ -1,11 +1,14 @@
 import 'dart:html';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:typhoonista_thesis/entities/Location.dart';
 import 'package:typhoonista_thesis/entities/Typhoon.dart';
 import 'package:typhoonista_thesis/entities/TyphoonDay.dart';
 import 'package:typhoonista_thesis/main.dart';
 import 'package:typhoonista_thesis/providers/TyphoonProvider.dart';
 import 'package:typhoonista_thesis/services/FirestoreService.dart';
+import 'package:typhoonista_thesis/services/locations.dart';
 import 'package:typhoonista_thesis/services/pdfGeneratorService.dart';
 import '../../../../providers/sample_provider.dart';
 import 'package:provider/provider.dart';
@@ -22,7 +25,8 @@ class recent_estimation extends StatefulWidget {
 class _recent_estimationState extends State<recent_estimation> {
   final windspeedCtlr = TextEditingController();
   final rainfallCtlr = TextEditingController();
-  final locationCtlr = TextEditingController();
+  String selectedLocation = "Choose Location";
+  String selectedLocationCode = "";
   TyphoonDay? newlyAddedDayInformation;
   bool haveAdded = false;
   @override
@@ -160,7 +164,8 @@ class _recent_estimationState extends State<recent_estimation> {
                                             child: Ink(
                                               child: InkWell(
                                                 onTap: (() {
-                                                  showGenerateReportDialog();
+                                                  showGenerateReportDialog(
+                                                      recentEstimation.id);
                                                 }),
                                                 borderRadius:
                                                     BorderRadius.circular(10),
@@ -189,6 +194,8 @@ class _recent_estimationState extends State<recent_estimation> {
                                               child: InkWell(
                                                 onTap: (() {
                                                   showDialog(
+                                                    // barrierDismissible: false,
+                                                    //todo barrierdismissable, add close button, and when clost button is clicked, clear selectedloc.
                                                       context: context,
                                                       builder: (context) {
                                                         return AlertDialog(
@@ -270,8 +277,8 @@ class _recent_estimationState extends State<recent_estimation> {
               height: MediaQuery.of(context).size.height * 0.2,
               child: Center(
                   child: RichText(
-                                  textAlign: TextAlign.justify,
-                                  text: TextSpan(
+                textAlign: TextAlign.justify,
+                text: TextSpan(
                     text: "Deleting a computation ",
                     style: textStyles.lato_regular(
                         fontSize: 20, color: Color(0xffAD0000)),
@@ -285,25 +292,33 @@ class _recent_estimationState extends State<recent_estimation> {
                           style:
                               textStyles.lato_regular(color: Color(0xffAD0000)))
                     ]),
-                                )),
+              )),
             ),
             actions: [
               ButtonBar(
                 children: [
                   InkWell(
-                    onTap: ((){
+                    onTap: (() {
                       Navigator.pop(context);
                     }),
                     child: Container(
                       height: 60,
                       width: 185,
                       color: Color(0xff00109F),
-                      child: Center(child: Text("Cancel", style: textStyles.lato_regular(fontSize: 20, color: Colors.white),),),
+                      child: Center(
+                        child: Text(
+                          "Cancel",
+                          style: textStyles.lato_regular(
+                              fontSize: 20, color: Colors.white),
+                        ),
+                      ),
                     ),
                   ),
-                  SizedBox(width:10,),
+                  SizedBox(
+                    width: 10,
+                  ),
                   InkWell(
-                    onTap: (() async{
+                    onTap: (() async {
                       await FirestoreService().deleteTyphoon();
                       Navigator.pop(context);
                     }),
@@ -311,7 +326,13 @@ class _recent_estimationState extends State<recent_estimation> {
                       height: 60,
                       width: 185,
                       color: Color(0xffAD0000),
-                      child: Center(child: Text("Delete", style: textStyles.lato_regular(fontSize: 20, color: Colors.white),),),
+                      child: Center(
+                        child: Text(
+                          "Delete",
+                          style: textStyles.lato_regular(
+                              fontSize: 20, color: Colors.white),
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -321,7 +342,7 @@ class _recent_estimationState extends State<recent_estimation> {
         });
   }
 
-  showGenerateReportDialog(){
+  showGenerateReportDialog(String typhoonID) {
     showDialog(
         context: context,
         builder: (context) {
@@ -332,8 +353,8 @@ class _recent_estimationState extends State<recent_estimation> {
               height: MediaQuery.of(context).size.height * 0.2,
               child: Center(
                   child: RichText(
-                                  textAlign: TextAlign.justify,
-                                  text: TextSpan(
+                textAlign: TextAlign.justify,
+                text: TextSpan(
                     text: "Generating a report ",
                     style: textStyles.lato_regular(
                         fontSize: 20, color: Color(0xffAD0000)),
@@ -343,37 +364,54 @@ class _recent_estimationState extends State<recent_estimation> {
                               "will mark this typhoon as Finished. Would you like to continue? ",
                           style: textStyles.lato_regular(color: Colors.black)),
                       TextSpan(
-                          text: "(Please note that this action is irreversible and will remove the current typhoon that’s being estimated)",
+                          text:
+                              "(Please note that this action is irreversible and will remove the current typhoon that’s being estimated)",
                           style:
                               textStyles.lato_regular(color: Color(0xffAD0000)))
                     ]),
-                                )),
+              )),
             ),
             actions: [
               ButtonBar(
                 children: [
                   InkWell(
-                    onTap: ((){
+                    onTap: (() {
                       Navigator.pop(context);
                     }),
                     child: Container(
                       height: 60,
                       width: 185,
                       color: Color(0xff00109F),
-                      child: Center(child: Text("Cancel", style: textStyles.lato_regular(fontSize: 20, color: Colors.white),),),
+                      child: Center(
+                        child: Text(
+                          "Cancel",
+                          style: textStyles.lato_regular(
+                              fontSize: 20, color: Colors.white),
+                        ),
+                      ),
                     ),
                   ),
-                  SizedBox(width:10,),
+                  SizedBox(
+                    width: 10,
+                  ),
                   InkWell(
-                    onTap: (() async{
+                    onTap: (() async {
                       pdfGeneratorService().generateSamplePDF('HELLOOOO');
+                      FirestoreService()
+                          .updateTyphoonStatusAsFinished(typhoonID);
                       Navigator.pop(context);
                     }),
                     child: Container(
                       height: 60,
                       width: 185,
                       color: Color(0xffAD0000),
-                      child: Center(child: Text("Generate", style: textStyles.lato_regular(fontSize: 20, color: Colors.white),),),
+                      child: Center(
+                        child: Text(
+                          "Generate",
+                          style: textStyles.lato_regular(
+                              fontSize: 20, color: Colors.white),
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -425,15 +463,41 @@ class _recent_estimationState extends State<recent_estimation> {
                           border: OutlineInputBorder(),
                           labelText: "Rainfall"),
                     ),
-                    TextField(
-                      enabled: !haveAdded,
-                      controller: locationCtlr,
-                      decoration: InputDecoration(
-                          labelStyle: textStyles.lato_light(
-                              color: Colors.grey.withOpacity(0.9)),
-                          border: OutlineInputBorder(),
-                          labelText: "Location"),
-                    ),
+                    InkWell(
+                      onTap: !haveAdded
+                          ? (() {
+                              showChooseLocationDialog(recentEstimation.id, customState);
+                            })
+                          : null,
+                      child: Container(
+                        height: 60,
+                        width: double.maxFinite,
+                        decoration: BoxDecoration(
+                            border: Border.all(
+                                width: 1,
+                                color: Colors.grey.shade600,
+                                style: BorderStyle.solid),
+                            borderRadius: BorderRadius.circular(5)),
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 30),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                selectedLocation,
+                                style: textStyles.lato_regular(fontSize: 17),
+                              ),
+                              Icon(
+                                Icons.arrow_drop_down,
+                                size: 22,
+                                color: Colors.black,
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    )
                   ],
                 ),
               ),
@@ -455,15 +519,17 @@ class _recent_estimationState extends State<recent_estimation> {
                                     double.parse(windspeedCtlr.text.trim()),
                                 rainfall:
                                     double.parse(rainfallCtlr.text.trim()),
-                                location: locationCtlr.text.trim(),
+                                location: selectedLocation,
+                                locationCode: selectedLocationCode,
                                 isFirstDay: false,
                                 typhoonId: recentEstimation.id);
                             windspeedCtlr.clear();
                             rainfallCtlr.clear();
-                            locationCtlr.clear();
                             customState(() {
                               haveAdded = true;
                               newlyAddedDayInformation = addDay;
+                              selectedLocation = "Choose Location";
+                              selectedLocationCode = "";
                             });
                           }),
                     child: Ink(
@@ -637,5 +703,81 @@ class _recent_estimationState extends State<recent_estimation> {
         ),
       ),
     );
+  }
+
+  showChooseLocationDialog(String typhoonID, Function customState ) async{
+    showDialog(
+        context: context,
+        builder: (context) {
+          return Container(
+            height: MediaQuery.of(context).size.height*0.2,
+            width: MediaQuery.of(context).size.width*0.2,
+            child: AlertDialog(
+                content: FutureBuilder<QuerySnapshot>(
+              future: FirebaseFirestore.instance
+                  .collection('users')
+                  .doc('test-user')
+                  .collection('typhoons')
+                  .doc(typhoonID)
+                  .collection('days')
+                  .get(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  final List<TyphoonDay> days = snapshot.data!.docs
+                      .map((doc) =>
+                          TyphoonDay.fromJson(doc.data() as Map<String, dynamic>))
+                      .toList();
+                // List locationsInFirestore = days.map((day) => day.location).toList();
+                List<Location> locationsLocal = Locations().locationsJson;
+            
+                List<Location> unavailableLocations = [];
+                for(TyphoonDay day in days){
+                  DateTime current = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+                  DateTime dateRecorded = DateTime(DateTime.parse(day.dateRecorded).year, DateTime.parse(day.dateRecorded).month, DateTime.parse(day.dateRecorded).day);
+                  if(dateRecorded.isAtSameMomentAs(current)){
+                    Location loc = Location(name: day.location, code: day.locationCode!);
+                    unavailableLocations.add(loc);
+                  }
+                }
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: List.generate(locationsLocal.length, (index) {
+                      bool isTheLocationUnavailable = false;
+                      for(Location i in unavailableLocations){
+                        if(i.code==locationsLocal[index].code){
+                          isTheLocationUnavailable = true;
+                        }
+                      }
+                      if(isTheLocationUnavailable==true){
+                        return ListTile(
+                          title: Text(locationsLocal[index].name!),
+                          tileColor: Colors.grey,
+                          onTap: null,
+                        );
+                      }
+                      else{
+                        return ListTile(
+                          title: Text(locationsLocal[index].name!),
+                          tileColor: Colors.green,
+                          onTap: ((){
+                            customState(() {
+                              selectedLocation = locationsLocal[index].name!;
+                              selectedLocationCode = locationsLocal[index].code!;
+                            });
+                            Navigator.pop(context);
+                          }),
+                        );
+                      }
+                    })
+
+                  );
+                }
+                else{
+                  return  Text("no data");
+                }
+              },
+            )),
+          );
+        });
   }
 }
