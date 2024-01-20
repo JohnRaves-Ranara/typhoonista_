@@ -63,7 +63,7 @@ class _HomeState extends State<Home> {
                 
                 Expanded(flex: 85, 
                 child: 
-                // estimator_page()
+                // documents_page()
                 pageToBeDisplayed
                 !)
               ],

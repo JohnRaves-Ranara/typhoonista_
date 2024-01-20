@@ -120,41 +120,47 @@ class _history_pageState extends State<history_page> {
                   }),
             ),
             SizedBox(height: 30,),
-            Container(
-              width: double.maxFinite,
-              child: StreamBuilder<List<TyphoonDay>>(
-                stream: daysStream(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasError) {
-                    return Text('ERROR');
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return Text('No data');
-                  } else {
-                    final List<TyphoonDay> days = snapshot.data!;
-                    return DataTable(
-                      showCheckboxColumn: false,
-                      columns: 
-                    [
-                      DataColumn(label: Text('Typhoon Name', style: textStyles.lato_bold(),)),
-                      DataColumn(label: Text('Day Number', style: textStyles.lato_bold())),
-                      DataColumn(label: Text('Location', style: textStyles.lato_bold())),
-                      DataColumn(label: Text('Damage Cost', style: textStyles.lato_bold())),
-                    ]
-                    , rows: days.map((day) => DataRow(
-                      // selected: false,
-                      onSelectChanged: (isSelected) {
-                        //todo
-                        print(day.damageCost);
+            Expanded(
+              child: Container(
+                child: ListView(
+                  children: [Container(
+                    width: double.maxFinite,
+                    child: StreamBuilder<List<TyphoonDay>>(
+                      stream: daysStream(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasError) {
+                          return Text('ERROR');
+                        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                          return Text('No data');
+                        } else {
+                          final List<TyphoonDay> days = snapshot.data!;
+                          return DataTable(
+                            showCheckboxColumn: false,
+                            columns: 
+                          [
+                            DataColumn(label: Text('Typhoon Name', style: textStyles.lato_bold(),)),
+                            DataColumn(label: Text('Day Number', style: textStyles.lato_bold())),
+                            DataColumn(label: Text('Location', style: textStyles.lato_bold())),
+                            DataColumn(label: Text('Damage Cost', style: textStyles.lato_bold())),
+                          ]
+                          , rows: days.map((day) => DataRow(
+                            // selected: false,
+                            onSelectChanged: (isSelected) {
+                              //todo
+                              print(day.damageCost);
+                            },
+                            cells: [
+                              DataCell(Text(day.typhoonName, style: textStyles.lato_regular())),
+                              DataCell(Text(day.day.toString(), style: textStyles.lato_regular())),
+                              DataCell(Text(day.location, style: textStyles.lato_regular())),
+                              DataCell(Text(day.damageCost.toString(), style: textStyles.lato_regular()))
+                            ]
+                           )).toList());
+                        }
                       },
-                      cells: [
-                        DataCell(Text(day.typhoonName, style: textStyles.lato_regular())),
-                        DataCell(Text(day.day.toString(), style: textStyles.lato_regular())),
-                        DataCell(Text(day.location, style: textStyles.lato_regular())),
-                        DataCell(Text(day.damageCost.toString(), style: textStyles.lato_regular()))
-                      ]
-                     )).toList());
-                  }
-                },
+                    ),
+                  )],
+                ),
               ),
             ),
           ],

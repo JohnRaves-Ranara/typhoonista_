@@ -141,15 +141,15 @@ class FirestoreService {
     return TyphoonDay.fromJson(x.docs.first.data());
   }
 
-  // Stream<List<TyphoonDay>> streamAllDays() => FirebaseFirestore.instance
-  //     .collection('users')
-  //     .doc('test-user')
-  //     .collection('allDays')
-  //     .snapshots()
-  //     .map((snapshot) => snapshot.docs.map((json) {
-  //           final v = TyphoonDay.fromJson(json.data());
-  //           return v;
-  //         }).toList());
+  Future<Typhoon> getTyphoon(String typhoonID) async {
+    DocumentSnapshot v = await FirebaseFirestore.instance
+        .collection('users')
+        .doc('test-user')
+        .collection('typhoons')
+        .doc(typhoonID)
+        .get();
+    return Typhoon.fromJson(v.data() as Map<String, dynamic>);
+  }
 
   Stream<Typhoon> streamRecentEstimation() => FirebaseFirestore.instance
       .collection('users')

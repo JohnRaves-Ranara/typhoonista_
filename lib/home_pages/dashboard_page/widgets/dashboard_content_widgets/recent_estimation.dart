@@ -57,7 +57,7 @@ class _recent_estimationState extends State<recent_estimation> {
                       child: Container(
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(26),
-                              color: Color(0xffA31212)),
+                              color: Color(0xff0690d7)),
                           child: Column(
                             children: [
                               Expanded(
@@ -76,7 +76,7 @@ class _recent_estimationState extends State<recent_estimation> {
                                       decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(26),
-                                          color: Color(0xffe50202)),
+                                          color: Color(0xff02a0f1)),
                                       child: Column(
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceAround,
@@ -132,7 +132,7 @@ class _recent_estimationState extends State<recent_estimation> {
                                           child: Material(
                                             borderRadius:
                                                 BorderRadius.circular(10),
-                                            color: Color(0xffe50202),
+                                            color: Color(0xffd60000),
                                             child: Ink(
                                               child: InkWell(
                                                 borderRadius:
