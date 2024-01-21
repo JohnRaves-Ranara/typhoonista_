@@ -396,7 +396,7 @@ class _recent_estimationState extends State<recent_estimation> {
                   ),
                   InkWell(
                     onTap: (() async {
-                      pdfGeneratorService().generateSamplePDF('HELLOOOO');
+                      pdfGeneratorService().generateSamplePDF();
                       FirestoreService()
                           .updateTyphoonStatusAsFinished(typhoonID);
                       Navigator.pop(context);
