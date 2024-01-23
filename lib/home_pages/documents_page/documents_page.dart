@@ -6,6 +6,7 @@ import 'package:typhoonista_thesis/home_pages/documents_page/typhoon_live_summar
 import 'package:typhoonista_thesis/services/FirestoreService.dart';
 import 'package:provider/provider.dart';
 import 'package:typhoonista_thesis/providers/page_provider.dart';
+import 'package:typhoonista_thesis/services/pdfGeneratorService.dart';
 import 'typhoonDocsList.dart';
 
 class documents_page extends StatefulWidget {
@@ -22,6 +23,7 @@ class _documents_pageState extends State<documents_page> {
     return Consumer<page_provider>(
       builder: (context, prov, child) {
         return Scaffold(
+          
           body: Container(
             padding: EdgeInsets.only(right: 50, left: 50, bottom: (prov.documentsPage==1) ? 70 : 40, top: 70),
             child: Column(

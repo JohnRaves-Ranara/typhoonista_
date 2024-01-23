@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:typhoonista_thesis/entities/Location.dart';
 import 'package:typhoonista_thesis/entities/Typhoon.dart';
 import 'package:typhoonista_thesis/entities/TyphoonDay.dart';
 import 'package:typhoonista_thesis/services/estimatorModel.dart';
@@ -206,6 +207,50 @@ class FirestoreService {
       await docRef.delete();
     }
 
+  }
+
+  Future<List<Location>> getDistinctLocations(String typhoonID) async {
+    QuerySnapshot daysSnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc('test-user')
+        .collection('typhoons')
+        .doc(typhoonID)
+        .collection('days')
+        .orderBy('dateRecorded')
+        .get();
+
+    //taking all the locations from firestore
+    List<Location> notDistinctLocations = daysSnapshot.docs.map((doc) {
+      final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+      return Location(code: data['locationCode'], name: data['location']);
+    }).toList();
+
+    //to remove duplicates
+    Set<Location> distinctLocationsSet = notDistinctLocations.toSet();
+
+    List<Location> distinctLocationsList = distinctLocationsSet.toList();
+    List<TyphoonDay> days = daysSnapshot.docs
+        .map((doc) => TyphoonDay.fromJson(doc.data() as Map<String, dynamic>))
+        .toList();
+
+    //to set the TyphoonDays inside each distinct location
+    for (int i = 0; i < days.length; i++) {
+      for (Location loc in distinctLocationsList) {
+        if (days[i].locationCode == loc.code) {
+          loc.days.add(days[i]);
+        }
+      }
+    }
+
+    //for tallying per-location total dmgcost
+    for (int i = 0; i < distinctLocationsList.length; i++) {
+      double total = 0;
+      for (TyphoonDay day in distinctLocationsList[i].days) {
+        total += day.damageCost;
+      }
+      distinctLocationsList[i].totalDamageCost += total;
+    }
+    return distinctLocationsList;
   }
 
 }

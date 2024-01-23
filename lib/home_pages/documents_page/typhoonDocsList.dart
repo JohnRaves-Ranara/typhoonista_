@@ -68,7 +68,11 @@ class _typhoonDocsListState extends State<typhoonDocsList> {
                                       }
                                     });
                                   }),
-                                  onTap: (() {
+                                  onTap: (() async{
+
+                                    final locations = await FirestoreService().getDistinctLocations(typhoon.id);
+
+                                    
                                     setState(() {
                                       underlined = false;
                                     });
@@ -78,6 +82,8 @@ class _typhoonDocsListState extends State<typhoonDocsList> {
                                     context
                                         .read<page_provider>()
                                         .changeSelectedTyphoon(typhoon);
+                                    
+                                    context.read<page_provider>().changeSelectedLocations(locations);
                                   }),
                                   child: Text(
                                     "View Details    >",

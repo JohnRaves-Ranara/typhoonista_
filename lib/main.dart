@@ -20,7 +20,8 @@ Future main() async {
             projectId: "typhoonistadb",
             storageBucket: "typhoonistadb.appspot.com",
             messagingSenderId: "598391340065",
-            appId: "1:598391340065:web:b20f6cf51eb55d5f9c3760"));
+            appId: "1:598391340065:web:b20f6cf51eb55d5f9c3760"
+            ));
   }
 
   Provider.debugCheckInvalidValueType = null;

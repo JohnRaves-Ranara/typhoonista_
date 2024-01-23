@@ -2,6 +2,7 @@ import 'dart:html';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:typhoonista_thesis/entities/Location.dart';
 import 'package:typhoonista_thesis/entities/Typhoon.dart';
 import 'package:typhoonista_thesis/entities/TyphoonDay.dart';
@@ -90,7 +91,7 @@ class _recent_estimationState extends State<recent_estimation> {
                                                 fontSize: 20),
                                           ),
                                           Text(
-                                            "₱ ${recentEstimation.totalDamageCost.toStringAsFixed(2)}",
+                                            "₱ ${NumberFormat('#,##0.00', 'en_US').format(recentEstimation.totalDamageCost)}",
                                             style: textStyles.lato_bold(
                                                 color: Colors.white,
                                                 fontSize: 45),
@@ -171,7 +172,7 @@ class _recent_estimationState extends State<recent_estimation> {
                                                     BorderRadius.circular(10),
                                                 child: Center(
                                                   child: Text(
-                                                    "GENERATE REPORT",
+                                                    "MARK AS FINISHED",
                                                     style:
                                                         textStyles.lato_regular(
                                                             color: Colors.black,
@@ -396,7 +397,7 @@ class _recent_estimationState extends State<recent_estimation> {
                   ),
                   InkWell(
                     onTap: (() async {
-                      pdfGeneratorService().generateSamplePDF();
+                      // pdfGeneratorService().generateSamplePDF();
                       FirestoreService()
                           .updateTyphoonStatusAsFinished(typhoonID);
                       Navigator.pop(context);

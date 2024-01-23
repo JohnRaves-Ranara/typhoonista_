@@ -22,11 +22,11 @@ class overview extends StatelessWidget {
       height: 22,
       width: 22,
     ),
-    Image.asset(
-      'lib/assets/images/typhoons.png',
-      height: 22,
-      width: 22,
-    ),
+    // Image.asset(
+    //   'lib/assets/images/typhoons.png',
+    //   height: 22,
+    //   width: 22,
+    // ),
     Image.asset(
       'lib/assets/images/documents.png',
       height: 22,
@@ -47,10 +47,10 @@ class overview extends StatelessWidget {
       'History',
       style: textStyles.lato_bold(color: Colors.black, fontSize: 18),
     ),
-    Text(
-      'Typhoons',
-      style: textStyles.lato_bold(color: Colors.black, fontSize: 18),
-    ),
+    // Text(
+    //   'Typhoons',
+    //   style: textStyles.lato_bold(color: Colors.black, fontSize: 18),
+    // ),
     Text(
       'Documents',
       style: textStyles.lato_bold(color: Colors.black, fontSize: 18),

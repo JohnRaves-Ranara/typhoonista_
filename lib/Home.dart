@@ -40,11 +40,9 @@ class _HomeState extends State<Home> {
           pageToBeDisplayed = history_page();
           break;
           case(4):
-          pageToBeDisplayed = typhoons_page();
-          case(5):
           pageToBeDisplayed = documents_page();
           break;
-          case(6):
+          case(5):
           pageToBeDisplayed = settings_page();
           break;
           default:
