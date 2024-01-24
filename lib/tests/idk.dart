@@ -3,8 +3,6 @@ import 'package:typhoonista_thesis/entities/Location.dart';
 import 'package:typhoonista_thesis/entities/Typhoon.dart';
 import 'package:typhoonista_thesis/entities/TyphoonDay.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:typhoonista_thesis/services/locations.dart';
 import 'package:typhoonista_thesis/assets/themes/textStyles.dart';
 import 'package:typhoonista_thesis/services/pdfGeneratorService.dart';
 
@@ -211,141 +209,131 @@ class _idkState extends State<idk> {
                   Container(
                     width: double.maxFinite,
                     // color: Colors.green.shade200,
-                    child: Container(
-                      // color: Colors.green,
-                      height: 280,
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Container(
-                              //this right here is the first child
-                              padding: EdgeInsets.all(20),
-                              // color: Colors.blue,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "Name of Typhoon",
-                                        style: titleStyle,
-                                      ),
-                                      Text(
-                                        "Typhoon ${dummyTyphoon.typhoonName}",
-                                        style: valueStyle,
-                                      )
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: 20,
-                                  ),
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text("Typhoon Starting Date",
-                                          style: titleStyle),
-                                      Text(
-                                        "${DateTime.parse(dummyTyphoon.startDate).month}/${DateTime.parse(dummyTyphoon.startDate).day}/${DateTime.parse(dummyTyphoon.startDate).year}",
-                                        style: valueStyle,
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: 20,
-                                  ),
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text("Typhoon Ending Date",
-                                          style: titleStyle),
-                                      Text(
-                                        (dummyTyphoon.endDate == "")
-                                            ? "Unknown"
-                                            : "${DateTime.parse(dummyTyphoon.endDate).month}/${DateTime.parse(dummyTyphoon.endDate).day}/${DateTime.parse(dummyTyphoon.endDate).year}",
-                                        style: valueStyle,
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Container(
+                            //this right here is the first child
+                            padding: EdgeInsets.all(20),
+                            // color: Colors.blue,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Name of Typhoon",
+                                      style: titleStyle,
+                                    ),
+                                    Text(
+                                      "Typhoon ${dummyTyphoon.typhoonName}",
+                                      style: valueStyle,
+                                    )
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                  children: [
+                                    Text("Typhoon Starting Date",
+                                        style: titleStyle),
+                                    Text(
+                                      "${DateTime.parse(dummyTyphoon.startDate).month}/${DateTime.parse(dummyTyphoon.startDate).day}/${DateTime.parse(dummyTyphoon.startDate).year}",
+                                      style: valueStyle,
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                  children: [
+                                    Text("Typhoon Ending Date",
+                                        style: titleStyle),
+                                    Text(
+                                      (dummyTyphoon.endDate == "")
+                                          ? "Unknown"
+                                          : "${DateTime.parse(dummyTyphoon.endDate).month}/${DateTime.parse(dummyTyphoon.endDate).day}/${DateTime.parse(dummyTyphoon.endDate).year}",
+                                      style: valueStyle,
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
                           ),
-                          Expanded(
-                            child: Container(
-                              //this right here is the second child
-                              // color: Colors.orange,
-                              padding: EdgeInsets.all(20),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text("Typhoon Status", style: titleStyle),
-                                      Text(
-                                        "${dummyTyphoon.status}",
-                                        style: valueStyle,
-                                      )
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: 20,
-                                  ),
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text("Total Damage To Rice Crops",
-                                          style: titleStyle),
-                                      Text(
-                                        "${dummyTyphoon.totalDamageCost} PHP",
-                                        style: valueStyle,
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: 20,
-                                  ),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text("Locations", style: titleStyle),
-                                      SizedBox(
-                                        height: 5,
-                                      ),
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: (locs.isEmpty)
-                                            ? [Text('Loading...')]
-                                            : locs
-                                                .map((loc) => Text(
-                                                      "• ${loc.name}",
-                                                      style: valueStyle,
-                                                    ))
-                                                .toList(),
-                                      )
-                                    ],
-                                  )
-                                ],
-                              ),
+                        ),
+                        Expanded(
+                          child: Container(
+                            //this right here is the second child
+                            // color: Colors.orange,
+                            padding: EdgeInsets.all(20),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                  children: [
+                                    Text("Typhoon Status", style: titleStyle),
+                                    Text(
+                                      "${dummyTyphoon.status}",
+                                      style: valueStyle,
+                                    )
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                  children: [
+                                    Text("Total Damage To Rice Crops",
+                                        style: titleStyle),
+                                    Text(
+                                      "${dummyTyphoon.totalDamageCost} PHP",
+                                      style: valueStyle,
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                  children: [
+                                    Text("Locations", style: titleStyle),
+                                    SizedBox(
+                                      height: 5,
+                                    ),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: (locs.isEmpty)
+                                          ? [Text('Loading...')]
+                                          : locs
+                                              .map((loc) => Text(
+                                                    "• ${loc.name}",
+                                                    style: valueStyle,
+                                                  ))
+                                              .toList(),
+                                    )
+                                  ],
+                                )
+                              ],
                             ),
-                          )
-                        ],
-                      ),
+                          ),
+                        )
+                      ],
                     ),
                   ),
                   Container(

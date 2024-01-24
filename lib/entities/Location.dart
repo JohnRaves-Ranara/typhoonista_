@@ -1,5 +1,4 @@
 import 'TyphoonDay.dart';
-import 'package:flutter/foundation.dart';
 
 class Location {
   String? typhoonID;

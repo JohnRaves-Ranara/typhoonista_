@@ -11,6 +11,8 @@ import 'package:typhoonista_thesis/entities/TyphoonDay.dart';
 // import 'package:typhoonista_thesis/assets/themes/textStyles.dart';
 import 'package:typhoonista_thesis/entities/Row.dart';
 import 'package:flutter/material.dart' as m;
+import 'package:printing/printing.dart';
+import 'package:printing/printing_web.dart';
 
 class pdfGeneratorService {
   Typhoon? typhoon;
@@ -26,25 +28,20 @@ class pdfGeneratorService {
     "Damage Cost"
   ];
 
-  // printthis() {
-  //   final v = locations!
-  //       .map((loc) => loc.days
-  //           .map((day) => [
-  //                 day.day,
-  //                 "${DateTime.parse(day.dateRecorded).month}/${DateTime.parse(day.dateRecorded).day}/${DateTime.parse(day.dateRecorded).year}",
-  //                 day.windSpeed,
-  //                 day.rainfall,
-  //                 day.damageCost
-  //               ])
-  //           .toList())
-  //       .toList();
-  // }
-
   String numberFormatter({required double number}) {
     return NumberFormat('#,##0.00', 'en_US').format(number);
   }
 
   Future<void> generateSamplePDF() async {
+    final latoReg = await PdfGoogleFonts.latoRegular();
+    final latoBold = await PdfGoogleFonts.latoBold();
+    final latoItalicBold = await PdfGoogleFonts.latoBoldItalic();
+    TextStyle titleStyle =
+      TextStyle(color: PdfColor.fromHex("#808080"), fontSize: 12, font: latoReg);
+  TextStyle valueStyle =
+      TextStyle(color: PdfColor.fromHex("#000000"), fontSize: 12, font: latoReg);
+  TextStyle header1Style = TextStyle(color: PdfColor.fromHex("#000000"), fontSize: 14, font: latoBold);
+  TextStyle header2Style = TextStyle(color: PdfColor.fromHex("#000000"), fontSize: 14, font: latoItalicBold);
     final tableRows = locations!
         .map((loc) => loc.days
             .map((day) => [
@@ -75,7 +72,7 @@ class pdfGeneratorService {
                       children: [
                         Text(
                           'Typhoonista',
-                          style: TextStyle(fontSize: 14),
+                          style: header1Style
                         ),
                         Image(
                             height: 25, width: 25, MemoryImage(typhoonistaLogo))
@@ -84,7 +81,7 @@ class pdfGeneratorService {
                   ),
                   Text(
                     "Typhoon Summary Report",
-                    style: TextStyle(fontSize: 14),
+                    style: header2Style
                   ),
                   
                 ],
@@ -92,25 +89,23 @@ class pdfGeneratorService {
             Divider(color: PdfColor.fromHex("#5A5A5A")),
             Container(
             width: double.maxFinite,
-            height: 225,//todo try gridview
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             "Name of Typhoon",
-                            // style: titleStyle,
+                            style: titleStyle,
                           ),
                           Text(
                             "Typhoon ${typhoon!.typhoonName}",
-                            // style: valueStyle,
+                            style: valueStyle,
                           )
                         ],
                       ),
@@ -118,16 +113,15 @@ class pdfGeneratorService {
                         height: 20,
                       ),
                       Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             "Typhoon Starting Date",
-                            // style: titleStyle
+                            style: titleStyle
                           ),
                           Text(
                             "${DateTime.parse(typhoon!.startDate).month}/${DateTime.parse(typhoon!.startDate).day}/${DateTime.parse(typhoon!.startDate).year}",
-                            // style: valueStyle,
+                            style: valueStyle,
                           ),
                         ],
                       ),
@@ -135,18 +129,17 @@ class pdfGeneratorService {
                         height: 20,
                       ),
                       Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             "Typhoon Ending Date",
-                            // style: titleStyle
+                            style: titleStyle
                           ),
                           Text(
                             (typhoon!.endDate == "")
                                 ? "Unknown"
                                 : "${DateTime.parse(typhoon!.endDate).month}/${DateTime.parse(typhoon!.endDate).day}/${DateTime.parse(typhoon!.endDate).year}",
-                            // style: valueStyle,
+                            style: valueStyle,
                           ),
                         ],
                       ),
@@ -155,20 +148,18 @@ class pdfGeneratorService {
                 ),
                 Expanded(
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             "Typhoon Status",
-                            // style: titleStyle
+                            style: titleStyle
                           ),
                           Text(
                             "${typhoon!.status}",
-                            // style: valueStyle,
+                            style: valueStyle,
                           )
                         ],
                       ),
@@ -176,16 +167,15 @@ class pdfGeneratorService {
                         height: 20,
                       ),
                       Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             "Total Damage To Rice Crops",
-                            // style: titleStyle
+                            style: titleStyle
                           ),
                           Text(
                             "${numberFormatter(number: typhoon!.totalDamageCost)} PHP",
-                            // style: valueStyle,
+                            style: valueStyle,
                           ),
                         ],
                       ),
@@ -197,7 +187,7 @@ class pdfGeneratorService {
                         children: [
                           Text(
                             "Locations",
-                            // style: titleStyle
+                            style: titleStyle
                           ),
                           SizedBox(
                             height: 5,
@@ -205,8 +195,8 @@ class pdfGeneratorService {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: locations!
-                                .map((loc) => Bullet(text: "${loc.name}"
-                                    //style
+                                .map((loc) => Bullet(text: "${loc.name}",
+                                    style: valueStyle
                                     ))
                                 .toList(),
                           )
@@ -237,13 +227,11 @@ class pdfGeneratorService {
             children: [
               Text(
                 "Location",
-                // style: textStyles.lato_regular(
-                //     fontSize: 14, color: Colors.grey),
+                style: titleStyle
               ),
               Text(
                 "${location.name}",
-                // style: textStyles.lato_regular(
-                //     fontSize: 14, color: Colors.black),
+                style: valueStyle
               ),
               SizedBox(
                 height: 10,
@@ -282,7 +270,7 @@ class pdfGeneratorService {
               children: [
                 Image(height: 18, width: 18, MemoryImage(typhoonistaLogo)),
                 SizedBox(width: 10),
-                Text('TYPHOONISTA  -  ${DateTime.now().year}', style: TextStyle(fontSize: 10, color: PdfColor.fromHex("#0090D9")))
+                Text('TYPHOONISTA  -  ${DateTime.now().year}', style: TextStyle(fontSize: 10, color: PdfColor.fromHex("#0090D9"), font: latoReg))
               ]);
         }));
 

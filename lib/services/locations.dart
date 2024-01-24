@@ -1,8 +1,9 @@
 
+
+import 'package:typhoonista_thesis/services/jsonLocations.dart';
 import 'package:typhoonista_thesis/entities/Location.dart';
 
-class Locations{
-  
+class Locations {
   final List<Location> _locationsJson = [
     Location(name: "Davao", code: "dav1"),
     Location(name: "Cebu", code: "ceb2"),
@@ -11,12 +12,12 @@ class Locations{
   ];
 
   List<Location> get locationsJson => _locationsJson;
-
 }
 
 void main(){
+  
+  final x = jsonLocations().locations;
 
-  // for(var i in Locations().locationsJson.entries){
-  //   print(i);
-  // }
+  print(x[0]);
+  
 }

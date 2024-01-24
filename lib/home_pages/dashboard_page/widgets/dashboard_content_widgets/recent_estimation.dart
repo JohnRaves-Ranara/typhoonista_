@@ -289,7 +289,7 @@ class _recent_estimationState extends State<recent_estimation> {
                               "will erase all of its estimations. Do you wish to proceed? ",
                           style: textStyles.lato_regular(color: Colors.black)),
                       TextSpan(
-                          text: "(You can generate a report instead)",
+                          text: "(If the Typhoon is finished, you can choose 'Mark as Finished' instead)",
                           style:
                               textStyles.lato_regular(color: Color(0xffAD0000)))
                     ]),
@@ -356,17 +356,22 @@ class _recent_estimationState extends State<recent_estimation> {
                   child: RichText(
                 textAlign: TextAlign.justify,
                 text: TextSpan(
-                    text: "Generating a report ",
+                    text: "This will ",
                     style: textStyles.lato_regular(
-                        fontSize: 20, color: Color(0xffAD0000)),
+                        fontSize: 20, color: Colors.black),
                     children: [
                       TextSpan(
                           text:
-                              "will mark this typhoon as Finished. Would you like to continue? ",
-                          style: textStyles.lato_regular(color: Colors.black)),
+                              "mark this typhoon as 'Finished'. ",
+                          style: textStyles.lato_regular(color: Color(0xffAD0000))),
                       TextSpan(
                           text:
-                              "(Please note that this action is irreversible and will remove the current typhoon that’s being estimated)",
+                              "Would you like to continue? ",
+                          style:
+                              textStyles.lato_regular(color: Colors.black)),
+                      TextSpan(
+                          text:
+                              "(Please note that this action is irreversible and will remove this typhoon from the ongoing typhoon estimation)",
                           style:
                               textStyles.lato_regular(color: Color(0xffAD0000)))
                     ]),
