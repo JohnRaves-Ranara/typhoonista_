@@ -12,7 +12,7 @@ void main(){
 
   final v = Locations_().getLocations();
 
-  print(v[0].munName);
+  print(v.length);
   
   }
 

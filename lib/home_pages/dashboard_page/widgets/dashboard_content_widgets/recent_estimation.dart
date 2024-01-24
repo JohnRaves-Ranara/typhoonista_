@@ -15,6 +15,8 @@ import '../../../../providers/sample_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:typhoonista_thesis/assets/themes/textStyles.dart';
 import 'package:typhoonista_thesis/entities/DamageCostBar.dart';
+import 'package:typhoonista_thesis/entities/Location_.dart';
+import 'package:typhoonista_thesis/services/locations_.dart';
 
 class recent_estimation extends StatefulWidget {
   const recent_estimation({super.key});
@@ -30,6 +32,9 @@ class _recent_estimationState extends State<recent_estimation> {
   String selectedLocationCode = "";
   TyphoonDay? newlyAddedDayInformation;
   bool haveAdded = false;
+  List<Location_> locs = Locations_().getLocations();
+  List<Location_> suggestions = [];
+  final ctrlr = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -195,8 +200,8 @@ class _recent_estimationState extends State<recent_estimation> {
                                               child: InkWell(
                                                 onTap: (() {
                                                   showDialog(
-                                                    // barrierDismissible: false,
-                                                    //todo barrierdismissable, add close button, and when clost button is clicked, clear selectedloc.
+                                                      // barrierDismissible: false,
+                                                      //todo barrierdismissable, add close button, and when clost button is clicked, clear selectedloc.
                                                       context: context,
                                                       builder: (context) {
                                                         return AlertDialog(
@@ -289,7 +294,8 @@ class _recent_estimationState extends State<recent_estimation> {
                               "will erase all of its estimations. Do you wish to proceed? ",
                           style: textStyles.lato_regular(color: Colors.black)),
                       TextSpan(
-                          text: "(If the Typhoon is finished, you can choose 'Mark as Finished' instead)",
+                          text:
+                              "(If the Typhoon is finished, you can choose 'Mark as Finished' instead)",
                           style:
                               textStyles.lato_regular(color: Color(0xffAD0000)))
                     ]),
@@ -361,14 +367,12 @@ class _recent_estimationState extends State<recent_estimation> {
                         fontSize: 20, color: Colors.black),
                     children: [
                       TextSpan(
-                          text:
-                              "mark this typhoon as 'Finished'. ",
-                          style: textStyles.lato_regular(color: Color(0xffAD0000))),
+                          text: "mark this typhoon as 'Finished'. ",
+                          style: textStyles.lato_regular(
+                              color: Color(0xffAD0000))),
                       TextSpan(
-                          text:
-                              "Would you like to continue? ",
-                          style:
-                              textStyles.lato_regular(color: Colors.black)),
+                          text: "Would you like to continue? ",
+                          style: textStyles.lato_regular(color: Colors.black)),
                       TextSpan(
                           text:
                               "(Please note that this action is irreversible and will remove this typhoon from the ongoing typhoon estimation)",
@@ -472,7 +476,9 @@ class _recent_estimationState extends State<recent_estimation> {
                     InkWell(
                       onTap: !haveAdded
                           ? (() {
-                              showChooseLocationDialog(recentEstimation.id, customState);
+                              // showChooseLocationDialog(recentEstimation.id, customState);
+                              showSampleDialog(
+                                  customState, recentEstimation.id);
                             })
                           : null,
                       child: Container(
@@ -711,13 +717,13 @@ class _recent_estimationState extends State<recent_estimation> {
     );
   }
 
-  showChooseLocationDialog(String typhoonID, Function customState ) async{
+  showChooseLocationDialog(String typhoonID, Function customState) async {
     showDialog(
         context: context,
         builder: (context) {
           return Container(
-            height: MediaQuery.of(context).size.height*0.2,
-            width: MediaQuery.of(context).size.width*0.2,
+            height: MediaQuery.of(context).size.height * 0.2,
+            width: MediaQuery.of(context).size.width * 0.4,
             child: AlertDialog(
                 content: FutureBuilder<QuerySnapshot>(
               future: FirebaseFirestore.instance
@@ -730,60 +736,290 @@ class _recent_estimationState extends State<recent_estimation> {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   final List<TyphoonDay> days = snapshot.data!.docs
-                      .map((doc) =>
-                          TyphoonDay.fromJson(doc.data() as Map<String, dynamic>))
+                      .map((doc) => TyphoonDay.fromJson(
+                          doc.data() as Map<String, dynamic>))
                       .toList();
-                // List locationsInFirestore = days.map((day) => day.location).toList();
-                List<Location> locationsLocal = Locations().locationsJson;
-            
-                List<Location> unavailableLocations = [];
-                for(TyphoonDay day in days){
-                  DateTime current = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
-                  DateTime dateRecorded = DateTime(DateTime.parse(day.dateRecorded).year, DateTime.parse(day.dateRecorded).month, DateTime.parse(day.dateRecorded).day);
-                  if(dateRecorded.isAtSameMomentAs(current)){
-                    Location loc = Location(name: day.location, code: day.locationCode!);
-                    unavailableLocations.add(loc);
+                  List<Location_> locationsLocal = Locations_().getLocations();
+
+                  List<Location_> unavailableLocations = [];
+                  for (TyphoonDay day in days) {
+                    DateTime current = DateTime(DateTime.now().year,
+                        DateTime.now().month, DateTime.now().day);
+                    DateTime dateRecorded = DateTime(
+                        DateTime.parse(day.dateRecorded).year,
+                        DateTime.parse(day.dateRecorded).month,
+                        DateTime.parse(day.dateRecorded).day);
+                    if (dateRecorded.isAtSameMomentAs(current)) {
+                      Location_ loc = Location_(
+                          munName: day.location, munCode: day.locationCode!);
+                      unavailableLocations.add(loc);
+                    }
                   }
-                }
-                  return Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: List.generate(locationsLocal.length, (index) {
+                  return SingleChildScrollView(
+                    child: Column(
+                        children: List.generate(locationsLocal.length, (index) {
                       bool isTheLocationUnavailable = false;
-                      for(Location i in unavailableLocations){
-                        if(i.code==locationsLocal[index].code){
+                      for (Location_ i in unavailableLocations) {
+                        if (i.munCode == locationsLocal[index].munCode) {
                           isTheLocationUnavailable = true;
                         }
                       }
-                      if(isTheLocationUnavailable==true){
+                      if (isTheLocationUnavailable == true) {
                         return ListTile(
-                          title: Text(locationsLocal[index].name!),
+                          title: Text(locationsLocal[index].munName!),
                           tileColor: Colors.grey,
                           onTap: null,
                         );
-                      }
-                      else{
+                      } else {
                         return ListTile(
-                          title: Text(locationsLocal[index].name!),
+                          title: Text(locationsLocal[index].munName!),
                           tileColor: Colors.green,
-                          onTap: ((){
+                          onTap: (() {
                             customState(() {
-                              selectedLocation = locationsLocal[index].name!;
-                              selectedLocationCode = locationsLocal[index].code!;
+                              selectedLocation = locationsLocal[index].munName!;
+                              selectedLocationCode =
+                                  locationsLocal[index].munCode!;
                             });
                             Navigator.pop(context);
                           }),
                         );
                       }
-                    })
-
+                    })),
                   );
-                }
-                else{
-                  return  Text("no data");
+                } else {
+                  return Text("no data");
                 }
               },
             )),
           );
         });
+  }
+
+  showSampleDialog(Function customState, String typhoonID) {
+    bool isSearchLocation = false;
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          content: Container(
+            height: MediaQuery.of(context).size.height * 0.4,
+            width: MediaQuery.of(context).size.width * 0.4,
+            child: StatefulBuilder(
+              builder: (context, customState2) {
+                return FutureBuilder(
+                    future: FirebaseFirestore.instance
+                        .collection('users')
+                        .doc('test-user')
+                        .collection('typhoons')
+                        .doc(typhoonID)
+                        .collection('days')
+                        .get(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        final List<TyphoonDay> days = snapshot.data!.docs
+                            .map((doc) => TyphoonDay.fromJson(
+                                doc.data() as Map<String, dynamic>))
+                            .toList();
+
+                        List<Location_> unavailableLocations = [];
+                        for (TyphoonDay day in days) {
+                          DateTime current = DateTime(DateTime.now().year,
+                              DateTime.now().month, DateTime.now().day);
+                          DateTime dateRecorded = DateTime(
+                              DateTime.parse(day.dateRecorded).year,
+                              DateTime.parse(day.dateRecorded).month,
+                              DateTime.parse(day.dateRecorded).day);
+                          if (dateRecorded.isAtSameMomentAs(current)) {
+                            Location_ loc = Location_(
+                                munName: day.location,
+                                munCode: day.locationCode!);
+                            unavailableLocations.add(loc);
+                          }
+                        }
+                        return Column(
+                          children: [
+                            (isSearchLocation)
+                                ? Container(
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: TextField(
+                                            autofocus: true,
+                                            style: textStyles.lato_regular(fontSize: 12, color: Colors.black),
+                                            maxLength: 30,
+                                            decoration: InputDecoration(
+                                              border: InputBorder.none,
+                                              hintText: "Search Location...",
+                                                counterText: ""),
+                                            controller: ctrlr,
+                                            onChanged: (value) => searchbook(
+                                                value.trim(), customState2),
+                                          ),
+                                        ),
+                                        InkWell(
+                                          borderRadius:
+                                              BorderRadius.circular(50),
+                                          onTap: (() {
+                                            customState2(() {
+                                              isSearchLocation = false;
+                                              ctrlr.clear();
+                                            });
+                                          }),
+                                          child: Container(
+                                            margin: EdgeInsets.all(10),
+                                            decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(50)),
+                                            child: Icon(Icons.close),
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  )
+                                : Container(
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Container(
+                                          child: Row(
+                                            children: [
+                                              Text(
+                                                'Select Municipality',
+                                                style: textStyles.lato_bold(
+                                                    fontSize: 14),
+                                              ),
+                                              Tooltip(
+                                                message: "Hello world",
+                                                child: Icon(Icons.info, size: 14, color: Colors.blue,),
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                        InkWell(
+                                          borderRadius:
+                                              BorderRadius.circular(50),
+                                          onTap: (() {
+                                            customState2(() {
+                                              isSearchLocation = true;
+                                            });
+                                          }),
+                                          child: Container(
+                                            margin: EdgeInsets.all(10),
+                                            decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(50)),
+                                            child: Icon(Icons.search),
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                            Divider(color: Colors.grey.shade700,),
+                            Expanded(
+                              child: ListView(
+                                  primary: false,
+                                  children: (ctrlr.text.trim() == "")
+                                      ? List.generate(locs.length, (index) {
+                                          bool isTheLocationUnavailable = false;
+                                          for (Location_ i
+                                              in unavailableLocations) {
+                                            if (i.munCode ==
+                                                locs[index].munCode) {
+                                              isTheLocationUnavailable = true;
+                                            }
+                                          }
+                                          if (isTheLocationUnavailable ==
+                                              true) {
+                                            return ListTile(
+                                              title: Text(locs[index].munName!, style: textStyles.lato_regular(fontSize: 12, color: Colors.grey),),
+                                              onTap: null,
+                                            );
+                                          } else {
+                                            return ListTile(
+                                              title: Text(locs[index].munName!, style: textStyles.lato_regular(fontSize: 12, color: Colors.black)),
+                                              onTap: (() {
+                                                customState(() {
+                                                  selectedLocation =
+                                                      locs[index].munName!;
+                                                  selectedLocationCode =
+                                                      locs[index].munCode!;
+                                                });
+                                                Navigator.pop(context);
+                                              }),
+                                            );
+                                          }
+                                        })
+                                      : (suggestions.isNotEmpty)
+                                          ? List.generate(suggestions.length,
+                                              (index) {
+                                              bool isTheLocationUnavailable =
+                                                  false;
+                                              for (Location_ i
+                                                  in unavailableLocations) {
+                                                if (i.munCode ==
+                                                    suggestions[index]
+                                                        .munCode) {
+                                                  isTheLocationUnavailable =
+                                                      true;
+                                                }
+                                              }
+                                              if (isTheLocationUnavailable ==
+                                                  true) {
+                                                return ListTile(
+                                                  title: Text(suggestions[index]
+                                                      .munName!, style: textStyles.lato_regular(fontSize: 12, color: Colors.grey)),
+                                                  onTap: null,
+                                                );
+                                              } else {
+                                                return ListTile(
+                                                  title: Text(suggestions[index]
+                                                      .munName!, style: textStyles.lato_regular(fontSize: 12, color: Colors.black)),
+                                                  onTap: (() {
+                                                    customState(() {
+                                                      selectedLocation =
+                                                          suggestions[index]
+                                                              .munName!;
+                                                      selectedLocationCode =
+                                                          suggestions[index]
+                                                              .munCode!;
+                                                    });
+                                                    Navigator.pop(context);
+                                                  }),
+                                                );
+                                              }
+                                            })
+                                          : [
+                                              Center(
+                                                child: Text(
+                                                  '${ctrlr.text.trim()} does not exist.',
+                                                ),
+                                              )
+                                            ]),
+                            ),
+                          ],
+                        );
+                      } else {
+                        return Text("no data");
+                      }
+                    });
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  searchbook(String query, Function customState2) {
+    customState2(() {
+      suggestions = locs.where((loc) {
+        final munName = loc.munName!.toLowerCase();
+        final input = query.toLowerCase();
+        return munName.contains(input);
+      }).toList();
+    });
   }
 }

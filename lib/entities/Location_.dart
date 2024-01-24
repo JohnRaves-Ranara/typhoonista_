@@ -2,53 +2,53 @@ import 'TyphoonDay.dart';
 
 class Location_{
   String? typhoonID;
-  String munCode;
-  String munName;
-  String provName;
-  String provCode;
-  String regName;
-  String regCode;
-  double glat;
-  double glon;
-  double meanSlope;
-  double meanElevationM;
-  double ruggednessStdev;
-  double meanRuggedness;
-  double slopeStdev;
-  double areaKm2;
-  double povertyPerc;
-  double withCoast;
-  double coastLength;
-  double perimeter;
-  String ricePlanted;
-  double riceArea;
-  double yield;
-  double totalDamageCost = 0;
+  String? munCode;
+  String? munName;
+  String? provName;
+  String? provCode;
+  String? regName;
+  String? regCode;
+  double? glat;
+  double? glon;
+  double? meanSlope;
+  double? meanElevationM;
+  double? ruggednessStdev;
+  double? meanRuggedness;
+  double? slopeStdev;
+  double? areaKm2;
+  double? povertyPerc;
+  double? withCoast;
+  double? coastLength;
+  double? perimeter;
+  String? ricePlanted;
+  double? riceArea;
+  double? yield;
+  double? totalDamageCost = 0;
   List<TyphoonDay> days = [];
 
   Location_({
     this.typhoonID,
-    required this.munCode,
-    required this.munName,
-    required this.provName,
-    required this.provCode,
-    required this.regName,
-    required this.regCode,
-    required this.glat,
-    required this.glon,
-    required this.meanSlope,
-    required this.meanElevationM,
-    required this.ruggednessStdev,
-    required this.meanRuggedness,
-    required this.slopeStdev,
-    required this.areaKm2,
-    required this.povertyPerc,
-    required this.withCoast,
-    required this.coastLength,
-    required this.perimeter,
-    required this.ricePlanted,
-    required this.riceArea,
-    required this.yield,
+    this.munCode,
+    this.munName,
+    this.provName,
+    this.provCode,
+    this.regName,
+    this.regCode,
+    this.glat,
+    this.glon,
+    this.meanSlope,
+    this.meanElevationM,
+    this.ruggednessStdev,
+    this.meanRuggedness,
+    this.slopeStdev,
+    this.areaKm2,
+    this.povertyPerc,
+    this.withCoast,
+    this.coastLength,
+    this.perimeter,
+    this.ricePlanted,
+    this.riceArea,
+    this.yield,
   });
 
   @override
