@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:typhoonista_thesis/entities/Location.dart';
+import 'package:typhoonista_thesis/entities/Location_.dart';
 import 'package:typhoonista_thesis/entities/Typhoon.dart';
 import 'package:typhoonista_thesis/entities/TyphoonDay.dart';
 import 'package:typhoonista_thesis/services/estimatorModel.dart';
@@ -209,7 +210,7 @@ class FirestoreService {
 
   }
 
-  Future<List<Location>> getDistinctLocations(String typhoonID) async {
+  Future<List<Location_>> getDistinctLocations(String typhoonID) async {
     QuerySnapshot daysSnapshot = await FirebaseFirestore.instance
         .collection('users')
         .doc('test-user')
@@ -220,23 +221,23 @@ class FirestoreService {
         .get();
 
     //taking all the locations from firestore
-    List<Location> notDistinctLocations = daysSnapshot.docs.map((doc) {
+    List<Location_> notDistinctLocations = daysSnapshot.docs.map((doc) {
       final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-      return Location(code: data['locationCode'], name: data['location']);
+      return Location_(munCode: data['locationCode'], munName: data['location']);
     }).toList();
 
     //to remove duplicates
-    Set<Location> distinctLocationsSet = notDistinctLocations.toSet();
+    Set<Location_> distinctLocationsSet = notDistinctLocations.toSet();
 
-    List<Location> distinctLocationsList = distinctLocationsSet.toList();
+    List<Location_> distinctLocationsList = distinctLocationsSet.toList();
     List<TyphoonDay> days = daysSnapshot.docs
         .map((doc) => TyphoonDay.fromJson(doc.data() as Map<String, dynamic>))
         .toList();
 
     //to set the TyphoonDays inside each distinct location
     for (int i = 0; i < days.length; i++) {
-      for (Location loc in distinctLocationsList) {
-        if (days[i].locationCode == loc.code) {
+      for (Location_ loc in distinctLocationsList) {
+        if (days[i].locationCode == loc.munCode) {
           loc.days.add(days[i]);
         }
       }

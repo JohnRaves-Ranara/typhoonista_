@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:typhoonista_thesis/entities/Location.dart';
+import 'package:typhoonista_thesis/entities/Location_.dart';
 import 'package:typhoonista_thesis/entities/Typhoon.dart';
 import 'package:typhoonista_thesis/entities/TyphoonDay.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:typhoonista_thesis/assets/themes/textStyles.dart';
 import 'package:typhoonista_thesis/services/pdfGeneratorService.dart';
+import 'package:typhoonista_thesis/services/locations_.dart';
 
 class idk extends StatefulWidget {
   const idk({super.key});
@@ -26,14 +27,9 @@ class _idkState extends State<idk> {
     currentDay: 2,
   );
 
-  List<Location> locs = [
-    Location(
-      code: 'dav1',
-      name: 'Davao',
-    ),
-    Location(code: 'ceb2', name: 'Cebu'),
-    Location(code: 'arak3', name: 'Arakan'),
-    Location(code: 'sur4', name: 'Surigao')
+
+  List<Location_> locs = [
+
   ];
   TextStyle titleStyle =
       textStyles.lato_regular(color: Colors.grey, fontSize: 14);
@@ -43,6 +39,13 @@ class _idkState extends State<idk> {
   @override
   void initState() {
     super.initState();
+    List<Location_> locsFromJson = Locations_().getLocations();
+    locs = [
+      locsFromJson[0],
+      locsFromJson[1],
+      locsFromJson[2],
+      locsFromJson[3]
+    ];
     locs[0].days = [
       TyphoonDay(
           damageCost: 10899700,
@@ -322,7 +325,7 @@ class _idkState extends State<idk> {
                                           ? [Text('Loading...')]
                                           : locs
                                               .map((loc) => Text(
-                                                    "• ${loc.name}",
+                                                    "• ${loc.munName}",
                                                     style: valueStyle,
                                                   ))
                                               .toList(),
@@ -342,7 +345,7 @@ class _idkState extends State<idk> {
                           shrinkWrap: true,
                           itemCount: locs.length,
                           itemBuilder: (context, index) {
-                            Location loc = locs[index];
+                            Location_ loc = locs[index];
                             return Container(
                               margin: EdgeInsets.only(bottom: 20),
                               // color: Colors.amber.shade200,
@@ -356,7 +359,7 @@ class _idkState extends State<idk> {
                                         fontSize: 14, color: Colors.grey),
                                   ),
                                   Text(
-                                    "${loc.name}",
+                                    "${loc.munName}",
                                     style: textStyles.lato_regular(
                                         fontSize: 14, color: Colors.black),
                                   ),
@@ -425,46 +428,46 @@ class _idkState extends State<idk> {
   //   return Typhoon.fromJson(v.data() as Map<String, dynamic>);
   // }
 
-  Future<List<Location>> getDistinctLocations(String typhoonID) async {
-    QuerySnapshot v = await FirebaseFirestore.instance
-        .collection('users')
-        .doc('test-user')
-        .collection('typhoons')
-        .doc(typhoonID)
-        .collection('days')
-        .orderBy('dateRecorded')
-        .get();
+  // Future<List<Location>> getDistinctLocations(String typhoonID) async {
+  //   QuerySnapshot v = await FirebaseFirestore.instance
+  //       .collection('users')
+  //       .doc('test-user')
+  //       .collection('typhoons')
+  //       .doc(typhoonID)
+  //       .collection('days')
+  //       .orderBy('dateRecorded')
+  //       .get();
 
-    List<Location> notDistinctLocations = v.docs.map((doc) {
-      final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-      return Location(code: data['locationCode'], name: data['location']);
-    }).toList();
+  //   List<Location> notDistinctLocations = v.docs.map((doc) {
+  //     final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+  //     return Location(code: data['locationCode'], name: data['location']);
+  //   }).toList();
 
-    Set<Location> distinctLocationsSet = notDistinctLocations.toSet();
+  //   Set<Location> distinctLocationsSet = notDistinctLocations.toSet();
 
-    List<Location> distinctLocationsList = distinctLocationsSet.toList();
-    List<TyphoonDay> days = v.docs
-        .map((doc) => TyphoonDay.fromJson(doc.data() as Map<String, dynamic>))
-        .toList();
+  //   List<Location> distinctLocationsList = distinctLocationsSet.toList();
+  //   List<TyphoonDay> days = v.docs
+  //       .map((doc) => TyphoonDay.fromJson(doc.data() as Map<String, dynamic>))
+  //       .toList();
 
-    for (int i = 0; i < days.length; i++) {
-      for (Location loc in distinctLocationsList) {
-        if (days[i].locationCode == loc.code) {
-          loc.days.add(days[i]);
-        }
-      }
-    }
+  //   for (int i = 0; i < days.length; i++) {
+  //     for (Location loc in distinctLocationsList) {
+  //       if (days[i].locationCode == loc.code) {
+  //         loc.days.add(days[i]);
+  //       }
+  //     }
+  //   }
 
-    for (int i = 0; i < distinctLocationsList.length; i++) {
-      double total = 0;
-      for (TyphoonDay day in distinctLocationsList[i].days) {
-        total += day.damageCost;
-      }
-      distinctLocationsList[i].totalDamageCost += total;
-    }
-    setState(() {
-      // distinctLocations = distinctLocationsList;
-    });
-    return distinctLocationsList;
-  }
+  //   for (int i = 0; i < distinctLocationsList.length; i++) {
+  //     double total = 0;
+  //     for (TyphoonDay day in distinctLocationsList[i].days) {
+  //       total += day.damageCost;
+  //     }
+  //     distinctLocationsList[i].totalDamageCost += total;
+  //   }
+  //   setState(() {
+  //     // distinctLocations = distinctLocationsList;
+  //   });
+  //   return distinctLocationsList;
+  // }
 }

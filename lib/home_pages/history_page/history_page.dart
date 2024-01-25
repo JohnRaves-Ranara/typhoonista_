@@ -129,9 +129,9 @@ class _history_pageState extends State<history_page> {
                       stream: daysStream(),
                       builder: (context, snapshot) {
                         if (snapshot.hasError) {
-                          return Text('ERROR');
+                          return Center(child: Text('An error has occured.', style: textStyles.lato_regular(fontSize: 16),));
                         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                          return Text('No data');
+                          return Center(child: Text("Loading data...", style: textStyles.lato_regular(fontSize: 16),));
                         } else {
                           final List<TyphoonDay> days = snapshot.data!;
                           return DataTable(

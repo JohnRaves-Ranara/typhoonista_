@@ -23,7 +23,7 @@ class Location_{
   String? ricePlanted;
   double? riceArea;
   double? yield;
-  double? totalDamageCost = 0;
+  double totalDamageCost = 0;
   List<TyphoonDay> days = [];
 
   Location_({

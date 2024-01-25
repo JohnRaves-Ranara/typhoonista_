@@ -802,8 +802,8 @@ class _recent_estimationState extends State<recent_estimation> {
       builder: (context) {
         return AlertDialog(
           content: Container(
-            height: MediaQuery.of(context).size.height * 0.4,
-            width: MediaQuery.of(context).size.width * 0.4,
+            height: MediaQuery.of(context).size.height * 0.6,
+            width: MediaQuery.of(context).size.width * 0.3,
             child: StatefulBuilder(
               builder: (context, customState2) {
                 return FutureBuilder(
@@ -845,11 +845,13 @@ class _recent_estimationState extends State<recent_estimation> {
                                         Expanded(
                                           child: TextField(
                                             autofocus: true,
-                                            style: textStyles.lato_regular(fontSize: 12, color: Colors.black),
+                                            style: textStyles.lato_regular(
+                                                fontSize: 14,
+                                                color: Colors.black),
                                             maxLength: 30,
                                             decoration: InputDecoration(
-                                              border: InputBorder.none,
-                                              hintText: "Search Location...",
+                                                border: InputBorder.none,
+                                                hintText: "Search Location...",
                                                 counterText: ""),
                                             controller: ctrlr,
                                             onChanged: (value) => searchbook(
@@ -889,11 +891,19 @@ class _recent_estimationState extends State<recent_estimation> {
                                               Text(
                                                 'Select Municipality',
                                                 style: textStyles.lato_bold(
-                                                    fontSize: 14),
+                                                    fontSize: 16),
+                                              ),
+                                              SizedBox(
+                                                width: 10,
                                               ),
                                               Tooltip(
-                                                message: "Hello world",
-                                                child: Icon(Icons.info, size: 14, color: Colors.blue,),
+                                                message:
+                                                    "You are not allowed to estimate the same location per day.\nThe location you have previously selected will be \ntemporarily unavailable until tomorrow.",
+                                                child: Icon(
+                                                  Icons.info,
+                                                  size: 16,
+                                                  color: Colors.blue,
+                                                ),
                                               )
                                             ],
                                           ),
@@ -917,7 +927,9 @@ class _recent_estimationState extends State<recent_estimation> {
                                       ],
                                     ),
                                   ),
-                            Divider(color: Colors.grey.shade700,),
+                            Divider(
+                              color: Colors.grey.shade700,
+                            ),
                             Expanded(
                               child: ListView(
                                   primary: false,
@@ -934,12 +946,30 @@ class _recent_estimationState extends State<recent_estimation> {
                                           if (isTheLocationUnavailable ==
                                               true) {
                                             return ListTile(
-                                              title: Text(locs[index].munName!, style: textStyles.lato_regular(fontSize: 12, color: Colors.grey),),
+                                              title: Text(locs[index].munName!,
+                                                  style:
+                                                      textStyles.lato_regular(
+                                                          fontSize: 14,
+                                                          color: Colors.grey)),
                                               onTap: null,
+                                              trailing: Tooltip(
+                                                //todo add 'this location already has prediction for [date last recorded]
+                                                message:
+                                                    "This location already has prediction for today. Please try again tomorrow.",
+                                                child: Icon(
+                                                  Icons.info,
+                                                  size: 16,
+                                                  color: Colors.blue,
+                                                ),
+                                              ),
                                             );
                                           } else {
                                             return ListTile(
-                                              title: Text(locs[index].munName!, style: textStyles.lato_regular(fontSize: 12, color: Colors.black)),
+                                              title: Text(locs[index].munName!,
+                                                  style:
+                                                      textStyles.lato_regular(
+                                                          fontSize: 14,
+                                                          color: Colors.black)),
                                               onTap: (() {
                                                 customState(() {
                                                   selectedLocation =
@@ -969,14 +999,26 @@ class _recent_estimationState extends State<recent_estimation> {
                                               if (isTheLocationUnavailable ==
                                                   true) {
                                                 return ListTile(
-                                                  title: Text(suggestions[index]
-                                                      .munName!, style: textStyles.lato_regular(fontSize: 12, color: Colors.grey)),
+                                                  title: Text(
+                                                      suggestions[index]
+                                                          .munName!,
+                                                      style: textStyles
+                                                          .lato_regular(
+                                                              fontSize: 14,
+                                                              color:
+                                                                  Colors.grey)),
                                                   onTap: null,
                                                 );
                                               } else {
                                                 return ListTile(
-                                                  title: Text(suggestions[index]
-                                                      .munName!, style: textStyles.lato_regular(fontSize: 12, color: Colors.black)),
+                                                  title: Text(
+                                                      suggestions[index]
+                                                          .munName!,
+                                                      style: textStyles
+                                                          .lato_regular(
+                                                              fontSize: 14,
+                                                              color: Colors
+                                                                  .black)),
                                                   onTap: (() {
                                                     customState(() {
                                                       selectedLocation =
@@ -995,6 +1037,8 @@ class _recent_estimationState extends State<recent_estimation> {
                                               Center(
                                                 child: Text(
                                                   '${ctrlr.text.trim()} does not exist.',
+                                                  style:
+                                                      textStyles.lato_regular(),
                                                 ),
                                               )
                                             ]),
@@ -1002,7 +1046,7 @@ class _recent_estimationState extends State<recent_estimation> {
                           ],
                         );
                       } else {
-                        return Text("no data");
+                        return Center(child: CircularProgressIndicator());
                       }
                     });
               },

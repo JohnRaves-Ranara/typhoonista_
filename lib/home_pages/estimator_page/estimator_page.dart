@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:typhoonista_thesis/assets/themes/textStyles.dart';
+import 'package:typhoonista_thesis/entities/Location_.dart';
+import 'package:typhoonista_thesis/entities/TyphoonDay.dart';
 import 'package:typhoonista_thesis/services/FirestoreService.dart';
 import 'package:typhoonista_thesis/services/locations.dart';
+import 'package:typhoonista_thesis/services/locations_.dart';
 
 class estimator_page extends StatefulWidget {
   const estimator_page({super.key});
@@ -15,9 +18,13 @@ class _estimator_pageState extends State<estimator_page> {
   final windspeedCtlr = TextEditingController();
   final rainfallCtlr = TextEditingController();
   final locationCtlr = TextEditingController();
+  final ctrlr = TextEditingController();
+  List<Location_> locs = Locations_().getLocations();
+  List<Location_> suggestions = [];
 
   String selectedLocation = "Choose Location";
   String selectedLocationCode = "";
+  bool isSearchLocation = false;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -102,24 +109,36 @@ class _estimator_pageState extends State<estimator_page> {
                             height: 20,
                           ),
                           InkWell(
-                            onTap: ((){
-                              showChooseLocationDialog();
+                            onTap: (() {
+                              showSampleDialog();
                             }),
                             child: Container(
                               width: double.maxFinite,
                               height: 60,
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(5),
-                                border: Border.all(width: 1, color: Colors.grey.shade600, style: BorderStyle.solid)
-                              ),
+                                  borderRadius: BorderRadius.circular(5),
+                                  border: Border.all(
+                                      width: 1,
+                                      color: Colors.grey.shade600,
+                                      style: BorderStyle.solid)),
                               child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 20),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 20),
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    Text(selectedLocation, style: textStyles.lato_regular(fontSize: 17),),
-                                    Icon(Icons.arrow_drop_down, size: 22, color: Colors.black,)
+                                    Text(
+                                      selectedLocation,
+                                      style:
+                                          textStyles.lato_regular(fontSize: 17),
+                                    ),
+                                    Icon(
+                                      Icons.arrow_drop_down,
+                                      size: 22,
+                                      color: Colors.black,
+                                    )
                                   ],
                                 ),
                               ),
@@ -138,12 +157,13 @@ class _estimator_pageState extends State<estimator_page> {
                                   FirestoreService().addDay(
                                       typhoonId: null,
                                       typhoonName: typhoonNameCtlr.text.trim(),
-                                      windSpeed: double.parse(windspeedCtlr.text.trim()),
-                                      rainfall: double.parse(rainfallCtlr.text.trim()),
+                                      windSpeed: double.parse(
+                                          windspeedCtlr.text.trim()),
+                                      rainfall: double.parse(
+                                          rainfallCtlr.text.trim()),
                                       location: selectedLocation,
                                       locationCode: selectedLocationCode,
-                                      isFirstDay: true
-                                      );
+                                      isFirstDay: true);
                                   setState(() {
                                     selectedLocation = "Choose Location";
                                     selectedLocationCode = "";
@@ -185,39 +205,171 @@ class _estimator_pageState extends State<estimator_page> {
                     ))
                   ],
                 )),
-
           ],
         ));
   }
 
-  showChooseLocationDialog(){
+  showSampleDialog() {
     showDialog(
       context: context,
-      builder: (context){
+      builder: (context) {
         return AlertDialog(
           content: Container(
-            height: MediaQuery.of(context).size.height*0.3,
-            width: MediaQuery.of(context).size.width*0.3,
-            child: ListView.builder(
-              itemCount: Locations().locationsJson.length,
-              itemBuilder: (context, index){
-                List<String> locationNames = Locations().locationsJson.map((loc) => loc.name!).toList();
-                List<String> locationCodes = Locations().locationsJson.map((loc) => loc.code!).toList();
-                return ListTile(
-                  title: Text("${locationNames[index]}"),
-                  onTap: ((){
-                    setState(() {
-                      selectedLocation = locationNames[index];
-                      selectedLocationCode = locationCodes[index];
-                    });
-                    Navigator.pop(context);
-                  }),
+            height: MediaQuery.of(context).size.height * 0.6,
+            width: MediaQuery.of(context).size.width * 0.3,
+            child: StatefulBuilder(
+              builder: (context, customState2) {
+                return Column(
+                  children: [
+                    (isSearchLocation)
+                        ? Container(
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: TextField(
+                                    autofocus: true,
+                                    style: textStyles.lato_regular(
+                                        fontSize: 14, color: Colors.black),
+                                    maxLength: 30,
+                                    decoration: InputDecoration(
+                                        border: InputBorder.none,
+                                        hintText: "Search Location...",
+                                        counterText: ""),
+                                    controller: ctrlr,
+                                    onChanged: (value) =>
+                                        searchbook(value.trim(), customState2),
+                                  ),
+                                ),
+                                InkWell(
+                                  borderRadius: BorderRadius.circular(50),
+                                  onTap: (() {
+                                    customState2(() {
+                                      isSearchLocation = false;
+                                      ctrlr.clear();
+                                    });
+                                  }),
+                                  child: Container(
+                                    margin: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(50)),
+                                    child: Icon(Icons.close),
+                                  ),
+                                )
+                              ],
+                            ),
+                          )
+                        : Container(
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        'Select Municipality',
+                                        style:
+                                            textStyles.lato_bold(fontSize: 16),
+                                      ),
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                      Tooltip(
+                                        message:
+                                            "You are not allowed to estimate the same location per day.\nThe location you have previously selected will be \ntemporarily unavailable until tomorrow.",
+                                        child: Icon(
+                                          Icons.info,
+                                          size: 16,
+                                          color: Colors.blue,
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                InkWell(
+                                  borderRadius: BorderRadius.circular(50),
+                                  onTap: (() {
+                                    customState2(() {
+                                      isSearchLocation = true;
+                                    });
+                                  }),
+                                  child: Container(
+                                    margin: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(50)),
+                                    child: Icon(Icons.search),
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                    Divider(
+                      color: Colors.grey.shade700,
+                    ),
+                    Expanded(
+                      child: ListView(
+                        primary: false,
+                        children: (ctrlr.text.trim() == "")
+                            ? locs
+                                .map((loc) => ListTile(
+                                      title: Text(loc.munName!,
+                                          style: textStyles.lato_regular(
+                                              fontSize: 14,
+                                              color: Colors.black)),
+                                      onTap: (() {
+                                        setState(() {
+                                          selectedLocation = loc.munName!;
+                                          selectedLocationCode = loc.munCode!;
+                                        });
+                                        Navigator.pop(context);
+                                      }),
+                                    ))
+                                .toList()
+                            : (suggestions.isNotEmpty)
+                                ? suggestions
+                                    .map((loc) => ListTile(
+                                          title: Text(loc.munName!,
+                                              style: textStyles.lato_regular(
+                                                  fontSize: 14,
+                                                  color: Colors.black)),
+                                          onTap: (() {
+                                            setState(() {
+                                              selectedLocation = loc.munName!;
+                                              selectedLocationCode =
+                                                  loc.munCode!;
+                                            });
+                                            Navigator.pop(context);
+                                          }),
+                                        ))
+                                    .toList()
+                                : [
+                                    Center(
+                                      child: Text(
+                                        '${ctrlr.text.trim()} does not exist.',
+                                      ),
+                                    )
+                                  ],
+                      ),
+                    ),
+                  ],
                 );
               },
-            )
+            ),
           ),
         );
-      }
+      },
     );
+  }
+
+  searchbook(String query, Function customState) {
+    customState(() {
+      suggestions = locs.where((loc) {
+        final munName = loc.munName!.toLowerCase();
+        final input = query.toLowerCase();
+        return munName.contains(input);
+      }).toList();
+    });
   }
 }

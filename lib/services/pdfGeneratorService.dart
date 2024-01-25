@@ -5,7 +5,8 @@ import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart';
 import 'dart:html' as html;
-import 'package:typhoonista_thesis/entities/Location.dart';
+// import 'package:typhoonista_thesis/entities/Location.dart';
+import 'package:typhoonista_thesis/entities/Location_.dart';
 import 'package:typhoonista_thesis/entities/Typhoon.dart';
 import 'package:typhoonista_thesis/entities/TyphoonDay.dart';
 // import 'package:typhoonista_thesis/assets/themes/textStyles.dart';
@@ -16,7 +17,7 @@ import 'package:printing/printing_web.dart';
 
 class pdfGeneratorService {
   Typhoon? typhoon;
-  List<Location>? locations;
+  List<Location_>? locations;
 
   pdfGeneratorService({this.typhoon, this.locations});
   // var typhoonistaLogo;
@@ -175,7 +176,7 @@ class pdfGeneratorService {
                           ),
                           Text(
                             "${numberFormatter(number: typhoon!.totalDamageCost)} PHP",
-                            style: valueStyle,
+                            style: TextStyle(font: latoBold),
                           ),
                         ],
                       ),
@@ -195,7 +196,7 @@ class pdfGeneratorService {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: locations!
-                                .map((loc) => Bullet(text: "${loc.name}",
+                                .map((loc) => Bullet(text: "${loc.munName}",
                                     style: valueStyle
                                     ))
                                 .toList(),
@@ -211,7 +212,7 @@ class pdfGeneratorService {
             SizedBox(height: 10)
           ])),
     );
-
+    print("YADA");
     for (int i = 0; i < locations!.length; i++) {
       final location = locations![i];
       widgets.add(Wrap(children: [
@@ -230,7 +231,7 @@ class pdfGeneratorService {
                 style: titleStyle
               ),
               Text(
-                "${location.name}",
+                "${location.munName}",
                 style: valueStyle
               ),
               SizedBox(
@@ -238,6 +239,9 @@ class pdfGeneratorService {
               ),
               Container(
                   child: TableHelper.fromTextArray(
+                    headerStyle: TextStyle(font: latoReg),
+                    cellStyle: TextStyle(font: latoReg),
+                    border: TableBorder.all(color: PdfColor.fromHex("#d4d4d4"), width: 1, style:BorderStyle.solid),
                       headers: tableHeaders, data: tableRows[i])),
               SizedBox(
                 height: 15,
@@ -246,7 +250,7 @@ class pdfGeneratorService {
                 children: [
                   Spacer(),
                   Text(
-                      "Total Damage Cost: ${numberFormatter(number: location.totalDamageCost)} PHP")
+                      "Total Damage Cost: ${numberFormatter(number: location.totalDamageCost)} PHP", style: TextStyle(font: latoBold))
                 ],
               ),
             ],
@@ -256,9 +260,9 @@ class pdfGeneratorService {
     }
 
     final pdf = Document();
-
+    print("DAMEE");
     pdf.addPage(MultiPage(
-        margin: EdgeInsets.all(20),
+        margin: EdgeInsets.symmetric(vertical: 30, horizontal: 50),
         pageFormat: PdfPageFormat.a4,
         build: (context) {
           return widgets;

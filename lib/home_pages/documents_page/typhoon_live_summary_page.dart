@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:typhoonista_thesis/entities/Location.dart';
+import 'package:typhoonista_thesis/entities/Location_.dart';
 import 'package:typhoonista_thesis/entities/Typhoon.dart';
 import 'package:typhoonista_thesis/entities/TyphoonDay.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -110,8 +110,8 @@ class _typhoon_live_summary_pageState extends State<typhoon_live_summary_page> {
                                     color: Colors.black, fontSize: 14);
                                 return Container(
                                   // color: Colors.green,
-                                  height: 280,
                                   child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Expanded(
                                         child: Container(
@@ -244,7 +244,7 @@ class _typhoon_live_summary_pageState extends State<typhoon_live_summary_page> {
                                                         ? [Text('Loading...')]
                                                         : prov.locations!
                                                             .map((loc) => Text(
-                                                                  "• ${loc.name}",
+                                                                  "• ${loc.munName}",
                                                                   style:
                                                                       valueStyle,
                                                                 ))
@@ -266,11 +266,11 @@ class _typhoon_live_summary_pageState extends State<typhoon_live_summary_page> {
                       ),
                       Container(
                         width: double.maxFinite,
-                        child: FutureBuilder<List<Location>>(
+                        child: FutureBuilder<List<Location_>>(
                           future: FirestoreService().getDistinctLocations(selectedTyphoon.id),
                           builder: (context, snapshot) {
                             if (snapshot.hasData) {
-                              final List<Location> locations = snapshot.data!;
+                              final List<Location_> locations = snapshot.data!;
                               // prov.changeSelectedLocations(locations);
                               return Column(
                                 children: locations.map((loc) {
@@ -290,7 +290,7 @@ class _typhoon_live_summary_pageState extends State<typhoon_live_summary_page> {
                                               fontSize: 14, color: Colors.grey),
                                         ),
                                         Text(
-                                          "${loc.name}",
+                                          "${loc.munName}",
                                           style: textStyles.lato_regular(
                                               fontSize: 14,
                                               color: Colors.black),
@@ -303,7 +303,7 @@ class _typhoon_live_summary_pageState extends State<typhoon_live_summary_page> {
                                           child: DataTable(
                                               border: TableBorder.all(
                                                   width: 1,
-                                                  color: Colors.grey.shade500,
+                                                  color: Color(0xffd4d4d4),
                                                   style: BorderStyle.solid),
                                               columns: const [
                                                 DataColumn(
