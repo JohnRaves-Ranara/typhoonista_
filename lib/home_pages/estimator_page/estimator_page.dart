@@ -272,18 +272,7 @@ class _estimator_pageState extends State<estimator_page> {
                                         style:
                                             textStyles.lato_bold(fontSize: 16),
                                       ),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                      Tooltip(
-                                        message:
-                                            "You are not allowed to estimate the same location per day.\nThe location you have previously selected will be \ntemporarily unavailable until tomorrow.",
-                                        child: Icon(
-                                          Icons.info,
-                                          size: 16,
-                                          color: Colors.blue,
-                                        ),
-                                      )
+                                      
                                     ],
                                   ),
                                 ),

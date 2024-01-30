@@ -309,8 +309,7 @@ class _typhoon_live_summary_pageState extends State<typhoon_live_summary_page> {
                                                 DataColumn(
                                                     label: Text("Day No.")),
                                                 DataColumn(
-                                                    label:
-                                                        Text("Date Recorded")),
+                                                    label:Text("Date Recorded")),
                                                 DataColumn(
                                                     label: Text("Windspeed")),
                                                 DataColumn(

@@ -1,5 +1,8 @@
+import 'dart:html';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:typhoonista_thesis/entities/DamageCostBar.dart';
 import 'package:typhoonista_thesis/entities/Location.dart';
 import 'package:typhoonista_thesis/entities/Location_.dart';
 import 'package:typhoonista_thesis/entities/Typhoon.dart';
@@ -46,8 +49,7 @@ class FirestoreService {
       };
 
       await typhoonDocRef.set(typhoon);
-      
-      
+
       //create new days collection inside newly created typhoons document
       CollectionReference daysColRef =
           typhColRef.doc(_typhoonId).collection("days");
@@ -62,7 +64,7 @@ class FirestoreService {
         "windSpeed": windSpeed,
         "rainfall": rainfall,
         "location": location,
-        "locationCode" : locationCode,
+        "locationCode": locationCode,
         "day": 1,
         "damageCost": damageCost,
         "dateRecorded": currentDateTime.toString()
@@ -92,7 +94,7 @@ class FirestoreService {
         "windSpeed": windSpeed,
         "rainfall": rainfall,
         "location": location,
-        "locationCode" : locationCode,
+        "locationCode": locationCode,
         "day": (DateTime(currentDateTime.year, currentDateTime.month,
                     currentDateTime.day)
                 .isAfter(dateOfRecentDay))
@@ -162,11 +164,13 @@ class FirestoreService {
       .map((snapshot) => snapshot.docs.first)
       .map((doc) => Typhoon.fromJson(doc.data()));
 
-  Future<void> updateTyphoonStatusAsFinished(String typhoonID) async{
-    await FirebaseFirestore.instance.collection('users').doc('test-user').collection('typhoons').doc(typhoonID).update({
-      "status" : "finished",
-      "endDate" : DateTime.now().toString()
-    });
+  Future<void> updateTyphoonStatusAsFinished(String typhoonID) async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc('test-user')
+        .collection('typhoons')
+        .doc(typhoonID)
+        .update({"status": "finished", "endDate": DateTime.now().toString()});
   }
 
   // Stream<TyphoonDay> getRecentlyAddedDay() {
@@ -191,23 +195,42 @@ class FirestoreService {
             snapshot.docs.map((doc) => Typhoon.fromJson(doc.data())).toList());
   }
 
-  Future<void> deleteTyphoon() async{
-    final snapshot = await FirebaseFirestore.instance.collection('users').doc('test-user').collection('typhoons').where('status', isEqualTo: 'ongoing').get();
-    
-    List<Typhoon> typhoons = snapshot.docs.map((doc) => Typhoon.fromJson(doc.data())).toList();
+  Future<void> deleteTyphoon() async {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc('test-user')
+        .collection('typhoons')
+        .where('status', isEqualTo: 'ongoing')
+        .get();
+
+    List<Typhoon> typhoons =
+        snapshot.docs.map((doc) => Typhoon.fromJson(doc.data())).toList();
 
     Typhoon ongoingTyphoon = typhoons.first;
 
-    await FirebaseFirestore.instance.collection('users').doc('test-user').collection('typhoons').doc(ongoingTyphoon.id).delete();
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc('test-user')
+        .collection('typhoons')
+        .doc(ongoingTyphoon.id)
+        .delete();
 
-    final snapshotDays = await FirebaseFirestore.instance.collection('users').doc('test-user').collection('allDays').where('typhoonID', isEqualTo: ongoingTyphoon.id).get();
+    final snapshotDays = await FirebaseFirestore.instance
+        .collection('users')
+        .doc('test-user')
+        .collection('allDays')
+        .where('typhoonID', isEqualTo: ongoingTyphoon.id)
+        .get();
 
-    for(QueryDocumentSnapshot doc in snapshotDays.docs){
-      final docRef = FirebaseFirestore.instance.collection('users').doc('test-user').collection('allDays').doc(doc.id);
+    for (QueryDocumentSnapshot doc in snapshotDays.docs) {
+      final docRef = FirebaseFirestore.instance
+          .collection('users')
+          .doc('test-user')
+          .collection('allDays')
+          .doc(doc.id);
 
       await docRef.delete();
     }
-
   }
 
   Future<List<Location_>> getDistinctLocations(String typhoonID) async {
@@ -223,7 +246,8 @@ class FirestoreService {
     //taking all the locations from firestore
     List<Location_> notDistinctLocations = daysSnapshot.docs.map((doc) {
       final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-      return Location_(munCode: data['locationCode'], munName: data['location']);
+      return Location_(
+          munCode: data['locationCode'], munName: data['location']);
     }).toList();
 
     //to remove duplicates
@@ -254,4 +278,82 @@ class FirestoreService {
     return distinctLocationsList;
   }
 
+  Future<List<DamageCostBar>> getAllDamageCostBarsBasedOnYear({required int year}) async {
+    QuerySnapshot typhSnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc('test-user')
+        .collection('typhoons')
+        .get();
+
+    // return typhSnapshot.docs
+    //     .map((doc) => Typhoon.fromJson(doc.data() as Map<String, dynamic>))
+    //     .toList();
+    List<Typhoon> typhoons = [];
+
+    typhSnapshot.docs.forEach((doc) { 
+      Map<String,dynamic> data = doc.data() as Map<String,dynamic>;
+      DateTime startDate = DateTime.parse(data['startDate'] as String);
+
+      if(startDate.year==year){
+        typhoons.add(
+          Typhoon.fromJson(data)
+        );
+      }
+    });
+    return typhoons.map((typhoon)=> DamageCostBar(typhoon.typhoonName, typhoon.totalDamageCost)).toList();
+  }
+
+  Future<List<int>> getTyphoonYears() async {
+    QuerySnapshot yearsSnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc('test-user')
+        .collection('typhoons')
+        .get();
+
+    List<int> bruh = [];
+
+    for (var doc in yearsSnapshot.docs) {
+      Map<String, dynamic> x = doc.data() as Map<String, dynamic>;
+      int b = DateTime.parse(x['startDate']).year;
+      bruh.add(b);
+    }
+
+    List<int> years = yearsSnapshot.docs
+        .map<int>((doc) {
+          Map<String, dynamic> docSnapshot = doc.data() as Map<String, dynamic>;
+          DateTime b = DateTime.parse(docSnapshot['startDate'] as String);
+          return b.year;
+        })
+        .toSet()
+        .toList();
+
+    print(years);
+    return years;
+  }
+
+  Future<int> getFirstTyphoonYear()async{
+    List<int> years = await getTyphoonYears();
+    return years.first;
+  }
+//   Future<List<int>> getYearsFromFirebase() async {
+//   List<int> yearsList = [];
+
+//   try {
+//     // Replace 'your_collection' with the actual name of your collection
+//     QuerySnapshot<Map<String, dynamic>> snapshot =
+//         await FirebaseFirestore.instance.collection('users').doc('test-user').collection('typhoons').get();
+
+//     for (QueryDocumentSnapshot<Map<String, dynamic>> document
+//         in snapshot.docs) {
+//       // Replace 'year' with the actual field name in your documents
+//       DateTime b = DateTime.parse(document.data()['startDate']);
+//       int year = b.year;
+//       yearsList.add(year);
+//     }
+//   } catch (e) {
+//     print('Error fetching years: $e');
+//   }
+
+//   return yearsList;
+// }
 }

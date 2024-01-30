@@ -1,6 +1,6 @@
 class DamageCostBar{
   final String typhoonName;
-  final int damageCost;
+  final double damageCost;
 
   DamageCostBar(this.typhoonName,this.damageCost, );
 }

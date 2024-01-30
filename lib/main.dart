@@ -9,6 +9,8 @@ import 'package:typhoonista_thesis/providers/page_provider.dart';
 import 'package:typhoonista_thesis/providers/sample_provider.dart';
 import 'package:typhoonista_thesis/tests/idk.dart';
 import 'package:typhoonista_thesis/tests/idk2.dart';
+import 'package:typhoonista_thesis/tests/idk3.dart';
+import 'package:typhoonista_thesis/tests/idkkk.dart';
 import 'package:typhoonista_thesis/tests/textDataProvider.dart';
 import 'home_pages/estimator_page/estimator_page.dart';
 
@@ -49,7 +51,7 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
-        home: Home(),
+        home: MyHomePage(),
       ),
     );
   }

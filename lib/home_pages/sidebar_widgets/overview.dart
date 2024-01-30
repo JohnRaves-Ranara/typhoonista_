@@ -82,11 +82,13 @@ class overview extends StatelessWidget {
             itemCount: icons.length,
             itemBuilder: (context, index) {
               return Ink(
-                // color: Colors.purple,
                 height: 50,
                 child: InkWell(
                   splashFactory: NoSplash.splashFactory,
                   onTap: ((){
+                    if(index==3){
+                      context.read<page_provider>().changeDocumentsPage(1);
+                    }
                     context.read<page_provider>().changePage(index+1);
                   }),
                   child: Row(
