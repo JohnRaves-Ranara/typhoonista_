@@ -26,11 +26,8 @@ class _MyHomePageState extends State<MyHomePage> {
   TextEditingController areaController = TextEditingController();
   TextEditingController yieldController = TextEditingController();
   TextEditingController priceController = TextEditingController();
-  final typhoonNameCtlr = TextEditingController();
-  final windspeedCtlr = TextEditingController();
-  final rainfallCtlr = TextEditingController();
-  final locationCtlr = TextEditingController();
   final ctrlr = TextEditingController();
+  final manualDistanceCtrlr = TextEditingController();
   bool isSearchLocation = false;
   bool isManualDistrackMin = false;
 
@@ -53,6 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
   String prediction = '';
   bool isSendingCoordinateRequest = false;
   bool isSendingPredictionRequest = false;
+  String distrackminfinal = 'Enter distrackmin';
 
   Future<void> sendPredictionRequest() async {
     try {
@@ -66,7 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
             double.parse(rainfall6hController.text),
             double.parse(areaController.text),
             double.parse(yieldController.text),
-            double.parse(coordinates1),
+            double.parse(distrackminfinal),
             double.parse(priceController.text),
           ],
         }),
@@ -186,78 +184,15 @@ class _MyHomePageState extends State<MyHomePage> {
               labelText: 'Price',
             ),
           ),
-          const Align(
-            alignment: Alignment.centerLeft,
-            child: Text("Select Location"),
-          ),
-          InkWell(
-            onTap: (() {
-              showLocationDialog();
+          GestureDetector(
+            onTap: ((){
+              showDistrackminOptions();
             }),
             child: Container(
-              width: double.maxFinite,
-              height: 60,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5),
-                  border: Border.all(
-                      width: 1,
-                      color: Colors.grey.shade600,
-                      style: BorderStyle.solid)),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      selectedMunicipalName,
-                      style: textStyles.lato_regular(fontSize: 17),
-                    ),
-                    Icon(
-                      Icons.arrow_drop_down,
-                      size: 22,
-                      color: Colors.black,
-                    )
-                  ],
-                ),
-              ),
-            ),
-          ),
-          const Align(
-            alignment: Alignment.centerLeft,
-            child: Text("Select Location of Typhoon"),
-          ),
-          InkWell(
-            onTap: (() {
-              showTyphoonLocationDialog();
-            }),
-            child: Container(
-              width: double.maxFinite,
-              height: 60,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5),
-                  border: Border.all(
-                      width: 1,
-                      color: Colors.grey.shade600,
-                      style: BorderStyle.solid)),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      selectedTyphoonLocation,
-                      style: textStyles.lato_regular(fontSize: 17),
-                    ),
-                    Icon(
-                      Icons.arrow_drop_down,
-                      size: 22,
-                      color: Colors.black,
-                    )
-                  ],
-                ),
-              ),
+              height: 100,
+              width: 200,
+              child: Text(distrackminfinal),
+              decoration: BoxDecoration(border: Border.all(width: 1, color: Colors.black, style: BorderStyle.solid)),
             ),
           ),
           Align(
@@ -265,27 +200,15 @@ class _MyHomePageState extends State<MyHomePage> {
           Align(alignment: Alignment.centerLeft, child: Text(predictionResult)),
           ElevatedButton(
               onPressed: () async {
-                
-                  setState(() {
-                    isSendingCoordinateRequest = true;
-                  });
-                  await sendCoordinatesRequest();
-                  setState(() {
-                    isSendingCoordinateRequest = false;
-                    distancetoTyphoon = coordinates1.trim();
-                    distance = distancetoTyphoon!;
-                  });
-
-                  
-
-                  setState(() {
-                    isSendingPredictionRequest = true;
-                  });
-                  await sendPredictionRequest();
-                  setState(() {
-                    isSendingPredictionRequest = false;
-                    predictionResult = prediction;
-                  });
+                print(distrackminfinal);
+                setState(() {
+                  isSendingPredictionRequest = true;
+                });
+                await sendPredictionRequest();
+                setState(() {
+                  isSendingPredictionRequest = false;
+                  predictionResult = prediction;
+                });
               },
               child: Text((isSendingCoordinateRequest == true)
                   ? 'Calculating coordinates'
@@ -297,7 +220,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  showLocationDialog() {
+  showLocationDialog(Function customState3) {
     showDialog(
       context: context,
       builder: (context) {
@@ -395,7 +318,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                               fontSize: 14,
                                               color: Colors.black)),
                                       onTap: (() {
-                                        setState(() {
+                                        customState3(() {
                                           selectedMunicipalName = loc.munName!;
                                           selectedMunicipalCode = loc.munCode!;
                                           for (Location_ locz in locs) {
@@ -420,7 +343,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                   fontSize: 14,
                                                   color: Colors.black)),
                                           onTap: (() {
-                                            setState(() {
+                                            customState3(() {
                                               selectedMunicipalName =
                                                   loc.munName!;
                                               selectedMunicipalCode =
@@ -459,7 +382,180 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  showTyphoonLocationDialog() {
+  showDistrackminOptions(){ 
+    showDialog(context: context,
+    builder: (context){
+      return AlertDialog(
+        content: Container(
+              height: MediaQuery.of(context).size.height*0.5,
+              width: MediaQuery.of(context).size.width*0.5,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: InkWell(
+                      onTap: ((){
+                        showAutomaticDistanceCalculation();
+                      }),
+                      child: Container(
+                        color: Colors.blue,
+                        child: Center(
+                          child: Text('AUTOMATIC'),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: InkWell(
+                      onTap: ((){
+                        showManualDistanceCalculation();
+                      }),
+                      child: Container(
+                        color: Colors.red,
+                        child: Center(
+                          child: Text('MANUAL'),
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
+      );
+    }
+    );
+  }
+
+  showManualDistanceCalculation(){
+    showDialog(context: context,
+    builder: (context){
+      return AlertDialog(
+        content: StatefulBuilder(
+          builder: (context, customState4) {
+            return Column(
+              children: [
+                Text("Enter distance in km"),
+                TextField(
+                  controller: manualDistanceCtrlr,
+                ),
+                ElevatedButton(onPressed: ((){
+                  setState(() {
+                    distrackminfinal = manualDistanceCtrlr.text.trim();
+                  });
+                  Navigator.popUntil(context, (route) => route.isFirst);
+                }), child: Text('HEVABI'))
+              ],
+            );
+          }
+        ),
+      );
+    });
+  }
+
+  showAutomaticDistanceCalculation() {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            content: StatefulBuilder(
+              builder: (context, customState3) {
+                return Column(
+                  children: [
+                    const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text("Select Location"),
+                    ),
+                    InkWell(
+                      onTap: (() {
+                        showLocationDialog(customState3);
+                      }),
+                      child: Container(
+                        width: double.maxFinite,
+                        height: 60,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(5),
+                            border: Border.all(
+                                width: 1,
+                                color: Colors.grey.shade600,
+                                style: BorderStyle.solid)),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                selectedMunicipalName,
+                                style: textStyles.lato_regular(fontSize: 17),
+                              ),
+                              Icon(
+                                Icons.arrow_drop_down,
+                                size: 22,
+                                color: Colors.black,
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text("Select Location of Typhoon"),
+                    ),
+                    InkWell(
+                      onTap: (() {
+                        showTyphoonLocationDialog(customState3);
+                      }),
+                      child: Container(
+                        width: double.maxFinite,
+                        height: 60,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(5),
+                            border: Border.all(
+                                width: 1,
+                                color: Colors.grey.shade600,
+                                style: BorderStyle.solid)),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                selectedTyphoonLocation,
+                                style: textStyles.lato_regular(fontSize: 17),
+                              ),
+                              Icon(
+                                Icons.arrow_drop_down,
+                                size: 22,
+                                color: Colors.black,
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    ElevatedButton(onPressed: (()async{
+                      customState3(() {
+                      isSendingCoordinateRequest = true;
+                    });
+                    await sendCoordinatesRequest();
+                    customState3(() {
+                      isSendingCoordinateRequest = false;
+                      distancetoTyphoon = coordinates1.trim();
+                      distance = distancetoTyphoon!;
+                      distrackminfinal = distance;
+                    });
+                    Navigator.popUntil(context, (route) => route.isFirst);
+                    }), child: Text((isSendingCoordinateRequest) ? 'Calculating...' : 'Calculate Distance'))
+                  ],
+                );
+              }
+            ),
+          );
+        });
+  }
+
+  showTyphoonLocationDialog(Function customState3) {
     showDialog(
       context: context,
       builder: (context) {
@@ -557,7 +653,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                               fontSize: 14,
                                               color: Colors.black)),
                                       onTap: (() {
-                                        setState(() {
+                                        customState3(() {
                                           selectedTyphoonLocation =
                                               loc.munName!;
                                           selectedTyphoonCode = loc.munCode!;
@@ -583,7 +679,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                   fontSize: 14,
                                                   color: Colors.black)),
                                           onTap: (() {
-                                            setState(() {
+                                            customState3(() {
                                               selectedTyphoonLocation =
                                                   loc.munName!;
                                               selectedTyphoonCode =

@@ -7,17 +7,30 @@ class TyphoonDay {
   final String typhoonName;
   final String location;
   final double windSpeed;
-  final double rainfall;
+  final double rainfall24;
+  final double rainfall6;
+  final double price;
+  final double distrackmin;
   final double damageCost;
   final int day;
   String? locationCode;
   String? locationID;
 
   TyphoonDay({
+    required this.price,
+    required this.distrackmin,
+    required this.rainfall24,
+    required this.rainfall6,
     this.locationCode,
     this.locationID,
-    required this.id, required this.dateRecorded, required this.typhoonName, required this.location,
-      required this.windSpeed, required this.rainfall, required this.damageCost, required this.day, required this.typhoonID});
+    required this.id,
+    required this.dateRecorded,
+    required this.typhoonName,
+    required this.location,
+      required this.windSpeed,
+      required this.damageCost,
+      required this.day,
+      required this.typhoonID});
 
   Map<String,dynamic> toJson() => {
       "damageCost" : damageCost,
@@ -25,7 +38,9 @@ class TyphoonDay {
       "day" : day,
       "id" : id,
       "location" : location,
-      "rainfall" : rainfall,
+      "rainfall6" : rainfall6,
+      "rainfall24" : rainfall24,
+      "price" : price,
       "typhoonID" : typhoonID,
       "typhoonName" : typhoonName,
       "windSpeed" : windSpeed,
@@ -40,7 +55,10 @@ class TyphoonDay {
       day : json["day"],
       id : json["id"],
       location : json["location"],
-      rainfall : json["rainfall"],
+      rainfall6 : json["rainfall6"],
+      rainfall24 : json["rainfall24"],
+      price : json["price"],
+      distrackmin : json["distrackmin"],
       typhoonID : json["typhoonID"],
       typhoonName : json["typhoonName"],
       windSpeed : json["windSpeed"],

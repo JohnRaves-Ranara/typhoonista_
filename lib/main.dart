@@ -17,6 +17,7 @@ import 'home_pages/estimator_page/estimator_page.dart';
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (kIsWeb) {
+    print("WEBB!");
     await Firebase.initializeApp(
         options: const FirebaseOptions(
             apiKey: "AIzaSyBSn3pTQvHIDuS1yN1tph1gpFeidCuw5Ko",
