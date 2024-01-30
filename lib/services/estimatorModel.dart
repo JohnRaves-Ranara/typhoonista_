@@ -5,17 +5,17 @@ import 'dart:convert';
 
 class estimatorModel{
   
-  double getEstimation(){
-    final random = Random();
-    final min = 1000000.0; // 1 million
-    final max = 3000000.0; // 3 million
+  // double getEstimation(){
+  //   final random = Random();
+  //   final min = 1000000.0; // 1 million
+  //   final max = 3000000.0; // 3 million
 
-    // Generate a random double between 0 and 1 (exclusive)
-    final randomDouble = random.nextDouble();
+  //   // Generate a random double between 0 and 1 (exclusive)
+  //   final randomDouble = random.nextDouble();
 
-    // Scale the random value to the desired range
-    return (min + (randomDouble * (max - min)) / 10).round() * 10;
-  }
+  //   // Scale the random value to the desired range
+  //   return (min + (randomDouble * (max - min)) / 10).round() * 10;
+  // }
 
   Future<double> sendPredictionRequest({
     required double windspeed,

@@ -44,12 +44,15 @@ class _estimator_pageState extends State<estimator_page> {
   String coordinates1 = '';
   String distance = '';
   String predictionResult = '';
-  String prediction = '';
+  double? prediction;
+  double? damageCostPredictionFromAPI;
   bool isSendingCoordinateRequest = false;
   bool isSendingPredictionRequest = false;
   String distrackminfinal = 'Enter distrackmin...';
   bool isFetchingPrediction = false;
   bool isAddingTyphoon = false;
+  double? test_area;
+  double? test_yield;
 
   Future<void> sendCoordinatesRequest() async {
     try {
@@ -81,6 +84,55 @@ class _estimator_pageState extends State<estimator_page> {
       setState(() {
         print("coordinates nag error: $error");
         coordinates1 = 'Error: $error';
+      });
+    }
+  }
+
+  Future<void> sendPredictionRequest() async {
+    try {
+      for(Location_ loc in locs){
+        if(loc.munCode == selectedMunicipalCode){
+          setState(() {
+            test_area = loc.riceArea;
+            test_yield = loc.riceYield;
+          });
+        }
+      }
+      print(windspeedController.text.trim());
+      print(rainfall24hController.text.trim());
+      print(rainfall6hController.text.trim());
+      print(test_area);
+      print(test_yield);
+      print(distrackminfinal.trim());
+      print(priceController.text.trim());
+      final response = await http.post(
+        Uri.parse('https://typhoonista.onrender.com/typhoonista/predict'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'features': [
+            double.parse(windspeedController.text.trim()),
+            double.parse(rainfall24hController.text.trim()),
+            double.parse(rainfall6hController.text.trim()),
+            test_area,
+            test_yield,
+            double.parse(distrackminfinal.trim()),
+            double.parse(priceController.text.trim()),
+          ],
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        print('Nigana ang send prediction');
+        setState(() {
+          prediction = jsonDecode(response.body);
+          damageCostPredictionFromAPI = prediction;
+        });
+      } else {
+        print("failed");
+      }
+    } catch (error) {
+      setState(() {
+        print("prediction nag error: $error");
       });
     }
   }
@@ -234,71 +286,43 @@ class _estimator_pageState extends State<estimator_page> {
                               child: InkWell(
                                 borderRadius: BorderRadius.circular(8),
                                 onTap: (() async {
-                                  late double damageCostPredictionFromAPI;
-                                  setState(() {
-                                    isFetchingPrediction = true;
-                                  });
+                                  
                                   for (Location_ loc in locs) {
                                     if (loc.munCode == selectedMunicipalCode) {
                                       print("LILUZIVERT");
                                       print(loc);
-                                        damageCostPredictionFromAPI = await estimatorModel().sendPredictionRequest(
-                                                area: loc.areaKm2!,
-                                                windspeed: double.parse(
-                                                    windspeedController.text
-                                                        .trim()),
-                                                rainfall24: double.parse(
-                                                    rainfall24hController.text
-                                                        .trim()),
-                                                rainfall6: double.parse(
-                                                    rainfall6hController.text
-                                                        .trim()),
-                                                riceYield: loc.riceYield!,
-                                                distrackmin: double.parse(
-                                                    distrackminfinal),
-                                                price: double.parse(
-                                                    priceController.text
-                                                        .trim()));
+                                        await sendPredictionRequest();
                                             print("NA SET NA DILI NA NULL");
                                       break;
                                     }
                                   }
-
-                                  setState(() {
-                                    isFetchingPrediction = false;
-                                  });
-
-                                  setState(() {
-                                    isAddingTyphoon = true;
-                                  });
                                   print("BRUHHH ${damageCostPredictionFromAPI}");
-                                  await FirestoreService().addDay(
-                                      typhoonId: null,
-                                      damageCost: 56.06,
-                                      typhoonName:
-                                          typhNameController.text.trim(),
-                                      windSpeed: double.parse(windspeedController.text.trim()),
-                                      rainfall24: double.parse(
-                                          rainfall24hController.text.trim()),
-                                      rainfall6: double.parse(
-                                          rainfall6hController.text.trim()),
-                                      price: double.parse(
-                                          ricePriceCtlr.text.trim()),
-                                      location: selectedMunicipalName,
-                                      locationCode: selectedMunicipalCode,
-                                      isFirstDay: true);
-                                  setState(() {
-                                    isAddingTyphoon = false;
-                                  });
+                                  await FirestoreService().dayAdd(
+                                      null,
+                                      damageCostPredictionFromAPI.toString(),
+                                      typhNameController.text,
+                                      windspeedController.text,
+                                      rainfall24hController.text,
+                                      rainfall6hController.text,
+                                      //todo try removing the setstates idk
+                                      //todo try if the showdialogs are the error cause
+                                      selectedMunicipalName,
+                                      selectedMunicipalCode,
+                                      true,
+                                      ricePriceCtlr.text.trim(),
+                                      distrackminfinal
+                                      );
+                                  
                                   setState(() {
                                     selectedMunicipalName = "Choose Location";
                                     selectedMunicipalCode = "";
                                   });
-                                  typhNameController.clear();
-                                  windspeedController.clear();
-                                  rainfall24hController.clear();
-                                  rainfall6hController.clear();
-                                  ricePriceCtlr.clear();
+                                  
+                                  // typhNameController.clear();
+                                  // windspeedController.clear();
+                                  // rainfall24hController.clear();
+                                  // rainfall6hController.clear();
+                                  // ricePriceCtlr.clear();
                                 }),
                                 child: Ink(
                                   padding: EdgeInsets.symmetric(horizontal: 30),

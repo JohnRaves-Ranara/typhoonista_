@@ -132,7 +132,7 @@ class Location_{
       perimeter: double.parse(json['perimeter']),
       ricePlanted: json['rice_planted'],
       riceArea: double.parse(json['rice_area']),
-      riceYield: double.parse(json['rice_area']),
+      riceYield: double.parse(json['yield']),
     );
   }
 }
