@@ -25,7 +25,8 @@ class pdfGeneratorService {
     "Day No.",
     "Date Recorded",
     "Windspeed",
-    "Rainfall",
+    "Rainfall (24H)",
+    "Rainfall (6H)",
     "Damage Cost"
   ];
 
@@ -49,7 +50,8 @@ class pdfGeneratorService {
                   day.day,
                   "${DateTime.parse(day.dateRecorded).month}/${DateTime.parse(day.dateRecorded).day}/${DateTime.parse(day.dateRecorded).year}",
                   day.windSpeed,
-                  day.rainfall,
+                  day.rainfall24,
+                  day.rainfall6,
                   numberFormatter(number: day.damageCost)
                 ])
             .toList())

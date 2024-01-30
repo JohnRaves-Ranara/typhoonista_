@@ -27,7 +27,10 @@ class recent_estimation extends StatefulWidget {
 
 class _recent_estimationState extends State<recent_estimation> {
   final windspeedCtlr = TextEditingController();
-  final rainfallCtlr = TextEditingController();
+  // final rainfallCtlr = TextEditingController();
+  final rainfall6Ctlr = TextEditingController();
+  final rainfall24Ctlr = TextEditingController();
+  final ricePriceCtlr = TextEditingController();
   String selectedLocation = "Choose Location";
   String selectedLocationCode = "";
   TyphoonDay? newlyAddedDayInformation;
@@ -465,13 +468,33 @@ class _recent_estimationState extends State<recent_estimation> {
                     ),
                     TextField(
                       enabled: !haveAdded,
-                      controller: rainfallCtlr,
+                      controller: rainfall24Ctlr,
                       decoration: InputDecoration(
                           fillColor: Colors.white,
                           labelStyle: textStyles.lato_light(
                               color: Colors.grey.withOpacity(0.9)),
                           border: OutlineInputBorder(),
-                          labelText: "Rainfall"),
+                          labelText: "Rainfall (24H)"),
+                    ),
+                    TextField(
+                      enabled: !haveAdded,
+                      controller: rainfall6Ctlr,
+                      decoration: InputDecoration(
+                          fillColor: Colors.white,
+                          labelStyle: textStyles.lato_light(
+                              color: Colors.grey.withOpacity(0.9)),
+                          border: OutlineInputBorder(),
+                          labelText: "Rainfall (6H)"),
+                    ),
+                    TextField(
+                      enabled: !haveAdded,
+                      controller: ricePriceCtlr,
+                      decoration: InputDecoration(
+                          fillColor: Colors.white,
+                          labelStyle: textStyles.lato_light(
+                              color: Colors.grey.withOpacity(0.9)),
+                          border: OutlineInputBorder(),
+                          labelText: "Rice Price (per kilo)"),
                     ),
                     InkWell(
                       onTap: !haveAdded
@@ -525,24 +548,26 @@ class _recent_estimationState extends State<recent_estimation> {
                     onTap: (haveAdded)
                         ? null
                         : (() async {
-                            final addDay = await FirestoreService().addDay(
-                                typhoonName: recentEstimation.typhoonName,
-                                windSpeed:
-                                    double.parse(windspeedCtlr.text.trim()),
-                                rainfall:
-                                    double.parse(rainfallCtlr.text.trim()),
-                                location: selectedLocation,
-                                locationCode: selectedLocationCode,
-                                isFirstDay: false,
-                                typhoonId: recentEstimation.id);
-                            windspeedCtlr.clear();
-                            rainfallCtlr.clear();
-                            customState(() {
-                              haveAdded = true;
-                              newlyAddedDayInformation = addDay;
-                              selectedLocation = "Choose Location";
-                              selectedLocationCode = "";
-                            });
+                            // final addDay = await FirestoreService().addDay(
+                            //     price: double.parse(ricePriceCtlr.text.trim()),
+                            //     typhoonName: recentEstimation.typhoonName,
+                            //     windSpeed:
+                            //         double.parse(windspeedCtlr.text.trim()),
+                            //     rainfall24: double.parse(rainfall24Ctlr.text.trim()),
+                            //     rainfall6: double.parse(rainfall6Ctlr.text.trim()),
+                            //     location: selectedLocation,
+                            //     locationCode: selectedLocationCode,
+                            //     isFirstDay: false,
+                            //     typhoonId: recentEstimation.id);
+                            // windspeedCtlr.clear();
+                            // rainfall24Ctlr.clear();
+                            // rainfall6Ctlr.clear();
+                            // customState(() {
+                            //   haveAdded = true;
+                            //   newlyAddedDayInformation = addDay;
+                            //   selectedLocation = "Choose Location";
+                            //   selectedLocationCode = "";
+                            // });
                           }),
                     child: Ink(
                       padding: EdgeInsets.symmetric(horizontal: 30),
@@ -651,11 +676,19 @@ class _recent_estimationState extends State<recent_estimation> {
                           ),
                           SizedBox(height: 10),
                           Text(
-                            'Rainfall:',
+                            'Rainfall (24H):',
                             style: textStyles.lato_light(fontSize: 12),
                           ),
                           Text(
-                            '${newlyAddedDayInformation!.rainfall}',
+                            '${newlyAddedDayInformation!.rainfall24}',
+                            style: textStyles.lato_black(fontSize: 16),
+                          ),
+                          Text(
+                            'Rainfall (6H):',
+                            style: textStyles.lato_light(fontSize: 12),
+                          ),
+                          Text(
+                            '${newlyAddedDayInformation!.rainfall6}',
                             style: textStyles.lato_black(fontSize: 16),
                           ),
                           SizedBox(height: 10),

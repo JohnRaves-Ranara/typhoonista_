@@ -313,7 +313,9 @@ class _typhoon_live_summary_pageState extends State<typhoon_live_summary_page> {
                                                 DataColumn(
                                                     label: Text("Windspeed")),
                                                 DataColumn(
-                                                    label: Text("Rainfall")),
+                                                    label: Text("Rainfall (24H)")),
+                                                DataColumn(
+                                                    label: Text("Rainfall (6H)")),
                                                 DataColumn(
                                                     label: Text("Damage Cost")),
                                               ],
@@ -327,7 +329,10 @@ class _typhoon_live_summary_pageState extends State<typhoon_live_summary_page> {
                                                             .windSpeed
                                                             .toString())),
                                                         DataCell(Text(day
-                                                            .rainfall
+                                                            .rainfall24
+                                                            .toString())),
+                                                        DataCell(Text(day
+                                                            .rainfall6
                                                             .toString())),
                                                         DataCell(Text(
                                                             "${day.damageCost.toString()}"))

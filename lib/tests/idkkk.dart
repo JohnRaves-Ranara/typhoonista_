@@ -52,20 +52,28 @@ class _MyHomePageState extends State<MyHomePage> {
   bool isSendingPredictionRequest = false;
   String distrackminfinal = 'Enter distrackmin';
 
-  Future<void> sendPredictionRequest() async {
+  Future<void> sendPredictionRequest({
+    required double windspeed,
+    required double rainfall24,
+    required double rainfall6,
+    required double area,
+    required double riceYield,
+    required double distrackmin,
+    required double price,
+  }) async {
     try {
       final response = await http.post(
         Uri.parse('https://typhoonista.onrender.com/typhoonista/predict'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'features': [
-            double.parse(windspeedController.text),
-            double.parse(rainfall24hController.text),
-            double.parse(rainfall6hController.text),
-            double.parse(areaController.text),
-            double.parse(yieldController.text),
-            double.parse(distrackminfinal),
-            double.parse(priceController.text),
+            windspeed,
+            rainfall24,
+            rainfall6,
+            area,
+            riceYield,
+            distrackmin,
+            price,
           ],
         }),
       );
@@ -204,7 +212,15 @@ class _MyHomePageState extends State<MyHomePage> {
                 setState(() {
                   isSendingPredictionRequest = true;
                 });
-                await sendPredictionRequest();
+                await sendPredictionRequest(
+                  windspeed: double.parse(windspeedController.text.trim()),
+                  rainfall24: double.parse(rainfall24hController.text.trim()),
+                  rainfall6: double.parse(rainfall6hController.text.trim()),
+                  area: double.parse(areaController.text.trim()),
+                  riceYield: double.parse(yieldController.text.trim()),
+                  distrackmin: double.parse(distrackminfinal),
+                  price: double.parse(priceController.text.trim())
+                );
                 setState(() {
                   isSendingPredictionRequest = false;
                   predictionResult = prediction;

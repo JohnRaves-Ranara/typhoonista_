@@ -22,7 +22,7 @@ class Location_{
   double? perimeter;
   String? ricePlanted;
   double? riceArea;
-  double? yield;
+  double? riceYield;
   double totalDamageCost = 0;
   List<TyphoonDay> days = [];
 
@@ -48,7 +48,7 @@ class Location_{
     this.perimeter,
     this.ricePlanted,
     this.riceArea,
-    this.yield,
+    this.riceYield,
   });
 
   @override
@@ -77,7 +77,7 @@ class Location_{
           perimeter == other.perimeter &&
           ricePlanted == other.ricePlanted &&
           riceArea == other.riceArea &&
-          yield == other.yield;
+          riceYield == other.riceYield;
 
   @override
   int get hashCode =>
@@ -102,11 +102,11 @@ class Location_{
       perimeter.hashCode ^
       ricePlanted.hashCode ^
       riceArea.hashCode ^
-      yield.hashCode;
+      riceYield.hashCode;
 
   @override
   String toString() {
-    return 'Location_{typhoonID: $typhoonID, munCode: $munCode, munName: $munName, provName: $provName, provCode: $provCode, regName: $regName, regCode: $regCode, glat: $glat, glon: $glon, meanSlope: $meanSlope, meanElevationM: $meanElevationM, ruggednessStdev: $ruggednessStdev, meanRuggedness: $meanRuggedness, slopeStdev: $slopeStdev, areaKm2: $areaKm2, povertyPerc: $povertyPerc, withCoast: $withCoast, coastLength: $coastLength, perimeter: $perimeter, ricePlanted: $ricePlanted, riceArea: $riceArea, yield: $yield}';
+    return 'Location_{typhoonID: $typhoonID, munCode: $munCode, munName: $munName, provName: $provName, provCode: $provCode, regName: $regName, regCode: $regCode, glat: $glat, glon: $glon, meanSlope: $meanSlope, meanElevationM: $meanElevationM, ruggednessStdev: $ruggednessStdev, meanRuggedness: $meanRuggedness, slopeStdev: $slopeStdev, areaKm2: $areaKm2, povertyPerc: $povertyPerc, withCoast: $withCoast, coastLength: $coastLength, perimeter: $perimeter, ricePlanted: $ricePlanted, riceArea: $riceArea, riceYield: $riceYield}';
   }
 
   static Location_ fromJson(Map<String, dynamic> json) {
@@ -132,7 +132,7 @@ class Location_{
       perimeter: double.parse(json['perimeter']),
       ricePlanted: json['rice_planted'],
       riceArea: double.parse(json['rice_area']),
-      yield: double.parse(json['rice_area']),
+      riceYield: double.parse(json['rice_area']),
     );
   }
 }

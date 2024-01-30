@@ -5,6 +5,7 @@ import 'package:typhoonista_thesis/assets/themes/textStyles.dart';
 import 'package:typhoonista_thesis/entities/Location_.dart';
 import 'package:typhoonista_thesis/entities/TyphoonDay.dart';
 import 'package:typhoonista_thesis/services/FirestoreService.dart';
+import 'package:typhoonista_thesis/services/estimatorModel.dart';
 import 'package:typhoonista_thesis/services/locations.dart';
 import 'package:typhoonista_thesis/services/locations_.dart';
 import 'package:http/http.dart' as http;
@@ -20,6 +21,7 @@ class _estimator_pageState extends State<estimator_page> {
   TextEditingController windspeedController = TextEditingController();
   TextEditingController rainfall24hController = TextEditingController();
   TextEditingController rainfall6hController = TextEditingController();
+  final ricePriceCtlr = TextEditingController();
   TextEditingController areaController = TextEditingController();
   TextEditingController yieldController = TextEditingController();
   TextEditingController priceController = TextEditingController();
@@ -27,12 +29,10 @@ class _estimator_pageState extends State<estimator_page> {
   final ctrlr = TextEditingController();
   List<Location_> locs = Locations_().getLocations();
   List<Location_> suggestions = [];
-
-  String selectedLocation = "Choose Location";
-  String selectedLocationCode = "";
+  
   bool isSearchLocation = false;
   final manualDistanceCtrlr = TextEditingController();
-  bool isManualDistrackMin = false;
+  // bool isManualDistrackMin = false;
 
   String selectedMunicipalName = "Choose Location";
   String selectedMunicipalCode = "";
@@ -40,7 +40,6 @@ class _estimator_pageState extends State<estimator_page> {
   String selectedTyphoonCode = "";
   String selectedTyphoonProvname = "";
   String selectedLocationProvname = "";
-
   String? distancetoTyphoon = '';
   String coordinates1 = '';
   String distance = '';
@@ -49,6 +48,9 @@ class _estimator_pageState extends State<estimator_page> {
   bool isSendingCoordinateRequest = false;
   bool isSendingPredictionRequest = false;
   String distrackminfinal = 'Enter distrackmin...';
+  bool isFetchingPrediction = false;
+  bool isAddingTyphoon = false;
+
   Future<void> sendCoordinatesRequest() async {
     try {
       final response = await http.post(
@@ -82,7 +84,7 @@ class _estimator_pageState extends State<estimator_page> {
       });
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -163,28 +165,31 @@ class _estimator_pageState extends State<estimator_page> {
                                 labelText: "Rainfall (6 hour)"),
                           ),
                           TextField(
-                            controller: areaController,
-                            decoration: InputDecoration(
-                                labelStyle: textStyles.lato_light(
-                                    color: Colors.grey.withOpacity(0.9)),
-                                border: OutlineInputBorder(),
-                                labelText: "Rice Area"),
-                          ),
-                          TextField(
-                            controller: yieldController,
-                            decoration: InputDecoration(
-                                labelStyle: textStyles.lato_light(
-                                    color: Colors.grey.withOpacity(0.9)),
-                                border: OutlineInputBorder(),
-                                labelText: "Yield"),
-                          ),
-                          TextField(
                             controller: priceController,
                             decoration: InputDecoration(
                                 labelStyle: textStyles.lato_light(
                                     color: Colors.grey.withOpacity(0.9)),
                                 border: OutlineInputBorder(),
-                                labelText: "Price"),
+                                labelText: "Rice Price (per kilo)"),
+                          ),
+                          InkWell(
+                            onTap: (() {
+                              showLocationDialog();
+                            }),
+                            child: Container(
+                              width: double.maxFinite,
+                              height: 30,
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                      color: Colors.grey.shade600,
+                                      width: 1,
+                                      style: BorderStyle.solid),
+                                  borderRadius: BorderRadius.circular(15)),
+                              child: Text(selectedMunicipalName,
+                                  style: textStyles.lato_light(
+                                    color: Colors.grey.withOpacity(0.9),
+                                  )),
+                            ),
                           ),
                           InkWell(
                             onTap: (() {
@@ -222,34 +227,78 @@ class _estimator_pageState extends State<estimator_page> {
                               ),
                             ),
                           ),
-                          SizedBox(
-                            height: 20,
-                          ),
                           ClipRRect(
                             borderRadius: BorderRadius.circular(8),
                             child: Material(
                               color: Colors.blue,
                               child: InkWell(
                                 borderRadius: BorderRadius.circular(8),
-                                onTap: (() {
-                                  // FirestoreService().addDay(
-                                  //     typhoonId: null,
-                                  //     typhoonName: typhNameController.text.trim(),
-                                  //     windSpeed: double.parse(
-                                  //         windspeedController.text.trim()),
-                                  //     rainfall: double.parse(
-                                  //         rainfallCtlr.text.trim()),
-                                  //     location: selectedLocation,
-                                  //     locationCode: selectedLocationCode,
-                                  //     isFirstDay: true);
+                                onTap: (() async {
+                                  late double damageCostPredictionFromAPI;
                                   setState(() {
-                                    selectedLocation = "Choose Location";
-                                    selectedLocationCode = "";
+                                    isFetchingPrediction = true;
                                   });
-                                  // typhoonNameCtlr.clear();
-                                  // windspeedCtlr.clear();
-                                  // rainfallCtlr.clear();
-                                  // locationCtlr.clear();
+                                  for (Location_ loc in locs) {
+                                    if (loc.munCode == selectedMunicipalCode) {
+                                      print("LILUZIVERT");
+                                      print(loc);
+                                        damageCostPredictionFromAPI = await estimatorModel().sendPredictionRequest(
+                                                area: loc.areaKm2!,
+                                                windspeed: double.parse(
+                                                    windspeedController.text
+                                                        .trim()),
+                                                rainfall24: double.parse(
+                                                    rainfall24hController.text
+                                                        .trim()),
+                                                rainfall6: double.parse(
+                                                    rainfall6hController.text
+                                                        .trim()),
+                                                riceYield: loc.riceYield!,
+                                                distrackmin: double.parse(
+                                                    distrackminfinal),
+                                                price: double.parse(
+                                                    priceController.text
+                                                        .trim()));
+                                            print("NA SET NA DILI NA NULL");
+                                      break;
+                                    }
+                                  }
+
+                                  setState(() {
+                                    isFetchingPrediction = false;
+                                  });
+
+                                  setState(() {
+                                    isAddingTyphoon = true;
+                                  });
+                                  print("BRUHHH ${damageCostPredictionFromAPI}");
+                                  await FirestoreService().addDay(
+                                      typhoonId: null,
+                                      damageCost: 56.06,
+                                      typhoonName:
+                                          typhNameController.text.trim(),
+                                      windSpeed: double.parse(windspeedController.text.trim()),
+                                      rainfall24: double.parse(
+                                          rainfall24hController.text.trim()),
+                                      rainfall6: double.parse(
+                                          rainfall6hController.text.trim()),
+                                      price: double.parse(
+                                          ricePriceCtlr.text.trim()),
+                                      location: selectedMunicipalName,
+                                      locationCode: selectedMunicipalCode,
+                                      isFirstDay: true);
+                                  setState(() {
+                                    isAddingTyphoon = false;
+                                  });
+                                  setState(() {
+                                    selectedMunicipalName = "Choose Location";
+                                    selectedMunicipalCode = "";
+                                  });
+                                  typhNameController.clear();
+                                  windspeedController.clear();
+                                  rainfall24hController.clear();
+                                  rainfall6hController.clear();
+                                  ricePriceCtlr.clear();
                                 }),
                                 child: Ink(
                                   padding: EdgeInsets.symmetric(horizontal: 30),
@@ -279,6 +328,13 @@ class _estimator_pageState extends State<estimator_page> {
                     )),
                     Expanded(
                         child: Container(
+                      child: Center(
+                        child: Text((isFetchingPrediction)
+                            ? 'Fetching Damage Cost Prediction...'
+                            : (isAddingTyphoon)
+                                ? 'Adding typhoon to database...'
+                                : 'hello world'),
+                      ),
                       color: Colors.blue,
                     ))
                   ],
@@ -287,7 +343,11 @@ class _estimator_pageState extends State<estimator_page> {
         ));
   }
 
-  showLocationDialog(Function customState3) {
+  bruh({required double num}){
+    print('Bdsadasdasd');
+  }
+
+  showLocationDialog() {
     showDialog(
       context: context,
       builder: (context) {
@@ -385,7 +445,7 @@ class _estimator_pageState extends State<estimator_page> {
                                               fontSize: 14,
                                               color: Colors.black)),
                                       onTap: (() {
-                                        customState3(() {
+                                        setState(() {
                                           selectedMunicipalName = loc.munName!;
                                           selectedMunicipalCode = loc.munCode!;
                                           for (Location_ locz in locs) {
@@ -394,7 +454,6 @@ class _estimator_pageState extends State<estimator_page> {
                                                   locz.provName!;
                                             }
                                           }
-                                          // }
                                         });
                                         print(selectedMunicipalCode);
                                         print(selectedLocationProvname);
@@ -410,7 +469,7 @@ class _estimator_pageState extends State<estimator_page> {
                                                   fontSize: 14,
                                                   color: Colors.black)),
                                           onTap: (() {
-                                            customState3(() {
+                                            setState(() {
                                               selectedMunicipalName =
                                                   loc.munName!;
                                               selectedMunicipalCode =
@@ -449,18 +508,19 @@ class _estimator_pageState extends State<estimator_page> {
     );
   }
 
-  showDistrackminOptions(){ 
-    showDialog(context: context,
-    builder: (context){
-      return AlertDialog(
-        content: Container(
-              height: MediaQuery.of(context).size.height*0.5,
-              width: MediaQuery.of(context).size.width*0.5,
+  showDistrackminOptions() {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            content: Container(
+              height: MediaQuery.of(context).size.height * 0.5,
+              width: MediaQuery.of(context).size.width * 0.5,
               child: Row(
                 children: [
                   Expanded(
                     child: InkWell(
-                      onTap: ((){
+                      onTap: (() {
                         showAutomaticDistanceCalculation();
                       }),
                       child: Container(
@@ -473,7 +533,7 @@ class _estimator_pageState extends State<estimator_page> {
                   ),
                   Expanded(
                     child: InkWell(
-                      onTap: ((){
+                      onTap: (() {
                         showManualDistanceCalculation();
                       }),
                       child: Container(
@@ -487,35 +547,35 @@ class _estimator_pageState extends State<estimator_page> {
                 ],
               ),
             ),
-      );
-    }
-    );
+          );
+        });
   }
 
-  showManualDistanceCalculation(){
-    showDialog(context: context,
-    builder: (context){
-      return AlertDialog(
-        content: StatefulBuilder(
-          builder: (context, customState4) {
-            return Column(
-              children: [
-                Text("Enter distance in km"),
-                TextField(
-                  controller: manualDistanceCtrlr,
-                ),
-                ElevatedButton(onPressed: ((){
-                  setState(() {
-                    distrackminfinal = manualDistanceCtrlr.text.trim();
-                  });
-                  Navigator.popUntil(context, (route) => route.isFirst);
-                }), child: Text('HEVABI'))
-              ],
-            );
-          }
-        ),
-      );
-    });
+  showManualDistanceCalculation() {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            content: StatefulBuilder(builder: (context, customState4) {
+              return Column(
+                children: [
+                  Text("Enter distance in km"),
+                  TextField(
+                    controller: manualDistanceCtrlr,
+                  ),
+                  ElevatedButton(
+                      onPressed: (() {
+                        setState(() {
+                          distrackminfinal = manualDistanceCtrlr.text.trim();
+                        });
+                        Navigator.popUntil(context, (route) => route.isFirst);
+                      }),
+                      child: Text('HEVABI'))
+                ],
+              );
+            }),
+          );
+        });
   }
 
   showAutomaticDistanceCalculation() {
@@ -523,101 +583,89 @@ class _estimator_pageState extends State<estimator_page> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            content: StatefulBuilder(
-              builder: (context, customState3) {
-                return Column(
-                  children: [
-                    const Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text("Select Location"),
+            content: StatefulBuilder(builder: (context, customState3) {
+              return Column(
+                children: [
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text("Selected Location"),
+                  ),
+                  Container(
+                    width: double.maxFinite,
+                    height: 60,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5),
+                        border: Border.all(
+                            width: 1,
+                            color: Colors.grey.shade600,
+                            style: BorderStyle.solid)),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Text(
+                        (selectedMunicipalName == "Choose Location")
+                            ? 'No municipal location selected'
+                            : selectedMunicipalName,
+                        style: textStyles.lato_regular(fontSize: 17),
+                      ),
                     ),
-                    InkWell(
-                      onTap: (() {
-                        showLocationDialog(customState3);
-                      }),
-                      child: Container(
-                        width: double.maxFinite,
-                        height: 60,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5),
-                            border: Border.all(
-                                width: 1,
-                                color: Colors.grey.shade600,
-                                style: BorderStyle.solid)),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text(
-                                selectedMunicipalName,
-                                style: textStyles.lato_regular(fontSize: 17),
-                              ),
-                              Icon(
-                                Icons.arrow_drop_down,
-                                size: 22,
-                                color: Colors.black,
-                              )
-                            ],
-                          ),
+                  ),
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text("Select Location of Typhoon"),
+                  ),
+                  InkWell(
+                    onTap: (() {
+                      showTyphoonLocationDialog(customState3);
+                    }),
+                    child: Container(
+                      width: double.maxFinite,
+                      height: 60,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5),
+                          border: Border.all(
+                              width: 1,
+                              color: Colors.grey.shade600,
+                              style: BorderStyle.solid)),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              selectedTyphoonLocation,
+                              style: textStyles.lato_regular(fontSize: 17),
+                            ),
+                            Icon(
+                              Icons.arrow_drop_down,
+                              size: 22,
+                              color: Colors.black,
+                            )
+                          ],
                         ),
                       ),
                     ),
-                    const Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text("Select Location of Typhoon"),
-                    ),
-                    InkWell(
-                      onTap: (() {
-                        showTyphoonLocationDialog(customState3);
+                  ),
+                  ElevatedButton(
+                      onPressed: (() async {
+                        customState3(() {
+                          isSendingCoordinateRequest = true;
+                        });
+                        await sendCoordinatesRequest();
+                        customState3(() {
+                          isSendingCoordinateRequest = false;
+                          distancetoTyphoon = coordinates1.trim();
+                          distance = distancetoTyphoon!;
+                          distrackminfinal = distance;
+                        });
+                        Navigator.popUntil(context, (route) => route.isFirst);
                       }),
-                      child: Container(
-                        width: double.maxFinite,
-                        height: 60,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5),
-                            border: Border.all(
-                                width: 1,
-                                color: Colors.grey.shade600,
-                                style: BorderStyle.solid)),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text(
-                                selectedTyphoonLocation,
-                                style: textStyles.lato_regular(fontSize: 17),
-                              ),
-                              Icon(
-                                Icons.arrow_drop_down,
-                                size: 22,
-                                color: Colors.black,
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    ElevatedButton(onPressed: (()async{
-                      customState3(() {
-                      isSendingCoordinateRequest = true;
-                    });
-                    await sendCoordinatesRequest();
-                    customState3(() {
-                      isSendingCoordinateRequest = false;
-                      distancetoTyphoon = coordinates1.trim();
-                      distance = distancetoTyphoon!;
-                      distrackminfinal = distance;
-                    });
-                    Navigator.popUntil(context, (route) => route.isFirst);
-                    }), child: Text((isSendingCoordinateRequest) ? 'Calculating...' : 'Calculate Distance'))
-                  ],
-                );
-              }
-            ),
+                      child: Text((isSendingCoordinateRequest)
+                          ? 'Calculating...'
+                          : 'Calculate Distance'))
+                ],
+              );
+            }),
           );
         });
   }

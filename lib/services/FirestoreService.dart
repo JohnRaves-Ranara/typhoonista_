@@ -1,3 +1,4 @@
+// import 'dart:ffi';
 import 'dart:html';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -21,17 +22,21 @@ class FirestoreService {
 
   Future<TyphoonDay> addDay(
       {String? typhoonId,
+      required double damageCost,
       required String typhoonName,
       required double windSpeed,
-      required double rainfall,
+      required double rainfall24,
+      required double rainfall6,
       required String location,
       required String locationCode,
-      required bool isFirstDay}) async {
-    final double damageCost = estimatorModel().getEstimation();
+      required bool isFirstDay,
+      required double price
+      }) async {
     late TyphoonDay newlyAddedDay;
     var dayJson;
     final currentDateTime = DateTime.now();
     if (isFirstDay) {
+      print("REDVLET");
       //line below creates a new typhoon document inside typhoons collection
       DocumentReference typhoonDocRef = typhColRef.doc();
       final _typhoonId = typhoonDocRef.id;
@@ -39,17 +44,19 @@ class FirestoreService {
         "id": _typhoonId,
         "typhoonName": typhoonName,
         "peakWindspeed": windSpeed,
-        "peakRainfall": rainfall,
         "totalDamageCost": damageCost,
         "startDate": currentDateTime.toString(),
         "recentDayDateRecorded": currentDateTime.toString(),
-        "endDate": "",
+        "peakRainfall24" : rainfall24,
+        "peakRainfall6" : rainfall6,
+        "price" : price,
+        "endDate" : "",
         "currentDay": 1,
         "status": "ongoing"
       };
 
       await typhoonDocRef.set(typhoon);
-
+      print("bruhbruhrbruh");
       //create new days collection inside newly created typhoons document
       CollectionReference daysColRef =
           typhColRef.doc(_typhoonId).collection("days");
@@ -62,7 +69,9 @@ class FirestoreService {
         "typhoonID": _typhoonId,
         "typhoonName": typhoonName,
         "windSpeed": windSpeed,
-        "rainfall": rainfall,
+        "rainfall": rainfall24,
+        "rainfall6" : rainfall6,
+        "price" : price,
         "location": location,
         "locationCode": locationCode,
         "day": 1,
@@ -92,7 +101,9 @@ class FirestoreService {
         "typhoonID": typhoonId,
         "typhoonName": typhoonName,
         "windSpeed": windSpeed,
-        "rainfall": rainfall,
+        "rainfall24": rainfall24,
+        "rainfall6" : rainfall6,
+        "price" : price,
         "location": location,
         "locationCode": locationCode,
         "day": (DateTime(currentDateTime.year, currentDateTime.month,
