@@ -48,7 +48,7 @@ class _estimator_pageState extends State<estimator_page> {
   double? damageCostPredictionFromAPI;
   bool isSendingCoordinateRequest = false;
   bool isSendingPredictionRequest = false;
-  String distrackminfinal = 'Enter distrackmin...';
+  String distrackminfinal = 'Distance of Typhoon to Location';
   bool isFetchingPrediction = false;
   bool isAddingTyphoon = false;
   double? test_area;
@@ -138,282 +138,351 @@ class _estimator_pageState extends State<estimator_page> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        padding: EdgeInsets.symmetric(horizontal: 70, vertical: 50),
+        padding: EdgeInsets.only(left: 70),
         child: Column(
           children: [
-            Container(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Damage Cost Estimator",
-                    style: textStyles.lato_black(fontSize: 32),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Text(
-                    "The impact of the industrial revolution has began to uprise in terms of the rice and skermberlu it ornare accumsan. Justo vulputate in pretium integer vulputate vitae proin congue etiam. Sollicitudin egestas est in ultrices molestie lacus iaculis risus. Velit habitasse felis auctor at.",
-                    style: textStyles.lato_light(fontSize: 18),
-                  )
-                ],
-              ),
-            ),
-            SizedBox(
-              height: 25,
-            ),
-            Divider(
-              thickness: 1,
-            ),
+            // Container(
+            //   child: Column(
+            //     mainAxisAlignment: MainAxisAlignment.center,
+            //     crossAxisAlignment: CrossAxisAlignment.start,
+            //     children: [
+            //       Text(
+            //         "Damage Cost Estimator",
+            //         style: textStyles.lato_black(fontSize: 32),
+            //       ),
+            //       SizedBox(
+            //         height: 20,
+            //       ),
+            //       Text(
+            //         "The impact of the industrial revolution has began to uprise in terms of the rice and skermberlu it ornare accumsan. Justo vulputate in pretium integer vulputate vitae proin congue etiam. Sollicitudin egestas est in ultrices molestie lacus iaculis risus. Velit habitasse felis auctor at.",
+            //         style: textStyles.lato_light(fontSize: 18),
+            //       )
+            //     ],
+            //   ),
+            // ),
+            // SizedBox(
+            //   height: 25,
+            // ),
+            // Divider(
+            //   thickness: 1,
+            // ),
             Expanded(
-                flex: 80,
                 child: Row(
-                  children: [
-                    Expanded(
+              children: [
+                Expanded(
+                    child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 30),
+                  // color: Colors.green,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Add New Typhoon",
+                        style: textStyles.lato_black(fontSize: 30),
+                      ),
+                      SizedBox(height: 30,),
+                      TextField(
+                        style: textStyles.lato_regular(),
+                        controller: typhNameController,
+                        decoration: InputDecoration(
+                          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                            labelStyle: textStyles.lato_light(
+                                color: Colors.grey.withOpacity(0.9)),
+                            border: OutlineInputBorder(),
+                            labelText: "Name"),
+                      ),
+                      SizedBox(height: 15,),
+                      TextField(
+                        style: textStyles.lato_regular(),
+                        controller: windspeedController,
+                        decoration: InputDecoration(
+                          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                            labelStyle: textStyles.lato_light(
+                                color: Colors.grey.withOpacity(0.9)),
+                            border: OutlineInputBorder(),
+                            labelText: "Windspeed"),
+                      ),
+                      SizedBox(height: 15,),
+                      TextField(
+                        style: textStyles.lato_regular(),
+                        controller: rainfall24hController,
+                        decoration: InputDecoration(
+                          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                            labelStyle: textStyles.lato_light(
+                                color: Colors.grey.withOpacity(0.9)),
+                            border: OutlineInputBorder(),
+                            labelText: "Rainfall (24 hour)"),
+                      ),
+                      SizedBox(height: 15,),
+                      TextField(
+                        style: textStyles.lato_regular(),
+                        controller: rainfall6hController,
+                        decoration: InputDecoration(
+                          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                            labelStyle: textStyles.lato_light(
+                                color: Colors.grey.withOpacity(0.9)),
+                            border: OutlineInputBorder(),
+                            labelText: "Rainfall (6 hour)"),
+                      ),
+                      SizedBox(height: 15,),
+                      TextField(
+                        style: textStyles.lato_regular(),
+                        controller: priceController,
+                        decoration: InputDecoration(
+                          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                            labelStyle: textStyles.lato_light(
+                                color: Colors.grey.withOpacity(0.9)),
+                            border: OutlineInputBorder(),
+                            labelText: "Rice Price (per kilo)"),
+                      ),
+                      SizedBox(height: 15,),
+                      InkWell(
+                        borderRadius: BorderRadius.circular(5),
+                        onTap: (() {
+                          showLocationDialog();
+                        }),
                         child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 30),
-                      // color: Colors.green,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Add New Typhoon",
-                            style: textStyles.lato_black(fontSize: 30),
+                          width: double.maxFinite,
+                          height: 48,
+                          decoration: BoxDecoration(
+                              border: Border.all(
+                                  color: Colors.grey.shade600,
+                                  width: 1,
+                                  style: BorderStyle.solid),
+                              borderRadius: BorderRadius.circular(5)),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    selectedMunicipalName,
+                                    style:
+                                        textStyles.lato_regular(fontSize: 17),
+                                  ),
+                                  Icon(
+                                    Icons.arrow_drop_down,
+                                    size: 22,
+                                    color: Colors.black,
+                                  )
+                                ],
+                              ),
                           ),
-                          TextField(
-                            controller: typhNameController,
-                            decoration: InputDecoration(
-                                labelStyle: textStyles.lato_light(
-                                    color: Colors.grey.withOpacity(0.9)),
-                                border: OutlineInputBorder(),
-                                labelText: "Name"),
-                          ),
-                          TextField(
-                            controller: windspeedController,
-                            decoration: InputDecoration(
-                                labelStyle: textStyles.lato_light(
-                                    color: Colors.grey.withOpacity(0.9)),
-                                border: OutlineInputBorder(),
-                                labelText: "Windspeed"),
-                          ),
-                          TextField(
-                            controller: rainfall24hController,
-                            decoration: InputDecoration(
-                                labelStyle: textStyles.lato_light(
-                                    color: Colors.grey.withOpacity(0.9)),
-                                border: OutlineInputBorder(),
-                                labelText: "Rainfall (24 hour)"),
-                          ),
-                          TextField(
-                            controller: rainfall6hController,
-                            decoration: InputDecoration(
-                                labelStyle: textStyles.lato_light(
-                                    color: Colors.grey.withOpacity(0.9)),
-                                border: OutlineInputBorder(),
-                                labelText: "Rainfall (6 hour)"),
-                          ),
-                          TextField(
-                            controller: priceController,
-                            decoration: InputDecoration(
-                                labelStyle: textStyles.lato_light(
-                                    color: Colors.grey.withOpacity(0.9)),
-                                border: OutlineInputBorder(),
-                                labelText: "Rice Price (per kilo)"),
-                          ),
-                          InkWell(
-                            onTap: (() {
-                              showLocationDialog();
-                            }),
-                            child: Container(
-                              width: double.maxFinite,
-                              height: 30,
-                              decoration: BoxDecoration(
-                                  border: Border.all(
-                                      color: Colors.grey.shade600,
-                                      width: 1,
-                                      style: BorderStyle.solid),
-                                  borderRadius: BorderRadius.circular(15)),
-                              child: Text(selectedMunicipalName,
-                                  style: textStyles.lato_light(
-                                    color: Colors.grey.withOpacity(0.9),
-                                  )),
+                        ),
+                      ),
+                      SizedBox(height: 15,),
+                      InkWell(
+                        borderRadius: BorderRadius.circular(5),
+                        onTap: (() {
+                          if (selectedMunicipalName == 'Select Location') {
+                            showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return AlertDialog(
+                                    content: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                            'Please provide your location first.'),
+                                      ],
+                                    ),
+                                    actions: [
+                                      ElevatedButton(
+                                        child: Text('OK'),
+                                        onPressed: (() {
+                                          Navigator.pop(context);
+                                        }),
+                                      )
+                                    ],
+                                  );
+                                });
+                          } else {
+                            showDistrackminOptions();
+                          }
+                        }),
+                        child: Container(
+                          width: double.maxFinite,
+                          height: 48,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(5),
+                              border: Border.all(
+                                  width: 1,
+                                  color: Colors.grey.shade600,
+                                  style: BorderStyle.solid)),
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 20),
+                            child: Row(
+                              mainAxisAlignment:
+                                  MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  distrackminfinal,
+                                  style:
+                                      textStyles.lato_regular(fontSize: 17),
+                                ),
+                                Icon(
+                                  Icons.arrow_drop_down,
+                                  size: 22,
+                                  color: Colors.black,
+                                )
+                              ],
                             ),
                           ),
-                          InkWell(
-                            onTap: (() {
-                              if(selectedMunicipalName=='Select Location') {
-                                showDialog(
-                                  context: context,
-                                  builder: (context){
-                                    return AlertDialog(
-                                      content: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Text('Please provide your location first.'),
-                                        ],
-                                      ),
-                                      actions: [
-                                        ElevatedButton(
-                                          child: Text('OK'),
-                                          onPressed: ((){
-                                            Navigator.pop(context);
-                                          }),
-                                        )
-                                      ],
-                                    );
-                                  }
-                                );
+                        ),
+                      ),
+                      SizedBox(height: 30,),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Material(
+                          color: Colors.blue,
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(8),
+                            onTap: (() async {
+                              setState(() {
+                                isFetchingPrediction = true;
+                              });
+                              for (Location_ loc in locs) {
+                                if (loc.munCode == selectedMunicipalCode) {
+                                  print("LILUZIVERT");
+                                  print(loc);
+                                  await sendPredictionRequest();
+                                  print("NA SET NA DILI NA NULL");
+                                  break;
+                                }
                               }
-                              else{
-                                showDistrackminOptions();
+                              setState(() {
+                                print("beat the ");
+                                isFetchingPrediction = false;
+                                print("koto nai");
+                              });
+                              print(
+                                  "BRUHHH ${damageCostPredictionFromAPI}");
+                              try {
+                                setState(() {
+                                  isAddingTyphoon = true;
+                                });
+                                await FirestoreService().addDay(
+                                    damageCost: double.parse(
+                                        damageCostPredictionFromAPI!
+                                            .toStringAsFixed(2)),
+                                    windSpeed: double.parse(
+                                        windspeedController.text.trim()),
+                                    rainfall24: double.parse(
+                                        rainfall24hController.text.trim()),
+                                    rainfall6: double.parse(
+                                        rainfall6hController.text.trim()),
+                                    disTrackMin:
+                                        double.parse(distrackminfinal),
+                                    location: selectedMunicipalName,
+                                    locationCode: selectedMunicipalCode,
+                                    typhoonName:
+                                        typhNameController.text.trim(),
+                                    isFirstDay: true,
+                                    price: double.parse(
+                                        priceController.text.trim()));
+                              } catch (e) {
+                                print("ERROR SA DB OH: $e");
                               }
+                              print("HUMANA OG ADD SA DB");
+                              setState(() {
+                                print("pssy");
+                                isAddingTyphoon = false;
+                                print("drake");
+                              });
+            
+                              setState(() {
+                                print("resetting");
+                                selectedMunicipalName = "Choose Location";
+                                selectedMunicipalCode = "";
+                                distrackminfinal = "Enter distrackmin...";
+                                print("resetted");
+                              });
+            
+                              typhNameController.clear();
+                              windspeedController.clear();
+                              rainfall24hController.clear();
+                              rainfall6hController.clear();
+                              priceController.clear();
                             }),
-                            child: Container(
+                            child: Ink(
+                              padding: EdgeInsets.symmetric(horizontal: 30),
                               width: double.maxFinite,
-                              height: 60,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(5),
-                                  border: Border.all(
-                                      width: 1,
-                                      color: Colors.grey.shade600,
-                                      style: BorderStyle.solid)),
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 20),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      distrackminfinal,
-                                      style:
-                                          textStyles.lato_regular(fontSize: 17),
-                                    ),
-                                    Icon(
-                                      Icons.arrow_drop_down,
-                                      size: 22,
-                                      color: Colors.black,
-                                    )
-                                  ],
-                                ),
+                              height: 55,
+                              child: Row(
+                                children: [
+                                  Text(
+                                    "Estimate Damage Cost",
+                                    style: textStyles.lato_bold(
+                                        fontSize: 20, color: Colors.white),
+                                  ),
+                                  Spacer(),
+                                  Icon(
+                                    Icons.arrow_right_alt_sharp,
+                                    size: 40,
+                                    color: Colors.white,
+                                  )
+                                ],
                               ),
                             ),
                           ),
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: Material(
-                              color: Colors.blue,
-                              child: InkWell(
-                                borderRadius: BorderRadius.circular(8),
-                                onTap: (() async {
-                                  setState(() {
-                                    isFetchingPrediction = true;
-                                  });
-                                  for (Location_ loc in locs) {
-                                    if (loc.munCode == selectedMunicipalCode) {
-                                      print("LILUZIVERT");
-                                      print(loc);
-                                      await sendPredictionRequest();
-                                      print("NA SET NA DILI NA NULL");
-                                      break;
-                                    }
-                                  }
-                                  setState(() {
-                                    print("beat the ");
-                                    isFetchingPrediction = false;
-                                    print("koto nai");
-                                  });
-                                  print(
-                                      "BRUHHH ${damageCostPredictionFromAPI}");
-                                  try {
-                                    setState(() {
-                                      isAddingTyphoon = true;
-                                    });
-                                    await FirestoreService().addDay(
-                                        damageCost: double.parse(
-                                            damageCostPredictionFromAPI!
-                                                .toStringAsFixed(2)),
-                                        windSpeed: double.parse(
-                                            windspeedController.text.trim()),
-                                        rainfall24: double.parse(
-                                            rainfall24hController.text.trim()),
-                                        rainfall6: double.parse(
-                                            rainfall6hController.text.trim()),
-                                        disTrackMin:
-                                            double.parse(distrackminfinal),
-                                        location: selectedMunicipalName,
-                                        locationCode: selectedMunicipalCode,
-                                        typhoonName:
-                                            typhNameController.text.trim(),
-                                        isFirstDay: true,
-                                        price: double.parse(
-                                            priceController.text.trim()));
-                                  } catch (e) {
-                                    print("ERROR SA DB OH: $e");
-                                  }
-                                  print("HUMANA OG ADD SA DB");
-                                  setState(() {
-                                    print("pssy");
-                                    isAddingTyphoon = false;
-                                    print("drake");
-                                  });
-
-                                  setState(() {
-                                    print("resetting");
-                                    selectedMunicipalName = "Choose Location";
-                                    selectedMunicipalCode = "";
-                                    distrackminfinal = "Enter distrackmin...";
-                                    print("resetted");
-                                  });
-
-                                  typhNameController.clear();
-                                  windspeedController.clear();
-                                  rainfall24hController.clear();
-                                  rainfall6hController.clear();
-                                  priceController.clear();
-                                }),
-                                child: Ink(
-                                  padding: EdgeInsets.symmetric(horizontal: 30),
-                                  width: double.maxFinite,
-                                  height: 55,
-                                  child: Row(
-                                    children: [
-                                      Text(
-                                        "Estimate Damage Cost",
-                                        style: textStyles.lato_bold(
-                                            fontSize: 20, color: Colors.white),
-                                      ),
-                                      Spacer(),
-                                      Icon(
-                                        Icons.arrow_right_alt_sharp,
-                                        size: 40,
-                                        color: Colors.white,
-                                      )
-                                    ],
+                        ),
+                      )
+                    ],
+                  ),
+                )),
+                Expanded(
+                    child: Container(
+                      // child: Stack(
+                      //   children: [
+                      //     Positioned(
+                      //       right: 0,
+                      //       top: 1,
+                      //       child: Image.asset('lib/assets/images/largevector.png', height: MediaQuery.of(context).size.height,)),
+                          
+                      //   ],
+                      // ),
+                      child: (isFetchingPrediction) ?
+                          Center(
+                            child: Container(
+                              child: Column(
+                                children: [
+                                  Center(
+                                    child: Container(
+                                      height: 300,
+                                      child: CircularProgressIndicator()),
                                   ),
-                                ),
+                                  Text("Fetching Estimation...")
+                                ],
                               ),
                             ),
                           )
-                        ],
-                      ),
-                    )),
-                    Expanded(
-                        child: Container(
-                      child: Center(
-                        child: Text((isFetchingPrediction)
-                            ? 'Fetching Damage Cost Prediction...'
-                            : (isAddingTyphoon)
-                                ? 'Adding typhoon to database...'
-                                : 'hello world'),
-                      ),
-                      color: Colors.blue,
-                    ))
-                  ],
-                )),
+                          :(isAddingTyphoon) ?
+                          Center(
+                            child: Container(
+                              child: Column(
+                                children: [
+                                  Center(
+                                    child: Container(
+                                      height: 300,
+                                      child: CircularProgressIndicator()),
+                                  ),
+                                  Text("Adding to Database...")
+                                ],
+                              ),
+                            ),
+                          )
+                          :
+                          SizedBox(),
+                    )
+                )
+              ],
+            )
+            ),
           ],
         ));
   }
