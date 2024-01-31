@@ -26,8 +26,7 @@ class FirestoreService {
 
   Future<TyphoonDay> addDay(
       {String? typhoonId,
-      double? damageCost,
-      // required double dummydouble,
+      required double damageCost,
       required String typhoonName,
       required double windSpeed,
       required double rainfall24,
@@ -35,10 +34,22 @@ class FirestoreService {
       required String location,
       required String locationCode,
       required bool isFirstDay,
-      required double price
+      required double price,
+      required double disTrackMin
       }) async {
-    // print("dummy ${dummydouble}");
     print("dmgcostapi ${damageCost}");
+    print(typhoonId);
+    print(damageCost);
+    print(typhoonName);
+    print(windSpeed);
+    print(rainfall24);
+    print(rainfall6);
+    print(location);
+    print(locationCode);
+    print(isFirstDay);
+    print(price);
+
+    //
     late TyphoonDay newlyAddedDay;
     var dayJson;
     final currentDateTime = DateTime.now();
@@ -56,7 +67,6 @@ class FirestoreService {
         "recentDayDateRecorded": currentDateTime.toString(),
         "peakRainfall24" : rainfall24,
         "peakRainfall6" : rainfall6,
-        "price" : price,
         "endDate" : "",
         "currentDay": 1,
         "status": "ongoing"
@@ -76,19 +86,23 @@ class FirestoreService {
         "typhoonID": _typhoonId,
         "typhoonName": typhoonName,
         "windSpeed": windSpeed,
-        "rainfall": rainfall24,
+        "rainfall24": rainfall24,
         "rainfall6" : rainfall6,
         "price" : price,
+        "typhoonDistanceFromLocation" : disTrackMin,
         "location": location,
         "locationCode": locationCode,
         "day": 1,
         "damageCost": damageCost,
         "dateRecorded": currentDateTime.toString()
       };
+      print("morisette");
       await daysDocRef.set(dayJson);
       await allEstimations.set(dayJson);
+      print("percocets");
     } else {
-      await updateTyphoon(typhoonId!, currentDateTime, damageCost!);
+      print("BEATAKOTONAI???");
+      await updateTyphoon(typhoonId!, currentDateTime, damageCost);
 
       DocumentSnapshot typhoonDocSnapshot =
           await typhColRef.doc(typhoonId).get();
@@ -110,6 +124,7 @@ class FirestoreService {
         "windSpeed": windSpeed,
         "rainfall24": rainfall24,
         "rainfall6" : rainfall6,
+        "typhoonDistanceFromLocation" : disTrackMin,
         "price" : price,
         "location": location,
         "locationCode": locationCode,
@@ -130,117 +145,220 @@ class FirestoreService {
     return newlyAddedDay;
   }
 
-  Future<void> dayAdd(
-    String? typhoonId,
-      String damageCost1,
-      String typhoonName,
-      String windSpeed1,
-      String rainfall241,
-      String rainfall61,
-      String location,
-      String locationCode,
-      bool isFirstDay,
-      String price1,
-      String distrackmin1,
-  )async{
+  // Future<void> dummy(
+  //     {String? typhoonId,
+  //     required double damageCost1,
+  //     required String typhoonName,
+  //     required double windSpeed1,
+  //     required double rainfall241,
+  //     required double rainfall61,
+  //     required String location,
+  //     required String locationCode,
+  //     required bool isFirstDay,
+  //     required double price1,
+  //     required double distrackmin1,}
+  // )async {
+  //   var dayJson;
+  //   final currentDateTime = DateTime.now();
+  //   if (isFirstDay) {
+  //     print("REDVLET");
+  //     //line below creates a new typhoon document inside typhoons collection
+  //     DocumentReference typhoonDocRef = typhColRef.doc();
+  //     final _typhoonId = typhoonDocRef.id;
+  //     final typhoon = {
+  //       "id": _typhoonId,
+  //       "typhoonName": typhoonName,
+  //       "peakWindspeed": windSpeed1,
+  //       "totalDamageCost": damageCost1,
+  //       "startDate": currentDateTime.toString(),
+  //       "recentDayDateRecorded": currentDateTime.toString(),
+  //       "peakRainfall24" : rainfall241,
+  //       "peakRainfall6" : rainfall61,
+  //       "price" : price1,
+  //       "endDate" : "",
+  //       "currentDay": 1,
+  //       "status": "ongoing"
+  //     };
+
+  //     await typhoonDocRef.set(typhoon);
+  //     print("bruhbruhrbruh");
+  //     //create new days collection inside newly created typhoons document
+  //     CollectionReference daysColRef =
+  //         typhColRef.doc(_typhoonId).collection("days");
+  //     DocumentReference daysDocRef = daysColRef.doc();
+  //     final _dayId = daysDocRef.id;
+  //     DocumentReference allEstimations =
+  //         userRef.collection("allDays").doc(_dayId);
+  //     dayJson = {
+  //       "id": _dayId,
+  //       "typhoonID": _typhoonId,
+  //       "typhoonName": typhoonName,
+  //       "windSpeed": windSpeed1,
+  //       "rainfall": rainfall241,
+  //       "rainfall6" : rainfall61,
+  //       "price" : price1,
+  //       "location": location,
+  //       "locationCode": locationCode,
+  //       "day": 1,
+  //       "damageCost": damageCost1,
+  //       "dateRecorded": currentDateTime.toString()
+  //     };
+  //     await daysDocRef.set(dayJson);
+  //     await allEstimations.set(dayJson);
+  //   } else {
+  //     await updateTyphoon(typhoonId!, currentDateTime, damageCost1!);
+
+  //     DocumentSnapshot typhoonDocSnapshot =
+  //         await typhColRef.doc(typhoonId).get();
+  //     DateTime typhoonRecentDay =
+  //         DateTime.parse(typhoonDocSnapshot['recentDayDateRecorded']);
+  //     DateTime dateOfRecentDay = DateTime(
+  //         typhoonRecentDay.year, typhoonRecentDay.month, typhoonRecentDay.day);
+  //     int currentDayOfTyphoon = typhoonDocSnapshot['currentDay'];
+  //     CollectionReference daysColRef =
+  //         typhColRef.doc(typhoonId).collection("days");
+  //     DocumentReference daysDocRef = daysColRef.doc();
+  //     final dayId = daysDocRef.id;
+  //     DocumentReference allDays = userRef.collection("allDays").doc(dayId);
+
+  //     dayJson = {
+  //       "id": dayId,
+  //       "typhoonID": typhoonId,
+  //       "typhoonName": typhoonName,
+  //       "windSpeed": windSpeed1,
+  //       "rainfall24": rainfall241,
+  //       "rainfall6" : rainfall61,
+  //       "price" : price1,
+  //       "location": location,
+  //       "locationCode": locationCode,
+  //       "day": (DateTime(currentDateTime.year, currentDateTime.month,
+  //                   currentDateTime.day)
+  //               .isAfter(dateOfRecentDay))
+  //           ? currentDayOfTyphoon + 1
+  //           : currentDayOfTyphoon,
+  //       "damageCost": damageCost1,
+  //       "dateRecorded": currentDateTime.toString()
+  //     };
+
+  //     await daysDocRef.set(dayJson);
+  //     await allDays.set(dayJson);
+  //   }
+
+  //   // newlyAddedDay = TyphoonDay.fromJson(dayJson);
+  //   // return newlyAddedDay;
+  // }
+
+  // Future<void> dayAdd(
+  //   String? typhoonId,
+  //     String damageCost1,
+  //     String typhoonName,
+  //     String windSpeed1,
+  //     String rainfall241,
+  //     String rainfall61,
+  //     String location,
+  //     String locationCode,
+  //     bool isFirstDay,
+  //     String price1,
+  //     String distrackmin1,
+  // )async{
     
-    print("WAZZUPY OUTUBE");
-    double distrackmin = double.parse(distrackmin1);
-    double damageCost = double.parse(damageCost1);
-    double windSpeed = double.parse(windSpeed1);
-    double rainfall24 = double.parse(rainfall241);
-    double rainfall6 = double.parse(rainfall61);
-    double price = double.parse(price1);
+  //   print("WAZZUPY OUTUBE");
+  //   double distrackmin = double.parse(distrackmin1);
+  //   double damageCost = double.parse(damageCost1);
+  //   double windSpeed = double.parse(windSpeed1);
+  //   double rainfall24 = double.parse(rainfall241);
+  //   double rainfall6 = double.parse(rainfall61);
+  //   double price = double.parse(price1);
     
-    var dayJson;
-    final currentDateTime = DateTime.now();
-    if (isFirstDay) {
-      print("REDVLET");
-      //line below creates a new typhoon document inside typhoons collection
-      DocumentReference typhoonDocRef = typhColRef.doc();
-      final _typhoonId = typhoonDocRef.id;
-      final typhoon = {
-        "id": _typhoonId,
-        "typhoonName": typhoonName,
-        "peakWindspeed": windSpeed,
-        "totalDamageCost": damageCost,
-        "startDate": currentDateTime.toString(),
-        "recentDayDateRecorded": currentDateTime.toString(),
-        "peakRainfall24" : rainfall24,
-        "peakRainfall6" : rainfall6,
-        "price" : price,
-        "endDate" : "",
-        "currentDay": 1,
-        "status": "ongoing"
-      };
+  //   var dayJson;
+  //   final currentDateTime = DateTime.now();
+  //   if (isFirstDay) {
+  //     print("REDVLET");
+  //     //line below creates a new typhoon document inside typhoons collection
+  //     DocumentReference typhoonDocRef = typhColRef.doc();
+  //     final _typhoonId = typhoonDocRef.id;
+  //     final typhoon = {
+  //       "id": _typhoonId,
+  //       "typhoonName": typhoonName,
+  //       "peakWindspeed": windSpeed,
+  //       "totalDamageCost": damageCost,
+  //       "startDate": currentDateTime.toString(),
+  //       "recentDayDateRecorded": currentDateTime.toString(),
+  //       "peakRainfall24" : rainfall24,
+  //       "peakRainfall6" : rainfall6,
+  //       "price" : price,
+  //       "endDate" : "",
+  //       "currentDay": 1,
+  //       "status": "ongoing"
+  //     };
 
-      await typhoonDocRef.set(typhoon);
-      print("bruhbruhrbruh");
-      //create new days collection inside newly created typhoons document
-      CollectionReference daysColRef =
-          typhColRef.doc(_typhoonId).collection("days");
-      DocumentReference daysDocRef = daysColRef.doc();
-      final _dayId = daysDocRef.id;
-      DocumentReference allEstimations =
-          userRef.collection("allDays").doc(_dayId);
-      dayJson = {
-        "id": _dayId,
-        "typhoonID": _typhoonId,
-        "typhoonName": typhoonName,
-        "windSpeed": windSpeed,
-        "rainfall": rainfall24,
-        "rainfall6" : rainfall6,
-        "price" : price,
-        "location": location,
-        "locationCode": locationCode,
-        "day": 1,
-        "damageCost": damageCost,
-        "dateRecorded": currentDateTime.toString()
-      };
-      await daysDocRef.set(dayJson);
-      await allEstimations.set(dayJson);
-    } else {
-      await updateTyphoon(typhoonId!, currentDateTime, damageCost!);
+  //     await typhoonDocRef.set(typhoon);
+  //     print("bruhbruhrbruh");
+  //     //create new days collection inside newly created typhoons document
+  //     CollectionReference daysColRef =
+  //         typhColRef.doc(_typhoonId).collection("days");
+  //     DocumentReference daysDocRef = daysColRef.doc();
+  //     final _dayId = daysDocRef.id;
+  //     DocumentReference allEstimations =
+  //         userRef.collection("allDays").doc(_dayId);
+  //     dayJson = {
+  //       "id": _dayId,
+  //       "typhoonID": _typhoonId,
+  //       "typhoonName": typhoonName,
+  //       "windSpeed": windSpeed,
+  //       "rainfall": rainfall24,
+  //       "rainfall6" : rainfall6,
+  //       "price" : price,
+  //       "location": location,
+  //       "locationCode": locationCode,
+  //       "day": 1,
+  //       "damageCost": damageCost,
+  //       "dateRecorded": currentDateTime.toString()
+  //     };
+  //     await daysDocRef.set(dayJson);
+  //     await allEstimations.set(dayJson);
+  //   } else {
+  //     await updateTyphoon(typhoonId!, currentDateTime, damageCost!);
 
-      DocumentSnapshot typhoonDocSnapshot =
-          await typhColRef.doc(typhoonId).get();
-      DateTime typhoonRecentDay =
-          DateTime.parse(typhoonDocSnapshot['recentDayDateRecorded']);
-      DateTime dateOfRecentDay = DateTime(
-          typhoonRecentDay.year, typhoonRecentDay.month, typhoonRecentDay.day);
-      int currentDayOfTyphoon = typhoonDocSnapshot['currentDay'];
-      CollectionReference daysColRef =
-          typhColRef.doc(typhoonId).collection("days");
-      DocumentReference daysDocRef = daysColRef.doc();
-      final dayId = daysDocRef.id;
-      DocumentReference allDays = userRef.collection("allDays").doc(dayId);
+  //     DocumentSnapshot typhoonDocSnapshot =
+  //         await typhColRef.doc(typhoonId).get();
+  //     DateTime typhoonRecentDay =
+  //         DateTime.parse(typhoonDocSnapshot['recentDayDateRecorded']);
+  //     DateTime dateOfRecentDay = DateTime(
+  //         typhoonRecentDay.year, typhoonRecentDay.month, typhoonRecentDay.day);
+  //     int currentDayOfTyphoon = typhoonDocSnapshot['currentDay'];
+  //     CollectionReference daysColRef =
+  //         typhColRef.doc(typhoonId).collection("days");
+  //     DocumentReference daysDocRef = daysColRef.doc();
+  //     final dayId = daysDocRef.id;
+  //     DocumentReference allDays = userRef.collection("allDays").doc(dayId);
 
-      dayJson = {
-        "id": dayId,
-        "typhoonID": typhoonId,
-        "typhoonName": typhoonName,
-        "windSpeed": windSpeed,
-        "rainfall24": rainfall24,
-        "rainfall6" : rainfall6,
-        "price" : price,
-        "location": location,
-        "locationCode": locationCode,
-        "day": (DateTime(currentDateTime.year, currentDateTime.month,
-                    currentDateTime.day)
-                .isAfter(dateOfRecentDay))
-            ? currentDayOfTyphoon + 1
-            : currentDayOfTyphoon,
-        "damageCost": damageCost,
-        "dateRecorded": currentDateTime.toString()
-      };
+  //     dayJson = {
+  //       "id": dayId,
+  //       "typhoonID": typhoonId,
+  //       "typhoonName": typhoonName,
+  //       "windSpeed": windSpeed,
+  //       "rainfall24": rainfall24,
+  //       "rainfall6" : rainfall6,
+  //       "price" : price,
+  //       "location": location,
+  //       "locationCode": locationCode,
+  //       "day": (DateTime(currentDateTime.year, currentDateTime.month,
+  //                   currentDateTime.day)
+  //               .isAfter(dateOfRecentDay))
+  //           ? currentDayOfTyphoon + 1
+  //           : currentDayOfTyphoon,
+  //       "damageCost": damageCost,
+  //       "dateRecorded": currentDateTime.toString()
+  //     };
 
-      await daysDocRef.set(dayJson);
-      await allDays.set(dayJson);
-    }
+  //     await daysDocRef.set(dayJson);
+  //     await allDays.set(dayJson);
+  //   }
 
-    // newlyAddedDay = TyphoonDay.fromJson(dayJson);
-    // return newlyAddedDay;
-  }
+  //   // newlyAddedDay = TyphoonDay.fromJson(dayJson);
+  //   // return newlyAddedDay;
+  // }
 
   Future<void> updateTyphoon(
       String typhoonId, DateTime currentDateTime, double damageCost) async {
@@ -303,17 +421,6 @@ class FirestoreService {
         .update({"status": "finished", "endDate": DateTime.now().toString()});
   }
 
-  // Stream<TyphoonDay> getRecentlyAddedDay() {
-  //   return FirebaseFirestore.instance
-  //       .collection('users')
-  //       .doc('test-user')
-  //       .collection('allDays')
-  //       .orderBy('creationDate', descending: true)
-  //       .limit(1)
-  //       .snapshots()
-  //       .map((snapshot) => snapshot.docs.first)
-  //       .map((doc) => TyphoonDay.fromJson(doc.data()));
-  // }
 
   Stream<List<Typhoon>> streamAllTyphoons() {
     return FirebaseFirestore.instance
@@ -465,25 +572,4 @@ class FirestoreService {
     List<int> years = await getTyphoonYears();
     return years.first;
   }
-//   Future<List<int>> getYearsFromFirebase() async {
-//   List<int> yearsList = [];
-
-//   try {
-//     // Replace 'your_collection' with the actual name of your collection
-//     QuerySnapshot<Map<String, dynamic>> snapshot =
-//         await FirebaseFirestore.instance.collection('users').doc('test-user').collection('typhoons').get();
-
-//     for (QueryDocumentSnapshot<Map<String, dynamic>> document
-//         in snapshot.docs) {
-//       // Replace 'year' with the actual field name in your documents
-//       DateTime b = DateTime.parse(document.data()['startDate']);
-//       int year = b.year;
-//       yearsList.add(year);
-//     }
-//   } catch (e) {
-//     print('Error fetching years: $e');
-//   }
-
-//   return yearsList;
-// }
 }

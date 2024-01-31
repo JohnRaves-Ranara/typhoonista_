@@ -4,7 +4,8 @@ class Typhoon {
   final String id;
   final String typhoonName;
   final double peakWindspeed;
-  final double peakRainfall;
+  final double peakRainfall6;
+  final double peakRainfall24;
   final String startDate;
   final String endDate;
   final double totalDamageCost;
@@ -16,7 +17,8 @@ class Typhoon {
   Typhoon({
     this.status,
     this.locations,
-    required this.id, required this.typhoonName, required this.peakWindspeed, required this.peakRainfall,
+    required this.id, required this.typhoonName, required this.peakWindspeed, required this.peakRainfall6,
+    required this.peakRainfall24,
   required this.startDate, required this.endDate, required this.totalDamageCost, required this.currentDay
   });
 
@@ -25,7 +27,8 @@ class Typhoon {
       "id" : id,
       "typhoonName" : typhoonName, 
       "peakWindspeed" : peakWindspeed, 
-      "peakRainfall" : peakRainfall,
+      "peakRainfall6" : peakRainfall6,
+      "peakRainfall24" : peakRainfall24,
       "startDate" : startDate,
       "endDate" : endDate,
       "totalDamageCost" : totalDamageCost,
@@ -39,7 +42,8 @@ class Typhoon {
       id: json["id"],
       typhoonName : json["typhoonName"] ,
       peakWindspeed : json["peakWindspeed"], 
-      peakRainfall : json["peakRainfall"],
+      peakRainfall6 : json["peakRainfall6"],
+      peakRainfall24 : json["peakRainfall24"],
       startDate : json["startDate"],
       endDate:  json["endDate"],
       totalDamageCost: json["totalDamageCost"],

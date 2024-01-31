@@ -1,5 +1,5 @@
-import 'dart:html';
-
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -31,14 +31,119 @@ class _recent_estimationState extends State<recent_estimation> {
   final rainfall6Ctlr = TextEditingController();
   final rainfall24Ctlr = TextEditingController();
   final ricePriceCtlr = TextEditingController();
-  String selectedLocation = "Choose Location";
-  String selectedLocationCode = "";
+  String selectedMunicipalName = "Choose Location";
+  String selectedMunicipalCode = "";
+  String selectedLocationProvname = "";
   TyphoonDay? newlyAddedDayInformation;
   bool haveAdded = false;
   List<Location_> locs = Locations_().getLocations();
   List<Location_> suggestions = [];
+  bool isSearchLocation = false;
   final ctrlr = TextEditingController();
+  
+  final manualDistanceCtrlr = TextEditingController();
+  // bool isManualDistrackMin = false;
+
+  String selectedTyphoonLocation = "Choose Location";
+  String selectedTyphoonCode = "";
+  String selectedTyphoonProvname = "";
+  String? distancetoTyphoon = '';
+  String coordinates1 = '';
+  String distance = '';
+  String predictionResult = '';
+  double? prediction;
+  double? damageCostPredictionFromAPI;
+  bool isSendingCoordinateRequest = false;
+  bool isSendingPredictionRequest = false;
+  String distrackminfinal = 'Enter distrackmin...';
+  bool isFetchingPrediction = false;
+  bool isAddingTyphoon = false;
+  double? test_area;
+  double? test_yield;
+
   @override
+
+  Future<void> sendCoordinatesRequest() async {
+    try {
+      final response = await http.post(
+        Uri.parse('https://typhoonista.onrender.com/get_coordinates'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'predictionLocation':
+              "$selectedMunicipalName, $selectedLocationProvname,  Philippines",
+          'typhoonLocation':
+              "$selectedTyphoonLocation, $selectedTyphoonProvname, Philippines",
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        print('Nigana');
+        setState(() {
+          coordinates1 = jsonDecode(response.body)['distance'].toString();
+          coordinates1 = coordinates1.replaceAll(" km", "");
+          print(coordinates1);
+        });
+      } else {
+        print("failed");
+        print(selectedMunicipalName);
+        print(coordinates1);
+        coordinates1 = 'Failed to get coordinates';
+      }
+    } catch (error) {
+      setState(() {
+        print("coordinates nag error: $error");
+        coordinates1 = 'Error: $error';
+      });
+    }
+  }
+
+  Future<void> sendPredictionRequest() async {
+    try {
+      for (Location_ loc in locs) {
+        if (loc.munCode == selectedMunicipalCode) {
+          setState(() {
+            test_area = loc.riceArea;
+            test_yield = loc.riceYield;
+          });
+        }
+      }
+      print(windspeedCtlr.text.trim());
+      print(rainfall24Ctlr.text.trim());
+      print(rainfall6Ctlr.text.trim());
+      print(test_area);
+      print(test_yield);
+      print(distrackminfinal.trim());
+      print(ricePriceCtlr.text.trim());
+      final response = await http.post(
+        Uri.parse('https://typhoonista.onrender.com/typhoonista/predict'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'features': [
+            double.parse(windspeedCtlr.text.trim()),
+            double.parse(rainfall24Ctlr.text.trim()),
+            double.parse(rainfall6Ctlr.text.trim()),
+            test_area,
+            test_yield,
+            double.parse(distrackminfinal.trim()),
+            double.parse(ricePriceCtlr.text.trim()),
+          ],
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        print('Nigana ang send prediction');
+        setState(() {
+          prediction = jsonDecode(response.body);
+          damageCostPredictionFromAPI = prediction;
+        });
+      } else {
+        print("failed");
+      }
+    } catch (error) {
+      print("prediction nag error: $error");
+    }
+  }
+
   Widget build(BuildContext context) {
     return Expanded(
       flex: 55,
@@ -213,10 +318,11 @@ class _recent_estimationState extends State<recent_estimation> {
                                                             builder: (context,
                                                                 customState) {
                                                               return Container(
-                                                                decoration: BoxDecoration(
-                                                                    borderRadius:
-                                                                        BorderRadius.circular(
-                                                                            20)),
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                        // color: Colors.teal,
+                                                                        borderRadius:
+                                                                            BorderRadius.circular(20)),
                                                                 height: MediaQuery.of(
                                                                             context)
                                                                         .size
@@ -231,7 +337,8 @@ class _recent_estimationState extends State<recent_estimation> {
                                                                   children: [
                                                                     add_day(
                                                                         recentEstimation,
-                                                                        customState),
+                                                                        customState,
+                                                                        ),
                                                                     Information(
                                                                         customState)
                                                                   ],
@@ -437,164 +544,269 @@ class _recent_estimationState extends State<recent_estimation> {
   Widget add_day(Typhoon recentEstimation, Function customState) {
     return Expanded(
       child: Container(
+        // color: Colors.amber,
         padding: EdgeInsets.symmetric(horizontal: 40),
-        child: Container(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Spacer(),
-              Text(
-                "Add Day",
-                style: textStyles.lato_black(fontSize: 35),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Container(
-                // color: Colors.purple,
-                height: MediaQuery.of(context).size.height * 0.28,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    TextField(
-                      enabled: !haveAdded,
-                      controller: windspeedCtlr,
-                      decoration: InputDecoration(
-                          fillColor: Colors.white,
-                          labelStyle: textStyles.lato_light(
-                              color: Colors.grey.withOpacity(0.9)),
-                          border: OutlineInputBorder(),
-                          labelText: "Windspeed"),
-                    ),
-                    TextField(
-                      enabled: !haveAdded,
-                      controller: rainfall24Ctlr,
-                      decoration: InputDecoration(
-                          fillColor: Colors.white,
-                          labelStyle: textStyles.lato_light(
-                              color: Colors.grey.withOpacity(0.9)),
-                          border: OutlineInputBorder(),
-                          labelText: "Rainfall (24H)"),
-                    ),
-                    TextField(
-                      enabled: !haveAdded,
-                      controller: rainfall6Ctlr,
-                      decoration: InputDecoration(
-                          fillColor: Colors.white,
-                          labelStyle: textStyles.lato_light(
-                              color: Colors.grey.withOpacity(0.9)),
-                          border: OutlineInputBorder(),
-                          labelText: "Rainfall (6H)"),
-                    ),
-                    TextField(
-                      enabled: !haveAdded,
-                      controller: ricePriceCtlr,
-                      decoration: InputDecoration(
-                          fillColor: Colors.white,
-                          labelStyle: textStyles.lato_light(
-                              color: Colors.grey.withOpacity(0.9)),
-                          border: OutlineInputBorder(),
-                          labelText: "Rice Price (per kilo)"),
-                    ),
-                    InkWell(
-                      onTap: !haveAdded
-                          ? (() {
-                              // showChooseLocationDialog(recentEstimation.id, customState);
-                              showSampleDialog(
-                                  customState, recentEstimation.id);
-                            })
-                          : null,
-                      child: Container(
-                        height: 60,
-                        width: double.maxFinite,
-                        decoration: BoxDecoration(
-                            border: Border.all(
-                                width: 1,
-                                color: Colors.grey.shade600,
-                                style: BorderStyle.solid),
-                            borderRadius: BorderRadius.circular(5)),
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 30),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text(
-                                selectedLocation,
-                                style: textStyles.lato_regular(fontSize: 17),
-                              ),
-                              Icon(
-                                Icons.arrow_drop_down,
-                                size: 22,
-                                color: Colors.black,
-                              )
-                            ],
-                          ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Spacer(),
+            Text(
+              "Add Day",
+              style: textStyles.lato_black(fontSize: 35),
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Container(
+              // color: Colors.purple,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextField(
+                    enabled: !haveAdded,
+                    controller: windspeedCtlr,
+                    decoration: InputDecoration(
+                        fillColor: Colors.white,
+                        labelStyle: textStyles.lato_light(
+                            color: Colors.grey.withOpacity(0.9)),
+                        border: OutlineInputBorder(),
+                        labelText: "Windspeed"),
+                  ),
+                  TextField(
+                    enabled: !haveAdded,
+                    controller: rainfall24Ctlr,
+                    decoration: InputDecoration(
+                        fillColor: Colors.white,
+                        labelStyle: textStyles.lato_light(
+                            color: Colors.grey.withOpacity(0.9)),
+                        border: OutlineInputBorder(),
+                        labelText: "Rainfall (24H)"),
+                  ),
+                  TextField(
+                    enabled: !haveAdded,
+                    controller: rainfall6Ctlr,
+                    decoration: InputDecoration(
+                        fillColor: Colors.white,
+                        labelStyle: textStyles.lato_light(
+                            color: Colors.grey.withOpacity(0.9)),
+                        border: OutlineInputBorder(),
+                        labelText: "Rainfall (6H)"),
+                  ),
+                  TextField(
+                    enabled: !haveAdded,
+                    controller: ricePriceCtlr,
+                    decoration: InputDecoration(
+                        fillColor: Colors.white,
+                        labelStyle: textStyles.lato_light(
+                            color: Colors.grey.withOpacity(0.9)),
+                        border: OutlineInputBorder(),
+                        labelText: "Rice Price (per kilo)"),
+                  ),
+                  InkWell(
+                    onTap: !haveAdded
+                        ? (() {
+                            // showChooseLocationDialog(recentEstimation.id, customState);
+                            showSampleDialog(customState, recentEstimation.id);
+                          })
+                        : null,
+                    child: Container(
+                      height: 60,
+                      width: double.maxFinite,
+                      decoration: BoxDecoration(
+                          border: Border.all(
+                              width: 1,
+                              color: Colors.grey.shade600,
+                              style: BorderStyle.solid),
+                          borderRadius: BorderRadius.circular(5)),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 30),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              selectedMunicipalName,
+                              style: textStyles.lato_regular(fontSize: 17),
+                            ),
+                            Icon(
+                              Icons.arrow_drop_down,
+                              size: 22,
+                              color: Colors.black,
+                            )
+                          ],
                         ),
                       ),
-                    )
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Material(
-                  color: (haveAdded) ? Colors.grey : Colors.blue,
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(8),
-                    onTap: (haveAdded)
-                        ? null
-                        : (() async {
-                            // final addDay = await FirestoreService().addDay(
-                            //     price: double.parse(ricePriceCtlr.text.trim()),
-                            //     typhoonName: recentEstimation.typhoonName,
-                            //     windSpeed:
-                            //         double.parse(windspeedCtlr.text.trim()),
-                            //     rainfall24: double.parse(rainfall24Ctlr.text.trim()),
-                            //     rainfall6: double.parse(rainfall6Ctlr.text.trim()),
-                            //     location: selectedLocation,
-                            //     locationCode: selectedLocationCode,
-                            //     isFirstDay: false,
-                            //     typhoonId: recentEstimation.id);
-                            // windspeedCtlr.clear();
-                            // rainfall24Ctlr.clear();
-                            // rainfall6Ctlr.clear();
-                            // customState(() {
-                            //   haveAdded = true;
-                            //   newlyAddedDayInformation = addDay;
-                            //   selectedLocation = "Choose Location";
-                            //   selectedLocationCode = "";
-                            // });
-                          }),
-                    child: Ink(
-                      padding: EdgeInsets.symmetric(horizontal: 30),
+                    ),
+                  ),
+                  InkWell(
+                    onTap: !haveAdded
+                        ? (() {
+                            // showChooseLocationDialog(recentEstimation.id, customState);
+                            showDistrackminOptions(customState);
+                          })
+                        : null,
+                    child: Container(
+                      height: 60,
                       width: double.maxFinite,
-                      height: 55,
-                      child: Row(
-                        children: [
-                          Text(
-                            "Estimate Damage Cost",
-                            style: textStyles.lato_bold(
-                                fontSize: 18, color: Colors.white),
-                          ),
-                          Spacer(),
-                          Icon(
-                            Icons.arrow_right_alt_sharp,
-                            size: 40,
-                            color: Colors.white,
-                          )
-                        ],
+                      decoration: BoxDecoration(
+                          border: Border.all(
+                              width: 1,
+                              color: Colors.grey.shade600,
+                              style: BorderStyle.solid),
+                          borderRadius: BorderRadius.circular(5)),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 30),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              distrackminfinal,
+                              style: textStyles.lato_regular(fontSize: 17),
+                            ),
+                            Icon(
+                              Icons.arrow_drop_down,
+                              size: 22,
+                              color: Colors.black,
+                            )
+                          ],
+                        ),
                       ),
+                    ),
+                  )
+                ],
+              ),
+            ),
+            
+
+            SizedBox(
+              height: 20,
+            ),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Material(
+                color: (haveAdded) ? Colors.grey : Colors.blue,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(8),
+                  onTap: (haveAdded)
+                      ? null
+                      : (() async {
+                          // final addDay = await FirestoreService().addDay(
+                          //     price: double.parse(ricePriceCtlr.text.trim()),
+                          //     typhoonName: recentEstimation.typhoonName,
+                          //     windSpeed:
+                          //         double.parse(windspeedCtlr.text.trim()),
+                          //     rainfall24: double.parse(rainfall24Ctlr.text.trim()),
+                          //     rainfall6: double.parse(rainfall6Ctlr.text.trim()),
+                          //     location: selectedLocation,
+                          //     locationCode: selectedLocationCode,
+                          //     isFirstDay: false,
+                          //     typhoonId: recentEstimation.id);
+                          // windspeedCtlr.clear();
+                          // rainfall24Ctlr.clear();
+                          // rainfall6Ctlr.clear();
+                          // customState(() {
+                          //   haveAdded = true;
+                          //   newlyAddedDayInformation = addDay;
+                          //   selectedLocation = "Choose Location";
+                          //   selectedLocationCode = "";
+                          // });
+                          TyphoonDay? addDay;
+                          customState(() {
+                                    isFetchingPrediction = true;
+                                  });
+                                  for (Location_ loc in locs) {
+                                    if (loc.munCode == selectedMunicipalCode) {
+                                      print("LILUZIVERT");
+                                      print(loc);
+                                      await sendPredictionRequest();
+                                      print("NA SET NA DILI NA NULL");
+                                      break;
+                                    }
+                                  }
+                                  customState(() {
+                                    print("beat the ");
+                                    isFetchingPrediction = false;
+                                    print("koto nai");
+                                  });
+                                  print("BRUHHH ${damageCostPredictionFromAPI}");
+                                  try {
+                                    customState(() {
+                                      isAddingTyphoon = true;
+                                    });
+                                    addDay = await FirestoreService().addDay(
+                                        typhoonId: recentEstimation.id,
+                                        damageCost:
+                                            damageCostPredictionFromAPI!,
+                                        windSpeed: double.parse(
+                                            windspeedCtlr.text.trim()),
+                                        rainfall24: double.parse(
+                                            rainfall24Ctlr.text.trim()),
+                                        rainfall6: double.parse(
+                                            rainfall6Ctlr.text.trim()),
+                                        disTrackMin: double.parse(distrackminfinal),
+                                        location: selectedMunicipalName,
+                                        locationCode: selectedMunicipalCode,
+                                        typhoonName:
+                                            recentEstimation.typhoonName,
+                                        isFirstDay: false,
+                                        price: double.parse(
+                                            ricePriceCtlr.text.trim()));
+                                    
+                                  } catch (e) {
+                                    print("ERROR SA DB OH: $e");
+                                  }
+                                  print("HUMANA OG ADD SA DB");
+                                  customState(() {
+                                    print("pssy");
+                                    isAddingTyphoon = false;
+                                    print("drake");
+                                  });
+
+                                  customState(() {
+                                    print("resetting");
+                                    haveAdded = true;
+                                    try{
+                                      newlyAddedDayInformation = addDay;
+                                    }catch(e){
+                                      print("ERROR SA NEWLYADDEDDAY: ${e}");
+                                    }
+                                    selectedMunicipalName = "Choose Location";
+                                    selectedMunicipalCode = "";
+                                    distrackminfinal = "Enter distrackmin...";
+                                    print("resetted");
+                                  });
+
+                                  windspeedCtlr.clear();
+                                  rainfall24Ctlr.clear();
+                                  rainfall6Ctlr.clear();
+                                  ricePriceCtlr.clear();
+                        }),
+                  child: Ink(
+                    padding: EdgeInsets.symmetric(horizontal: 30),
+                    width: double.maxFinite,
+                    height: 55,
+                    child: Row(
+                      children: [
+                        Text(
+                          "Estimate Damage Cost",
+                          style: textStyles.lato_bold(
+                              fontSize: 18, color: Colors.white),
+                        ),
+                        Spacer(),
+                        Icon(
+                          Icons.arrow_right_alt_sharp,
+                          size: 40,
+                          color: Colors.white,
+                        )
+                      ],
                     ),
                   ),
                 ),
               ),
-              Spacer()
-            ],
-          ),
+            ),
+            Spacer()
+          ],
         ),
       ),
     );
@@ -750,82 +962,329 @@ class _recent_estimationState extends State<recent_estimation> {
     );
   }
 
-  showChooseLocationDialog(String typhoonID, Function customState) async {
+  showDistrackminOptions(Function customState) {
     showDialog(
         context: context,
         builder: (context) {
-          return Container(
-            height: MediaQuery.of(context).size.height * 0.2,
-            width: MediaQuery.of(context).size.width * 0.4,
-            child: AlertDialog(
-                content: FutureBuilder<QuerySnapshot>(
-              future: FirebaseFirestore.instance
-                  .collection('users')
-                  .doc('test-user')
-                  .collection('typhoons')
-                  .doc(typhoonID)
-                  .collection('days')
-                  .get(),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  final List<TyphoonDay> days = snapshot.data!.docs
-                      .map((doc) => TyphoonDay.fromJson(
-                          doc.data() as Map<String, dynamic>))
-                      .toList();
-                  List<Location_> locationsLocal = Locations_().getLocations();
-
-                  List<Location_> unavailableLocations = [];
-                  for (TyphoonDay day in days) {
-                    DateTime current = DateTime(DateTime.now().year,
-                        DateTime.now().month, DateTime.now().day);
-                    DateTime dateRecorded = DateTime(
-                        DateTime.parse(day.dateRecorded).year,
-                        DateTime.parse(day.dateRecorded).month,
-                        DateTime.parse(day.dateRecorded).day);
-                    if (dateRecorded.isAtSameMomentAs(current)) {
-                      Location_ loc = Location_(
-                          munName: day.location, munCode: day.locationCode!);
-                      unavailableLocations.add(loc);
-                    }
-                  }
-                  return SingleChildScrollView(
-                    child: Column(
-                        children: List.generate(locationsLocal.length, (index) {
-                      bool isTheLocationUnavailable = false;
-                      for (Location_ i in unavailableLocations) {
-                        if (i.munCode == locationsLocal[index].munCode) {
-                          isTheLocationUnavailable = true;
-                        }
-                      }
-                      if (isTheLocationUnavailable == true) {
-                        return ListTile(
-                          title: Text(locationsLocal[index].munName!),
-                          tileColor: Colors.grey,
-                          onTap: null,
-                        );
-                      } else {
-                        return ListTile(
-                          title: Text(locationsLocal[index].munName!),
-                          tileColor: Colors.green,
-                          onTap: (() {
-                            customState(() {
-                              selectedLocation = locationsLocal[index].munName!;
-                              selectedLocationCode =
-                                  locationsLocal[index].munCode!;
-                            });
-                            Navigator.pop(context);
-                          }),
-                        );
-                      }
-                    })),
-                  );
-                } else {
-                  return Text("no data");
-                }
-              },
-            )),
+          return AlertDialog(
+            content: Container(
+              height: MediaQuery.of(context).size.height * 0.5,
+              width: MediaQuery.of(context).size.width * 0.5,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: InkWell(
+                      onTap: (() {
+                        showAutomaticDistanceCalculation(customState);
+                      }),
+                      child: Container(
+                        color: Colors.blue,
+                        child: Center(
+                          child: Text('AUTOMATIC'),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: InkWell(
+                      onTap: (() {
+                        showManualDistanceCalculation(customState);
+                      }),
+                      child: Container(
+                        color: Colors.red,
+                        child: Center(
+                          child: Text('MANUAL'),
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
           );
         });
+  }
+
+  showManualDistanceCalculation(Function customState) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            content: Column(
+                children: [
+                  Text("Enter distance in km"),
+                  TextField(
+                    controller: manualDistanceCtrlr,
+                  ),
+                  ElevatedButton(
+                      onPressed: (() {
+                        customState(() {
+                          distrackminfinal = manualDistanceCtrlr.text.trim();
+                        });
+                        Navigator.pop(context);
+                        Navigator.pop(context);
+                      }),
+                      child: Text('HEVABI'))
+                ],
+              ),
+          );
+        });
+  }
+
+  showAutomaticDistanceCalculation(Function customState) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            content: StatefulBuilder(builder: (context, customState3) {
+              return Column(
+                children: [
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text("Selected Location"),
+                  ),
+                  Container(
+                    width: double.maxFinite,
+                    height: 60,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5),
+                        border: Border.all(
+                            width: 1,
+                            color: Colors.grey.shade600,
+                            style: BorderStyle.solid)),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Text(
+                        (selectedMunicipalName == "Choose Location")
+                            ? 'No municipal location selected'
+                            : selectedMunicipalName,
+                        style: textStyles.lato_regular(fontSize: 17),
+                      ),
+                    ),
+                  ),
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text("Select Location of Typhoon"),
+                  ),
+                  InkWell(
+                    onTap: (() {
+                      showTyphoonLocationDialog(customState3);
+                    }),
+                    child: Container(
+                      width: double.maxFinite,
+                      height: 60,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5),
+                          border: Border.all(
+                              width: 1,
+                              color: Colors.grey.shade600,
+                              style: BorderStyle.solid)),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              selectedTyphoonLocation,
+                              style: textStyles.lato_regular(fontSize: 17),
+                            ),
+                            Icon(
+                              Icons.arrow_drop_down,
+                              size: 22,
+                              color: Colors.black,
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  ElevatedButton(
+                      onPressed: (() async {
+                        customState3(() {
+                          isSendingCoordinateRequest = true;
+                        });
+                        await sendCoordinatesRequest();
+                        customState(() {
+                          isSendingCoordinateRequest = false;
+                          distancetoTyphoon = coordinates1.trim();
+                          distance = distancetoTyphoon!;
+                          distrackminfinal = distance;
+                        });
+                        Navigator.pop(context);
+                        Navigator.pop(context);
+                      }),
+                      child: Text((isSendingCoordinateRequest)
+                          ? 'Calculating...'
+                          : 'Calculate Distance'))
+                ],
+              );
+            }),
+          );
+        });
+  }
+
+  showTyphoonLocationDialog(Function customState3) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          content: Container(
+            height: MediaQuery.of(context).size.height * 0.6,
+            width: MediaQuery.of(context).size.width * 0.3,
+            child: StatefulBuilder(
+              builder: (context, customState2) {
+                return Column(
+                  children: [
+                    (isSearchLocation)
+                        ? Container(
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: TextField(
+                                    autofocus: true,
+                                    style: textStyles.lato_regular(
+                                        fontSize: 14, color: Colors.black),
+                                    maxLength: 30,
+                                    decoration: InputDecoration(
+                                        border: InputBorder.none,
+                                        hintText: "Search Location...",
+                                        counterText: ""),
+                                    controller: ctrlr,
+                                    onChanged: (value) =>
+                                        searchbook(value.trim(), customState2),
+                                  ),
+                                ),
+                                InkWell(
+                                  borderRadius: BorderRadius.circular(50),
+                                  onTap: (() {
+                                    customState2(() {
+                                      isSearchLocation = false;
+                                      ctrlr.clear();
+                                    });
+                                  }),
+                                  child: Container(
+                                    margin: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(50)),
+                                    child: Icon(Icons.close),
+                                  ),
+                                )
+                              ],
+                            ),
+                          )
+                        : Container(
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        'Select Typhoon Location Municipality',
+                                        style:
+                                            textStyles.lato_bold(fontSize: 16),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                InkWell(
+                                  borderRadius: BorderRadius.circular(50),
+                                  onTap: (() {
+                                    customState2(() {
+                                      isSearchLocation = true;
+                                    });
+                                  }),
+                                  child: Container(
+                                    margin: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(50)),
+                                    child: Icon(Icons.search),
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                    Divider(
+                      color: Colors.grey.shade700,
+                    ),
+                    Expanded(
+                      child: ListView(
+                        primary: false,
+                        children: (ctrlr.text.trim() == "")
+                            ? locs
+                                .map((loc) => ListTile(
+                                      title: Text(loc.munName!,
+                                          style: textStyles.lato_regular(
+                                              fontSize: 14,
+                                              color: Colors.black)),
+                                      onTap: (() {
+                                        customState3(() {
+                                          selectedTyphoonLocation =
+                                              loc.munName!;
+                                          selectedTyphoonCode = loc.munCode!;
+                                          for (Location_ locz in locs) {
+                                            if (locz.munCode == loc.munCode) {
+                                              selectedTyphoonProvname =
+                                                  locz.provName!;
+                                            }
+                                          }
+                                          // }
+                                        });
+                                        print(selectedTyphoonCode);
+                                        print(selectedTyphoonProvname);
+                                        Navigator.pop(context);
+                                      }),
+                                    ))
+                                .toList()
+                            : (suggestions.isNotEmpty)
+                                ? suggestions
+                                    .map((loc) => ListTile(
+                                          title: Text(loc.munName!,
+                                              style: textStyles.lato_regular(
+                                                  fontSize: 14,
+                                                  color: Colors.black)),
+                                          onTap: (() {
+                                            customState3(() {
+                                              selectedTyphoonLocation =
+                                                  loc.munName!;
+                                              selectedTyphoonCode =
+                                                  loc.munCode!;
+                                              for (Location_ locz in locs) {
+                                                if (locz.munCode ==
+                                                    loc.munCode) {
+                                                  selectedTyphoonProvname =
+                                                      locz.provName!;
+                                                }
+                                              }
+                                              // }
+                                            });
+                                            print(selectedTyphoonCode);
+                                            print(selectedTyphoonProvname);
+                                            Navigator.pop(context);
+                                          }),
+                                        ))
+                                    .toList()
+                                : [
+                                    Center(
+                                      child: Text(
+                                        '${ctrlr.text.trim()} does not exist.',
+                                      ),
+                                    )
+                                  ],
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
   }
 
   showSampleDialog(Function customState, String typhoonID) {
@@ -853,7 +1312,6 @@ class _recent_estimationState extends State<recent_estimation> {
                             .map((doc) => TyphoonDay.fromJson(
                                 doc.data() as Map<String, dynamic>))
                             .toList();
-
                         List<Location_> unavailableLocations = [];
                         for (TyphoonDay day in days) {
                           DateTime current = DateTime(DateTime.now().year,
@@ -869,6 +1327,7 @@ class _recent_estimationState extends State<recent_estimation> {
                             unavailableLocations.add(loc);
                           }
                         }
+                        // print("UNAVAILABLE LOCATIONS: ${unavailableLocations}");
                         return Column(
                           children: [
                             (isSearchLocation)
@@ -1005,10 +1464,17 @@ class _recent_estimationState extends State<recent_estimation> {
                                                           color: Colors.black)),
                                               onTap: (() {
                                                 customState(() {
-                                                  selectedLocation =
+                                                  selectedMunicipalName =
                                                       locs[index].munName!;
-                                                  selectedLocationCode =
+                                                  selectedMunicipalCode =
                                                       locs[index].munCode!;
+                                                  for (Location_ locz in locs) {
+                                                    if (locz.munCode ==
+                                                        locs[index].munCode) {
+                                                      selectedLocationProvname =
+                                                          locz.provName!;
+                                                    }
+                                                  }
                                                 });
                                                 Navigator.pop(context);
                                               }),
@@ -1054,12 +1520,19 @@ class _recent_estimationState extends State<recent_estimation> {
                                                                   .black)),
                                                   onTap: (() {
                                                     customState(() {
-                                                      selectedLocation =
-                                                          suggestions[index]
-                                                              .munName!;
-                                                      selectedLocationCode =
-                                                          suggestions[index]
-                                                              .munCode!;
+                                                      selectedMunicipalName =
+                                                          suggestions[index].munName!;
+                                                      selectedMunicipalCode =
+                                                          suggestions[index].munCode!;
+                                                      for (Location_ locz
+                                                          in locs) {
+                                                        if (locz.munCode ==
+                                                            suggestions[index]
+                                                                .munCode) {
+                                                          selectedLocationProvname =
+                                                              locz.provName!;
+                                                        }
+                                                      }
                                                     });
                                                     Navigator.pop(context);
                                                   }),

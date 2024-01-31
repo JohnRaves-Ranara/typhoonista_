@@ -9,8 +9,6 @@ class TyphoonDay {
   final double windSpeed;
   final double rainfall24;
   final double rainfall6;
-  double? riceArea;
-  double? yield;
   final double price;
   final double distrackmin;
   final double damageCost;
@@ -23,10 +21,7 @@ class TyphoonDay {
     required this.distrackmin,
     required this.rainfall24,
     required this.rainfall6,
-    this.riceArea,
-    this.yield,
     this.locationCode,
-    this.locationID,
     required this.id,
     required this.dateRecorded,
     required this.typhoonName,
@@ -50,8 +45,6 @@ class TyphoonDay {
       "windSpeed" : windSpeed,
       "locationCode" : locationCode,
       "locationID" : locationID,
-      "riceArea" : riceArea,
-      "yield" : yield
     };
 
   static TyphoonDay fromJson(Map<String, dynamic> json){
@@ -64,14 +57,11 @@ class TyphoonDay {
       rainfall6 : json["rainfall6"],
       rainfall24 : json["rainfall24"],
       price : json["price"],
-      distrackmin : json["distrackmin"],
+      distrackmin : json["typhoonDistanceFromLocation"],
       typhoonID : json["typhoonID"],
       typhoonName : json["typhoonName"],
       windSpeed : json["windSpeed"],
       locationCode : json["locationCode"],
-      locationID : json['locationID'],
-      riceArea: json["riceArea"],
-      yield: json["yield"]
     );
   }
 }

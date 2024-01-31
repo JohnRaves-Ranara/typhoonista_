@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:typhoonista_thesis/assets/themes/textStyles.dart';
 import 'package:typhoonista_thesis/entities/Location_.dart';
 import 'package:typhoonista_thesis/entities/TyphoonDay.dart';
@@ -21,7 +22,6 @@ class _estimator_pageState extends State<estimator_page> {
   TextEditingController windspeedController = TextEditingController();
   TextEditingController rainfall24hController = TextEditingController();
   TextEditingController rainfall6hController = TextEditingController();
-  final ricePriceCtlr = TextEditingController();
   TextEditingController areaController = TextEditingController();
   TextEditingController yieldController = TextEditingController();
   TextEditingController priceController = TextEditingController();
@@ -29,14 +29,14 @@ class _estimator_pageState extends State<estimator_page> {
   final ctrlr = TextEditingController();
   List<Location_> locs = Locations_().getLocations();
   List<Location_> suggestions = [];
-  
+
   bool isSearchLocation = false;
   final manualDistanceCtrlr = TextEditingController();
   // bool isManualDistrackMin = false;
 
-  String selectedMunicipalName = "Choose Location";
+  String selectedMunicipalName = "Select Location";
   String selectedMunicipalCode = "";
-  String selectedTyphoonLocation = "Choose Location";
+  String selectedTyphoonLocation = "Select Location";
   String selectedTyphoonCode = "";
   String selectedTyphoonProvname = "";
   String selectedLocationProvname = "";
@@ -90,8 +90,8 @@ class _estimator_pageState extends State<estimator_page> {
 
   Future<void> sendPredictionRequest() async {
     try {
-      for(Location_ loc in locs){
-        if(loc.munCode == selectedMunicipalCode){
+      for (Location_ loc in locs) {
+        if (loc.munCode == selectedMunicipalCode) {
           setState(() {
             test_area = loc.riceArea;
             test_yield = loc.riceYield;
@@ -131,9 +131,7 @@ class _estimator_pageState extends State<estimator_page> {
         print("failed");
       }
     } catch (error) {
-      setState(() {
-        print("prediction nag error: $error");
-      });
+      print("prediction nag error: $error");
     }
   }
 
@@ -245,7 +243,32 @@ class _estimator_pageState extends State<estimator_page> {
                           ),
                           InkWell(
                             onTap: (() {
-                              showDistrackminOptions();
+                              if(selectedMunicipalName=='Select Location') {
+                                showDialog(
+                                  context: context,
+                                  builder: (context){
+                                    return AlertDialog(
+                                      content: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text('Please provide your location first.'),
+                                        ],
+                                      ),
+                                      actions: [
+                                        ElevatedButton(
+                                          child: Text('OK'),
+                                          onPressed: ((){
+                                            Navigator.pop(context);
+                                          }),
+                                        )
+                                      ],
+                                    );
+                                  }
+                                );
+                              }
+                              else{
+                                showDistrackminOptions();
+                              }
                             }),
                             child: Container(
                               width: double.maxFinite,
@@ -286,43 +309,71 @@ class _estimator_pageState extends State<estimator_page> {
                               child: InkWell(
                                 borderRadius: BorderRadius.circular(8),
                                 onTap: (() async {
-                                  
+                                  setState(() {
+                                    isFetchingPrediction = true;
+                                  });
                                   for (Location_ loc in locs) {
                                     if (loc.munCode == selectedMunicipalCode) {
                                       print("LILUZIVERT");
                                       print(loc);
-                                        await sendPredictionRequest();
-                                            print("NA SET NA DILI NA NULL");
+                                      await sendPredictionRequest();
+                                      print("NA SET NA DILI NA NULL");
                                       break;
                                     }
                                   }
-                                  print("BRUHHH ${damageCostPredictionFromAPI}");
-                                  await FirestoreService().dayAdd(
-                                      null,
-                                      damageCostPredictionFromAPI.toString(),
-                                      typhNameController.text,
-                                      windspeedController.text,
-                                      rainfall24hController.text,
-                                      rainfall6hController.text,
-                                      //todo try removing the setstates idk
-                                      //todo try if the showdialogs are the error cause
-                                      selectedMunicipalName,
-                                      selectedMunicipalCode,
-                                      true,
-                                      ricePriceCtlr.text.trim(),
-                                      distrackminfinal
-                                      );
-                                  
                                   setState(() {
+                                    print("beat the ");
+                                    isFetchingPrediction = false;
+                                    print("koto nai");
+                                  });
+                                  print(
+                                      "BRUHHH ${damageCostPredictionFromAPI}");
+                                  try {
+                                    setState(() {
+                                      isAddingTyphoon = true;
+                                    });
+                                    await FirestoreService().addDay(
+                                        damageCost: double.parse(
+                                            damageCostPredictionFromAPI!
+                                                .toStringAsFixed(2)),
+                                        windSpeed: double.parse(
+                                            windspeedController.text.trim()),
+                                        rainfall24: double.parse(
+                                            rainfall24hController.text.trim()),
+                                        rainfall6: double.parse(
+                                            rainfall6hController.text.trim()),
+                                        disTrackMin:
+                                            double.parse(distrackminfinal),
+                                        location: selectedMunicipalName,
+                                        locationCode: selectedMunicipalCode,
+                                        typhoonName:
+                                            typhNameController.text.trim(),
+                                        isFirstDay: true,
+                                        price: double.parse(
+                                            priceController.text.trim()));
+                                  } catch (e) {
+                                    print("ERROR SA DB OH: $e");
+                                  }
+                                  print("HUMANA OG ADD SA DB");
+                                  setState(() {
+                                    print("pssy");
+                                    isAddingTyphoon = false;
+                                    print("drake");
+                                  });
+
+                                  setState(() {
+                                    print("resetting");
                                     selectedMunicipalName = "Choose Location";
                                     selectedMunicipalCode = "";
+                                    distrackminfinal = "Enter distrackmin...";
+                                    print("resetted");
                                   });
-                                  
-                                  // typhNameController.clear();
-                                  // windspeedController.clear();
-                                  // rainfall24hController.clear();
-                                  // rainfall6hController.clear();
-                                  // ricePriceCtlr.clear();
+
+                                  typhNameController.clear();
+                                  windspeedController.clear();
+                                  rainfall24hController.clear();
+                                  rainfall6hController.clear();
+                                  priceController.clear();
                                 }),
                                 child: Ink(
                                   padding: EdgeInsets.symmetric(horizontal: 30),
@@ -367,7 +418,7 @@ class _estimator_pageState extends State<estimator_page> {
         ));
   }
 
-  bruh({required double num}){
+  bruh({required double num}) {
     print('Bdsadasdasd');
   }
 
@@ -537,39 +588,212 @@ class _estimator_pageState extends State<estimator_page> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            content: Container(
-              height: MediaQuery.of(context).size.height * 0.5,
-              width: MediaQuery.of(context).size.width * 0.5,
-              child: Row(
-                children: [
-                  Expanded(
-                    child: InkWell(
-                      onTap: (() {
-                        showAutomaticDistanceCalculation();
-                      }),
-                      child: Container(
-                        color: Colors.blue,
-                        child: Center(
-                          child: Text('AUTOMATIC'),
-                        ),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: MediaQuery.of(context).size.width * 0.6,
+                  margin: EdgeInsets.symmetric(vertical: 30, horizontal: 20),
+                  child: Column(
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Text(
+                            'Select a Method',
+                            style: textStyles.lato_bold(fontSize: 24),
+                          ),
+                          Spacer(),
+                          Image.asset(
+                            'lib/assets/images/typhoonista_logo.png',
+                            height: 55,
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                        ],
                       ),
-                    ),
+                      SizedBox(
+                        height: 30,
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: InkWell(
+                              onTap: (() {
+                                showAutomaticDistanceCalculation();
+                              }),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    border: Border.all(
+                                        width: 1,
+                                        style: BorderStyle.solid,
+                                        color: Colors.grey.shade600),
+                                    borderRadius: BorderRadius.circular(15)),
+                                child: Container(
+                                  margin: EdgeInsets.all(25),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Automatic',
+                                        style:
+                                            textStyles.lato_bold(fontSize: 28),
+                                      ),
+                                      SizedBox(height: 20),
+                                      Text(
+                                        'This option utilizes an API that lets you compute for the distance of the typhoon from the location that you are predicting from automatically.',
+                                        style:
+                                            textStyles.lato_light(fontSize: 17),
+                                      ),
+                                      SizedBox(height: 25),
+                                      Row(
+                                        children: [
+                                          Container(
+                                            child: Row(
+                                              children: [
+                                                CircleAvatar(
+                                                  radius: 8,
+                                                  backgroundColor: Colors.red,
+                                                ),
+                                                SizedBox(
+                                                  width: 10,
+                                                ),
+                                                Text(
+                                                  'Less Accurate',
+                                                  style:
+                                                      textStyles.lato_regular(
+                                                          fontSize: 15),
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            width: 15,
+                                          ),
+                                          Container(
+                                            child: Row(
+                                              children: [
+                                                CircleAvatar(
+                                                  radius: 8,
+                                                  backgroundColor: Colors.green,
+                                                ),
+                                                SizedBox(
+                                                  width: 10,
+                                                ),
+                                                Text(
+                                                  'Less Time Consumption',
+                                                  style:
+                                                      textStyles.lato_regular(
+                                                          fontSize: 15),
+                                                )
+                                              ],
+                                            ),
+                                          )
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            width: 20,
+                          ),
+                          Expanded(
+                            child: InkWell(
+                              onTap: (() {
+                                showManualDistanceCalculation();
+                              }),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    border: Border.all(
+                                        width: 1,
+                                        style: BorderStyle.solid,
+                                        color: Colors.grey.shade600),
+                                    borderRadius: BorderRadius.circular(15)),
+                                child: Container(
+                                  margin: EdgeInsets.all(25),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Manual',
+                                        style:
+                                            textStyles.lato_bold(fontSize: 28),
+                                      ),
+                                      SizedBox(height: 20),
+                                      Text(
+                                        'This option lets you input your desired distance from your own computation. This option is suggested if you want more accurate predictions.',
+                                        style:
+                                            textStyles.lato_light(fontSize: 17),
+                                      ),
+                                      SizedBox(height: 25),
+                                      Row(
+                                        children: [
+                                          Container(
+                                            child: Row(
+                                              children: [
+                                                CircleAvatar(
+                                                  radius: 8,
+                                                  backgroundColor: Colors.green,
+                                                ),
+                                                SizedBox(
+                                                  width: 10,
+                                                ),
+                                                Text(
+                                                  'More Accurate',
+                                                  style:
+                                                      textStyles.lato_regular(
+                                                          fontSize: 15),
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            width: 15,
+                                          ),
+                                          Container(
+                                            child: Row(
+                                              children: [
+                                                CircleAvatar(
+                                                  radius: 8,
+                                                  backgroundColor: Colors.red,
+                                                ),
+                                                SizedBox(
+                                                  width: 10,
+                                                ),
+                                                Text(
+                                                  'Time Consuming',
+                                                  style:
+                                                      textStyles.lato_regular(
+                                                          fontSize: 15),
+                                                )
+                                              ],
+                                            ),
+                                          )
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ],
                   ),
-                  Expanded(
-                    child: InkWell(
-                      onTap: (() {
-                        showManualDistanceCalculation();
-                      }),
-                      child: Container(
-                        color: Colors.red,
-                        child: Center(
-                          child: Text('MANUAL'),
-                        ),
-                      ),
-                    ),
-                  )
-                ],
-              ),
+                ),
+              ],
             ),
           );
         });
@@ -580,24 +804,100 @@ class _estimator_pageState extends State<estimator_page> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            content: StatefulBuilder(builder: (context, customState4) {
-              return Column(
-                children: [
-                  Text("Enter distance in km"),
-                  TextField(
-                    controller: manualDistanceCtrlr,
+            backgroundColor: Colors.white,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            contentPadding: EdgeInsets.symmetric(vertical: 40, horizontal: 30),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 15,
+                    ),
+                    Text(
+                      'Manual',
+                      style: textStyles.lato_bold(fontSize: 28),
+                    ),
+                    Spacer(),
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.25,
+                      child: Text(
+                        'This option lets you input your desired distance from your own computation. This option is suggested if you want more accurate predictions.',
+                        style: textStyles.lato_light(fontSize: 17),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 15,
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 35,
+                ),
+                TextField(
+                  style: textStyles.lato_regular(fontSize: 22),
+                  controller: manualDistanceCtrlr,
+                  decoration: InputDecoration(
+                      contentPadding:
+                          EdgeInsets.symmetric(vertical: 30, horizontal: 20),
+                      labelStyle: textStyles.lato_light(
+                          color: Colors.grey.withOpacity(0.9), fontSize: 18),
+                      label: Text(
+                        'Distance of Typhoon and Location (in km)',
+                      ),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                              width: 1,
+                              color: Colors.grey.shade400,
+                              style: BorderStyle.solid))),
+                ),
+                SizedBox(
+                  height: 30,
+                ),
+                InkWell(
+                  borderRadius: BorderRadius.circular(15),
+                  onTap: (() {
+                    setState(() {
+                      distrackminfinal = manualDistanceCtrlr.text.trim();
+                      manualDistanceCtrlr.clear();
+                    });
+
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                  }),
+                  child: Container(
+                    height: 65,
+                    width: MediaQuery.of(context).size.width * 0.6,
+                    decoration: BoxDecoration(
+                        color: Colors.blue,
+                        borderRadius: BorderRadius.circular(15)),
+                    child: Row(children: [
+                      SizedBox(
+                        width: 30,
+                      ),
+                      Text(
+                        'Confirm',
+                        style: textStyles.lato_bold(
+                            color: Colors.white, fontSize: 20),
+                      ),
+                      Spacer(),
+                      Icon(
+                        Icons.arrow_right_alt,
+                        size: 45,
+                        color: Colors.white,
+                      ),
+                      SizedBox(
+                        width: 30,
+                      ),
+                    ]),
                   ),
-                  ElevatedButton(
-                      onPressed: (() {
-                        setState(() {
-                          distrackminfinal = manualDistanceCtrlr.text.trim();
-                        });
-                        Navigator.popUntil(context, (route) => route.isFirst);
-                      }),
-                      child: Text('HEVABI'))
-                ],
-              );
-            }),
+                ),
+              ],
+            ),
           );
         });
   }
@@ -607,86 +907,182 @@ class _estimator_pageState extends State<estimator_page> {
         context: context,
         builder: (context) {
           return AlertDialog(
+            backgroundColor: Colors.white,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            contentPadding: EdgeInsets.symmetric(vertical: 40, horizontal: 30),
             content: StatefulBuilder(builder: (context, customState3) {
               return Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text("Selected Location"),
-                  ),
-                  Container(
-                    width: double.maxFinite,
-                    height: 60,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5),
-                        border: Border.all(
-                            width: 1,
-                            color: Colors.grey.shade600,
-                            style: BorderStyle.solid)),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Text(
-                        (selectedMunicipalName == "Choose Location")
-                            ? 'No municipal location selected'
-                            : selectedMunicipalName,
-                        style: textStyles.lato_regular(fontSize: 17),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: 15,
                       ),
-                    ),
+                      Text(
+                        'Automatic',
+                        style: textStyles.lato_bold(fontSize: 28),
+                      ),
+                      Spacer(),
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.25,
+                        child: Text(
+                          'This option utilizes an API that lets you compute for the distance of the typhoon from the location that you are predicting from automatically.',
+                          style: textStyles.lato_light(fontSize: 17),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 15,
+                      ),
+                    ],
                   ),
-                  const Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text("Select Location of Typhoon"),
+                  SizedBox(
+                    height: 35,
                   ),
-                  InkWell(
-                    onTap: (() {
-                      showTyphoonLocationDialog(customState3);
-                    }),
-                    child: Container(
-                      width: double.maxFinite,
-                      height: 60,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(5),
-                          border: Border.all(
-                              width: 1,
-                              color: Colors.grey.shade600,
-                              style: BorderStyle.solid)),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.center,
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              selectedTyphoonLocation,
-                              style: textStyles.lato_regular(fontSize: 17),
+                              'Location',
+                              style: textStyles.lato_regular(fontSize: 14),
                             ),
-                            Icon(
-                              Icons.arrow_drop_down,
-                              size: 22,
-                              color: Colors.black,
-                            )
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Container(
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(
+                                      color: Colors.grey.shade400,
+                                      style: BorderStyle.solid,
+                                      width: 1),
+                                  color: Colors.grey.shade300),
+                              height: 70,
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  SizedBox(
+                                    width: 15,
+                                  ),
+                                  Text(
+                                    selectedMunicipalName,
+                                    style: textStyles.lato_bold(fontSize: 20),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ],
                         ),
                       ),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Typhoon Location',
+                              style: textStyles.lato_regular(fontSize: 14),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            InkWell(
+                              borderRadius: BorderRadius.circular(10),
+                              onTap: (() {
+                                showTyphoonLocationDialog(customState3);
+                              }),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(
+                                      color: Colors.grey.shade400,
+                                      style: BorderStyle.solid,
+                                      width: 1),
+                                ),
+                                height: 70,
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    SizedBox(
+                                      width: 15,
+                                    ),
+                                    Text(
+                                      selectedTyphoonLocation,
+                                      style: textStyles.lato_bold(fontSize: 20),
+                                    ),
+                                    Spacer(),
+                                    Icon(
+                                      Icons.arrow_drop_down,
+                                      size: 22,
+                                      color: Colors.black,
+                                    ),
+                                    SizedBox(
+                                      width: 15,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                  SizedBox(
+                    height: 30,
+                  ),
+                  InkWell(
+                    borderRadius: BorderRadius.circular(15),
+                    onTap: (() async {
+                      customState3(() {
+                        isSendingCoordinateRequest = true;
+                      });
+                      await sendCoordinatesRequest();
+                      customState3(() {
+                        isSendingCoordinateRequest = false;
+                        distancetoTyphoon = coordinates1.trim();
+                        distance = distancetoTyphoon!;
+                        distrackminfinal = distance;
+                      });
+                      Navigator.pop(context);
+                      Navigator.pop(context);
+                    }),
+                    child: Container(
+                      height: 65,
+                      width: MediaQuery.of(context).size.width * 0.6,
+                      decoration: BoxDecoration(
+                          color: Colors.blue,
+                          borderRadius: BorderRadius.circular(15)),
+                      child: Row(children: [
+                        SizedBox(
+                          width: 30,
+                        ),
+                        Text(
+                          (isSendingCoordinateRequest)
+                              ? 'Calculating Distance...'
+                              : 'Calculate Distance',
+                          style: textStyles.lato_bold(
+                              color: Colors.white, fontSize: 20),
+                        ),
+                        Spacer(),
+                        Icon(
+                          Icons.arrow_right_alt,
+                          size: 45,
+                          color: Colors.white,
+                        ),
+                        SizedBox(
+                          width: 30,
+                        ),
+                      ]),
                     ),
                   ),
-                  ElevatedButton(
-                      onPressed: (() async {
-                        customState3(() {
-                          isSendingCoordinateRequest = true;
-                        });
-                        await sendCoordinatesRequest();
-                        customState3(() {
-                          isSendingCoordinateRequest = false;
-                          distancetoTyphoon = coordinates1.trim();
-                          distance = distancetoTyphoon!;
-                          distrackminfinal = distance;
-                        });
-                        Navigator.popUntil(context, (route) => route.isFirst);
-                      }),
-                      child: Text((isSendingCoordinateRequest)
-                          ? 'Calculating...'
-                          : 'Calculate Distance'))
                 ],
               );
             }),
