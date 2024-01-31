@@ -131,8 +131,11 @@ class _history_pageState extends State<history_page> {
                         if (snapshot.hasError) {
                           return Center(child: Text('An error has occured.', style: textStyles.lato_regular(fontSize: 16),));
                         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                          return Center(child: Text("No data.", style: textStyles.lato_regular(fontSize: 16),));
+                        } else if(snapshot.connectionState == ConnectionState.waiting){
                           return Center(child: Text("Loading data...", style: textStyles.lato_regular(fontSize: 16),));
-                        } else {
+                        } 
+                        else {
                           final List<TyphoonDay> days = snapshot.data!;
                           return DataTable(
                             showCheckboxColumn: false,
@@ -204,7 +207,9 @@ class _history_pageState extends State<history_page> {
     Query query = FirebaseFirestore.instance
         .collection('users')
         .doc('test-user')
-        .collection('allDays');
+        .collection('allDays')
+        .orderBy('dateRecorded')
+        ;
 
     if (selectedDayNumber != 'All') {
       query = query.where('day', isEqualTo: selectedDayNumber);

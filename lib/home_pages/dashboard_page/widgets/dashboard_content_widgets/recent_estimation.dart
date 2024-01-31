@@ -17,6 +17,8 @@ import 'package:typhoonista_thesis/assets/themes/textStyles.dart';
 import 'package:typhoonista_thesis/entities/DamageCostBar.dart';
 import 'package:typhoonista_thesis/entities/Location_.dart';
 import 'package:typhoonista_thesis/services/locations_.dart';
+import 'package:loading_indicator/loading_indicator.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class recent_estimation extends StatefulWidget {
   const recent_estimation({super.key});
@@ -55,7 +57,7 @@ class _recent_estimationState extends State<recent_estimation> {
   double? damageCostPredictionFromAPI;
   bool isSendingCoordinateRequest = false;
   bool isSendingPredictionRequest = false;
-  String distrackminfinal = 'Enter distrackmin...';
+  String distrackminfinal = 'Distance of Typhoon to Location';
   bool isFetchingPrediction = false;
   bool isAddingTyphoon = false;
   double? test_area;
@@ -315,6 +317,8 @@ class _recent_estimationState extends State<recent_estimation> {
                                                       context: context,
                                                       builder: (context) {
                                                         return AlertDialog(
+                                                          backgroundColor:
+                                                              Colors.white,
                                                           shape: RoundedRectangleBorder(
                                                               borderRadius:
                                                                   BorderRadius
@@ -325,42 +329,34 @@ class _recent_estimationState extends State<recent_estimation> {
                                                             builder: (context,
                                                                 customState) {
                                                               return Column(
-                                                                mainAxisSize: MainAxisSize.min,
+                                                                mainAxisSize:
+                                                                    MainAxisSize
+                                                                        .min,
                                                                 children: [
                                                                   Container(
-                                                                    decoration:
-                                                                        BoxDecoration(
-                                                                            // color: Colors.teal,
-                                                                            borderRadius:
-                                                                                BorderRadius.circular(20)),
-                                                                    // height: MediaQuery.of(
-                                                                    //             context)
-                                                                    //         .size
-                                                                    //         .height *
-                                                                    //     0.8,
-                                                                    width: MediaQuery.of(
-                                                                                context)
-                                                                            .size
-                                                                            .width *
-                                                                        0.4,
-                                                                    child: (isFetchingPrediction)
-                                                                    ?
-                                                                    fetchingPrediction()
-                                                                    :
-                                                                    (isAddingTyphoon)
-                                                                    ?
-                                                                    addingToDatabase()
-                                                                    :
-                                                                    (isEstimationError)
-                                                                    ?
-                                                                    estimationError(errorMessage!, customState)
-                                                                    :
-                                                                    (isEstimationSuccess)
-                                                                    ?
-                                                                    Information(customState)
-                                                                    :
-                                                                    add_day(recentEstimation, customState)
-                                                                  ),
+                                                                      decoration:
+                                                                          BoxDecoration(
+                                                                              // color: Colors.teal,
+                                                                              borderRadius: BorderRadius.circular(
+                                                                                  20)),
+                                                                      // height: MediaQuery.of(
+                                                                      //             context)
+                                                                      //         .size
+                                                                      //         .height *
+                                                                      //     0.8,
+                                                                      width: MediaQuery.of(context)
+                                                                              .size
+                                                                              .width *
+                                                                          0.4,
+                                                                      child: (isFetchingPrediction)
+                                                                          ? fetchingPrediction()
+                                                                          : (isAddingTyphoon)
+                                                                              ? addingToDatabase()
+                                                                              : (isEstimationError)
+                                                                                  ? estimationError(errorMessage!, customState)
+                                                                                  : (isEstimationSuccess)
+                                                                                      ? Information(customState)
+                                                                                      : add_day(recentEstimation, customState)),
                                                                 ],
                                                               );
                                                             },
@@ -401,47 +397,80 @@ class _recent_estimationState extends State<recent_estimation> {
     );
   }
 
-  Widget estimationError(String err, Function customState){
+  Widget estimationError(String err, Function customState) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Icon(Icons.error, size: 200, color: Colors.red,),
-        Text('ERROR: $err'),
-        ElevatedButton(
-          onPressed: ((){
-            customState((){
-              isEstimationError = false;
-              errorMessage = '';
-            });
-            Navigator.pop(context);
-          }),
-          child: Text('OK')
-          )
+        Icon(
+          Icons.error,
+          size: 130,
+          color: Colors.red,
+        ),
+        SizedBox(
+          height: 20,
+        ),
+        Text(
+          'ERROR: $err',
+          style: textStyles.lato_bold(fontSize: 22),
+        ),
+        SizedBox(
+          height: 34,
+        ),
+        InkWell(
+          borderRadius: BorderRadius.circular(10),
+          onTap: (() {}),
+          child: Container(
+            height: 40,
+            width: 100,
+            decoration: BoxDecoration(
+                color: Colors.blue, borderRadius: BorderRadius.circular(10)),
+            child: Center(
+              child: Text(
+                'OK',
+                style: textStyles.lato_bold(fontSize: 24, color: Colors.white),
+              ),
+            ),
+          ),
+        )
       ],
     );
   }
 
-  Widget fetchingPrediction(){
+  Widget fetchingPrediction() {
     return Column(
       children: [
-        Container(
-          height: 300,
-          child: Center(child: CircularProgressIndicator()),
+        SizedBox(
+          height: 50,
         ),
-        Text('Estimating...')
+        const SpinKitPouringHourGlassRefined(size: 120, color: Colors.blue),
+        SizedBox(height: 40),
+        Text(
+          'Estimating. This may take a while...',
+          style: textStyles.lato_bold(fontSize: 22),
+        ),
+        SizedBox(
+          height: 40,
+        ),
       ],
     );
   }
 
-  Widget addingToDatabase(){
+  Widget addingToDatabase() {
     return Column(
       children: [
-        Container(
-          height: 300,
-          child: Center(child: CircularProgressIndicator()),
+        SizedBox(
+          height: 50,
         ),
-        Text('Adding estimation to database...')
+        const SpinKitPouringHourGlassRefined(size: 120, color: Colors.blue),
+        SizedBox(height: 40),
+        Text(
+          'Adding Estimation to Database...',
+          style: textStyles.lato_bold(fontSize: 22),
+        ),
+        SizedBox(
+          height: 40,
+        ),
       ],
     );
   }
@@ -612,7 +641,9 @@ class _recent_estimationState extends State<recent_estimation> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: 30,),
+          SizedBox(
+            height: 30,
+          ),
           Text(
             "Add Day",
             style: textStyles.lato_black(fontSize: 35),
@@ -634,8 +665,22 @@ class _recent_estimationState extends State<recent_estimation> {
                           EdgeInsets.symmetric(vertical: 0, horizontal: 10),
                       fillColor: Colors.white,
                       labelStyle: textStyles.lato_light(
-                          color: Colors.grey.withOpacity(0.9)),
-                      border: OutlineInputBorder(),
+                          color: Colors.black),
+                      enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Colors.grey.shade600.withOpacity(0.5),
+                              width: 1,
+                              style: BorderStyle.solid)),
+                      focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Colors.grey.shade600,
+                              width: 1,
+                              style: BorderStyle.solid)),
+                      border: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Colors.grey.shade600.withOpacity(0.5),
+                              width: 1,
+                              style: BorderStyle.solid)),
                       labelText: "Windspeed"),
                 ),
                 SizedBox(
@@ -650,8 +695,22 @@ class _recent_estimationState extends State<recent_estimation> {
                           EdgeInsets.symmetric(vertical: 0, horizontal: 10),
                       fillColor: Colors.white,
                       labelStyle: textStyles.lato_light(
-                          color: Colors.grey.withOpacity(0.9)),
-                      border: OutlineInputBorder(),
+                          color: Colors.black),
+                      enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Colors.grey.shade600.withOpacity(0.5),
+                              width: 1,
+                              style: BorderStyle.solid)),
+                      focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Colors.grey.shade600,
+                              width: 1,
+                              style: BorderStyle.solid)),
+                      border: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Colors.grey.shade600.withOpacity(0.5),
+                              width: 1,
+                              style: BorderStyle.solid)),
                       labelText: "Rainfall (24H)"),
                 ),
                 SizedBox(
@@ -666,8 +725,22 @@ class _recent_estimationState extends State<recent_estimation> {
                           EdgeInsets.symmetric(vertical: 0, horizontal: 10),
                       fillColor: Colors.white,
                       labelStyle: textStyles.lato_light(
-                          color: Colors.grey.withOpacity(0.9)),
-                      border: OutlineInputBorder(),
+                          color: Colors.black),
+                      enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Colors.grey.shade600.withOpacity(0.5),
+                              width: 1,
+                              style: BorderStyle.solid)),
+                      focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Colors.grey.shade600,
+                              width: 1,
+                              style: BorderStyle.solid)),
+                      border: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Colors.grey.shade600.withOpacity(0.5),
+                              width: 1,
+                              style: BorderStyle.solid)),
                       labelText: "Rainfall (6H)"),
                 ),
                 SizedBox(
@@ -682,8 +755,22 @@ class _recent_estimationState extends State<recent_estimation> {
                           EdgeInsets.symmetric(vertical: 0, horizontal: 10),
                       fillColor: Colors.white,
                       labelStyle: textStyles.lato_light(
-                          color: Colors.grey.withOpacity(0.9)),
-                      border: OutlineInputBorder(),
+                          color: Colors.black),
+                      enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Colors.grey.shade600.withOpacity(0.5),
+                              width: 1,
+                              style: BorderStyle.solid)),
+                      focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Colors.grey.shade600,
+                              width: 1,
+                              style: BorderStyle.solid)),
+                      border: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Colors.grey.shade600.withOpacity(0.5),
+                              width: 1,
+                              style: BorderStyle.solid)),
                       labelText: "Rice Price (per kilo)"),
                 ),
                 SizedBox(
@@ -703,7 +790,7 @@ class _recent_estimationState extends State<recent_estimation> {
                     decoration: BoxDecoration(
                         border: Border.all(
                             width: 1,
-                            color: Colors.grey.shade600,
+                            color: Colors.grey.shade600.withOpacity(0.5),
                             style: BorderStyle.solid),
                         borderRadius: BorderRadius.circular(5)),
                     child: Padding(
@@ -714,7 +801,7 @@ class _recent_estimationState extends State<recent_estimation> {
                         children: [
                           Text(
                             selectedMunicipalName,
-                            style: textStyles.lato_regular(fontSize: 17),
+                            style: (selectedMunicipalName == 'Select Location') ? textStyles.lato_light(fontSize: 17) : textStyles.lato_regular(fontSize: 17),
                           ),
                           Icon(
                             Icons.arrow_drop_down,
@@ -730,34 +817,12 @@ class _recent_estimationState extends State<recent_estimation> {
                   height: 10,
                 ),
                 InkWell(
-                  onTap: !haveAdded
-                      ? (() {
-                          if (selectedMunicipalName == 'Select Location') {
-                            showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return AlertDialog(
-                                    content: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                            'Please provide your location first.'),
-                                      ],
-                                    ),
-                                    actions: [
-                                      ElevatedButton(
-                                        child: Text('OK'),
-                                        onPressed: (() {
-                                          Navigator.pop(context);
-                                        }),
-                                      )
-                                    ],
-                                  );
-                                });
-                          } else {
-                            showDistrackminOptions(customState);
-                          }
-                        })
+                  onTap: (!haveAdded)
+                      ? (selectedMunicipalName == 'Select Location')
+                          ? null
+                          : (() {
+                              showDistrackminOptions(customState);
+                            })
                       : null,
                   child: Container(
                     height: 48,
@@ -765,7 +830,7 @@ class _recent_estimationState extends State<recent_estimation> {
                     decoration: BoxDecoration(
                         border: Border.all(
                             width: 1,
-                            color: Colors.grey.shade600,
+                            color: Colors.grey.shade600.withOpacity(0.5),
                             style: BorderStyle.solid),
                         borderRadius: BorderRadius.circular(5)),
                     child: Padding(
@@ -776,13 +841,23 @@ class _recent_estimationState extends State<recent_estimation> {
                         children: [
                           Text(
                             distrackminfinal,
-                            style: textStyles.lato_regular(fontSize: 17),
+                            style: (distrackminfinal=='Distance of Typhoon to Location') ? textStyles.lato_light(fontSize: 17) : textStyles.lato_regular(fontSize: 17),
                           ),
-                          Icon(
-                            Icons.arrow_drop_down,
-                            size: 22,
-                            color: Colors.black,
-                          )
+                          (selectedMunicipalName == 'Select Location')
+                              ? Tooltip(
+                                  message:
+                                      "Please provide your location first.",
+                                  child: Icon(
+                                    Icons.info,
+                                    size: 16,
+                                    color: Colors.blue,
+                                  ),
+                                )
+                              : Icon(
+                                  Icons.arrow_drop_down,
+                                  size: 22,
+                                  color: Colors.black,
+                                )
                         ],
                       ),
                     ),
@@ -866,7 +941,7 @@ class _recent_estimationState extends State<recent_estimation> {
                           selectedTyphoonLocation = "Choose Location";
                           selectedTyphoonCode = "";
                           selectedLocationProvname = "";
-                          distrackminfinal = "Enter distrackmin...";
+                          distrackminfinal = "Distance of Typhoon to Location";
                           windspeedCtlr.clear();
                           rainfall24Ctlr.clear();
                           rainfall6Ctlr.clear();
@@ -897,20 +972,27 @@ class _recent_estimationState extends State<recent_estimation> {
               ),
             ),
           ),
-          SizedBox(height: 30,),
+          SizedBox(
+            height: 30,
+          ),
         ],
       ),
     );
   }
 
   Widget Information(Function customState) {
+    customState(() {
+      haveAdded = true;
+    });
     return Container(
-      // constraints: BoxConstraints(minHeight: 100),
       padding: EdgeInsets.symmetric(horizontal: 40),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          SizedBox(
+            height: 20,
+          ),
           Text(
             "Estimation",
             style: textStyles.lato_black(fontSize: 35),
@@ -928,80 +1010,116 @@ class _recent_estimationState extends State<recent_estimation> {
                 borderRadius: BorderRadius.circular(20),
               ),
               child: (haveAdded)
-                  ? Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Typhoon Name::',
-                          style: textStyles.lato_light(fontSize: 12),
+                        Expanded(
+                          child: Container(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Typhoon Name:',
+                                  style: textStyles.lato_light(fontSize: 12),
+                                ),
+                                Text(
+                                  '${newlyAddedDayInformation!.typhoonName}',
+                                  style: textStyles.lato_black(fontSize: 16),
+                                ),
+                                SizedBox(height: 10),
+                                Text(
+                                  'Predicted Damage Cost:',
+                                  style: textStyles.lato_light(fontSize: 12),
+                                ),
+                                Text(
+                                  '₱ ${NumberFormat('#,##0.00', 'en_US').format(newlyAddedDayInformation!.damageCost)}',
+                                  style: textStyles.lato_black(fontSize: 16),
+                                ),
+                                SizedBox(height: 10),
+                                Text(
+                                  'Day:',
+                                  style: textStyles.lato_light(fontSize: 12),
+                                ),
+                                Text(
+                                  '${newlyAddedDayInformation!.day}',
+                                  style: textStyles.lato_black(fontSize: 16),
+                                ),
+                                SizedBox(height: 10),
+                                Text(
+                                  'Date Recorded:',
+                                  style: textStyles.lato_light(fontSize: 12),
+                                ),
+                                Text(
+                                  '${DateTime.parse(newlyAddedDayInformation!.dateRecorded).year}-${DateTime.parse(newlyAddedDayInformation!.dateRecorded).month}-${DateTime.parse(newlyAddedDayInformation!.dateRecorded).day} ${DateTime.parse(newlyAddedDayInformation!.dateRecorded).hour}:${DateTime.parse(newlyAddedDayInformation!.dateRecorded).minute}',
+                                  style: textStyles.lato_black(fontSize: 16),
+                                ),
+                                SizedBox(height: 10),
+                                Text(
+                                  'Windspeed:',
+                                  style: textStyles.lato_light(fontSize: 12),
+                                ),
+                                Text(
+                                  '${newlyAddedDayInformation!.windSpeed} kph',
+                                  style: textStyles.lato_black(fontSize: 16),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-                        Text(
-                          '${newlyAddedDayInformation!.typhoonName}',
-                          style: textStyles.lato_black(fontSize: 16),
-                        ),
-                        SizedBox(height: 10),
-                        Text(
-                          'Predicted Damage Cost:',
-                          style: textStyles.lato_light(fontSize: 12),
-                        ),
-                        Text(
-                          '${newlyAddedDayInformation!.damageCost}',
-                          style: textStyles.lato_black(fontSize: 16),
-                        ),
-                        SizedBox(height: 10),
-                        Text(
-                          'Day:',
-                          style: textStyles.lato_light(fontSize: 12),
-                        ),
-                        Text(
-                          '${newlyAddedDayInformation!.day}',
-                          style: textStyles.lato_black(fontSize: 16),
-                        ),
-                        SizedBox(height: 10),
-                        Text(
-                          'Date Recorded:',
-                          style: textStyles.lato_light(fontSize: 12),
-                        ),
-                        Text(
-                          '${newlyAddedDayInformation!.dateRecorded}',
-                          style: textStyles.lato_black(fontSize: 16),
-                        ),
-                        SizedBox(height: 10),
-                        Text(
-                          'Windspeed:',
-                          style: textStyles.lato_light(fontSize: 12),
-                        ),
-                        Text(
-                          '${newlyAddedDayInformation!.windSpeed}',
-                          style: textStyles.lato_black(fontSize: 16),
-                        ),
-                        SizedBox(height: 10),
-                        Text(
-                          'Rainfall (24H):',
-                          style: textStyles.lato_light(fontSize: 12),
-                        ),
-                        Text(
-                          '${newlyAddedDayInformation!.rainfall24}',
-                          style: textStyles.lato_black(fontSize: 16),
-                        ),
-                        Text(
-                          'Rainfall (6H):',
-                          style: textStyles.lato_light(fontSize: 12),
-                        ),
-                        Text(
-                          '${newlyAddedDayInformation!.rainfall6}',
-                          style: textStyles.lato_black(fontSize: 16),
-                        ),
-                        SizedBox(height: 10),
-                        Text(
-                          'Location:',
-                          style: textStyles.lato_light(fontSize: 12),
-                        ),
-                        Text(
-                          '${newlyAddedDayInformation!.location}',
-                          style: textStyles.lato_black(fontSize: 16),
-                        ),
+                        Expanded(
+                          child: Container(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Rainfall (24H):',
+                                  style: textStyles.lato_light(fontSize: 12),
+                                ),
+                                Text(
+                                  '${newlyAddedDayInformation!.rainfall24} mm',
+                                  style: textStyles.lato_black(fontSize: 16),
+                                ),
+                                SizedBox(height: 10),
+                                Text(
+                                  'Rainfall (6H):',
+                                  style: textStyles.lato_light(fontSize: 12),
+                                ),
+                                Text(
+                                  '${newlyAddedDayInformation!.rainfall6} mm',
+                                  style: textStyles.lato_black(fontSize: 16),
+                                ),
+                                SizedBox(height: 10),
+                                Text(
+                                  'Location:',
+                                  style: textStyles.lato_light(fontSize: 12),
+                                ),
+                                Text(
+                                  '${newlyAddedDayInformation!.location}',
+                                  style: textStyles.lato_black(fontSize: 16),
+                                ),
+                                SizedBox(height: 10),
+                                Text(
+                                  'Typhoon to Location Distance:',
+                                  style: textStyles.lato_light(fontSize: 12),
+                                ),
+                                Text(
+                                  '${newlyAddedDayInformation!.distrackmin} km',
+                                  style: textStyles.lato_black(fontSize: 16),
+                                ),
+                                SizedBox(height: 10),
+                                Text(
+                                  'Rice Price (per kilo):',
+                                  style: textStyles.lato_light(fontSize: 12),
+                                ),
+                                Text(
+                                  '${newlyAddedDayInformation!.price}',
+                                  style: textStyles.lato_black(fontSize: 16),
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
                       ],
                     )
                   : SizedBox()),
@@ -1046,6 +1164,9 @@ class _recent_estimationState extends State<recent_estimation> {
                 ),
               ),
             ),
+          ),
+          SizedBox(
+            height: 20,
           ),
         ],
       ),
@@ -1144,9 +1265,11 @@ class _recent_estimationState extends State<recent_estimation> {
                               child: Container(
                                 decoration: BoxDecoration(
                                     border: Border.all(
-                                        width: 1,
-                                        style: BorderStyle.solid,
-                                        color: Colors.grey.shade600),
+                                      width: 1,
+                                      style: BorderStyle.solid,
+                                      color:
+                                          Colors.grey.shade600.withOpacity(0.5),
+                                    ),
                                     borderRadius: BorderRadius.circular(15)),
                                 child: Container(
                                   margin: EdgeInsets.all(25),
@@ -1229,9 +1352,11 @@ class _recent_estimationState extends State<recent_estimation> {
                               child: Container(
                                 decoration: BoxDecoration(
                                     border: Border.all(
-                                        width: 1,
-                                        style: BorderStyle.solid,
-                                        color: Colors.grey.shade600),
+                                      width: 1,
+                                      style: BorderStyle.solid,
+                                      color:
+                                          Colors.grey.shade600.withOpacity(0.5),
+                                    ),
                                     borderRadius: BorderRadius.circular(15)),
                                 child: Container(
                                   margin: EdgeInsets.all(25),

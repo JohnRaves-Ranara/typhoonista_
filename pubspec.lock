@@ -190,22 +190,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.3"
-  flutter_neumorphic:
+  flutter_spinkit:
     dependency: "direct main"
     description:
-      name: flutter_neumorphic
-      sha256: "02606d937a3ceaa497b8a7c25f3efa95188bf93d77ebf0bd6552e432db4c2ec6"
+      name: flutter_spinkit
+      sha256: b39c753e909d4796906c5696a14daf33639a76e017136c8d82bf3e620ce5bb8e
       url: "https://pub.dev"
     source: hosted
-    version: "3.2.0"
-  flutter_neumorphic_plus:
-    dependency: "direct main"
-    description:
-      name: flutter_neumorphic_plus
-      sha256: fc702c6414c6d9e1498f84ca124b59104e0dcbac59f92a47c5776e023d985e63
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.3.0"
+    version: "5.2.0"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -264,6 +256,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.1"
+  loading_indicator:
+    dependency: "direct main"
+    description:
+      name: loading_indicator
+      sha256: a101ffb2aa3e646137d7810bfa90b50525dd3f72c01235b6df7491cf6af6f284
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.1.1"
   matcher:
     dependency: transitive
     description:

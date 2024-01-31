@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:typhoonista_thesis/home_pages/dashboard_page/widgets/dashboard_content_widgets/history.dart';
 import 'package:typhoonista_thesis/home_pages/documents_page/documents_page.dart';
 import 'package:typhoonista_thesis/home_pages/typhoons_page/typhoons_page.dart';
 import 'package:typhoonista_thesis/providers/page_provider.dart';
@@ -64,6 +65,7 @@ class _HomeState extends State<Home> {
                 // documents_page()
                 // estimator_page()
                 pageToBeDisplayed
+                // history_page()
                 !)
               ],
             ),

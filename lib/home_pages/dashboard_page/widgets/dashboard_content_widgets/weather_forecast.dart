@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:typhoonista_thesis/assets/themes/textStyles.dart';
@@ -36,63 +37,69 @@ class _weather_forecastState extends State<weather_forecast> {
           const SizedBox(
             height: 20,
           ),
-          Container(
-              decoration: BoxDecoration(
-                  color: Colors.white, borderRadius: BorderRadius.circular(26)),
-              child: weatherData.isEmpty
-                  ? const Center(
-                      child: CircularProgressIndicator(),
+          Expanded(
+            child: Container(
+                decoration: BoxDecoration(
+                    color: Colors.white, borderRadius: BorderRadius.circular(26)),
+                child: (weatherData.isEmpty)
+                    ? Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const SpinKitPouringHourGlassRefined(size: 50, color: Colors.blue),
+                      ],
                     )
-                  : SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 20),
-                        child: Row(
-                          children: weatherData
-                              .map(
-                                (forecastData) {
-                                  double temp = forecastData['main']['temp'];
-                                  temp = temp- 273.15;
-                                  return Container(
-                                  child: Container(
-                                    padding: const EdgeInsets.all(30.0),
-                                    decoration: const BoxDecoration(
-                                        // color: Colors.blue.shade50
-                                        ),
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        // Format the time
-                                        Text(
-                                          DateFormat('h a').format(
-                                              DateTime.parse(
-                                                  forecastData['dt_txt'])),
-                                          style: textStyles.lato_bold(),
-                                        ),
-                                        // Format the date
-                                        Text(
-                                          DateFormat('E, MMM d').format(
-                                              DateTime.parse(
-                                                  forecastData['dt_txt'])),
-                                          style: textStyles.lato_bold(),
-                                        ),
-                                        Image.network(
-                                            "https://openweathermap.org/img/wn/${forecastData['weather'][0]['icon']}.png"),
-                                        Text(
-                                            "${temp.round()} °C", style: textStyles.lato_regular(),),
-                                        Text(
-                                            "${forecastData['weather'][0]['description']}", style: textStyles.lato_regular(),),
-                                      ],
+                    : SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          child: Row(
+                            children: weatherData
+                                .map(
+                                  (forecastData) {
+                                    double temp = forecastData['main']['temp'];
+                                    temp = temp- 273.15;
+                                    return Container(
+                                    child: Container(
+                                      padding: const EdgeInsets.all(30.0),
+                                      decoration: const BoxDecoration(
+                                          // color: Colors.blue.shade50
+                                          ),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          // Format the time
+                                          Text(
+                                            DateFormat('h a').format(
+                                                DateTime.parse(
+                                                    forecastData['dt_txt'])),
+                                            style: textStyles.lato_bold(),
+                                          ),
+                                          // Format the date
+                                          Text(
+                                            DateFormat('E, MMM d').format(
+                                                DateTime.parse(
+                                                    forecastData['dt_txt'])),
+                                            style: textStyles.lato_bold(),
+                                          ),
+                                          Image.network(
+                                              "https://openweathermap.org/img/wn/${forecastData['weather'][0]['icon']}.png"),
+                                          Text(
+                                              "${temp.round()} °C", style: textStyles.lato_regular(),),
+                                          Text(
+                                              "${forecastData['weather'][0]['description']}", style: textStyles.lato_regular(),),
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                );
-                                }
-                              )
-                              .toList(),
+                                  );
+                                  }
+                                )
+                                .toList(),
+                          ),
                         ),
-                      ),
-                    )),
+                      )),
+          ),
         ],
       ),
     );

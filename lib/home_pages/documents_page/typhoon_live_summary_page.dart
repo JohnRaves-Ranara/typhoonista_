@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:typhoonista_thesis/entities/Location_.dart';
 import 'package:typhoonista_thesis/entities/Typhoon.dart';
@@ -33,7 +34,7 @@ class _typhoon_live_summary_pageState extends State<typhoon_live_summary_page> {
             SingleChildScrollView(
               child: Center(
                 child: Container(
-                  width: MediaQuery.of(context).size.width * 0.5,
+                  width: MediaQuery.of(context).size.width * 0.6,
                   padding: EdgeInsets.symmetric(horizontal: 35, vertical: 40),
                   decoration: BoxDecoration(
                       color: Colors.white,
@@ -218,7 +219,7 @@ class _typhoon_live_summary_pageState extends State<typhoon_live_summary_page> {
                                                       "Total Damage To Rice Crops",
                                                       style: titleStyle),
                                                   Text(
-                                                    "${typhoon.totalDamageCost} PHP",
+                                                    "${NumberFormat('#,##0.00', 'en_US').format(typhoon.totalDamageCost)} PHP",
                                                     style: valueStyle,
                                                   ),
                                                 ],
@@ -335,7 +336,7 @@ class _typhoon_live_summary_pageState extends State<typhoon_live_summary_page> {
                                                             .rainfall6
                                                             .toString())),
                                                         DataCell(Text(
-                                                            "${day.damageCost.toString()}"))
+                                                            "${NumberFormat('#,##0.00', 'en_US').format(day.damageCost)}"))
                                                       ]))
                                                   .toList()),
                                         ),
@@ -346,7 +347,7 @@ class _typhoon_live_summary_pageState extends State<typhoon_live_summary_page> {
                                           children: [
                                             Spacer(),
                                             Text(
-                                                "Total Damage Cost: ${loc.totalDamageCost.toString()} PHP")
+                                                "Total Damage Cost: ${NumberFormat('#,##0.00', 'en_US').format(loc.totalDamageCost)} PHP")
                                           ],
                                         ),
                                       ],

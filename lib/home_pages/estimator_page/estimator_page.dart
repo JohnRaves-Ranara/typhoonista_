@@ -181,62 +181,159 @@ class _estimator_pageState extends State<estimator_page> {
                         "Add New Typhoon",
                         style: textStyles.lato_black(fontSize: 30),
                       ),
-                      SizedBox(height: 30,),
+                      SizedBox(
+                        height: 30,
+                      ),
                       TextField(
                         style: textStyles.lato_regular(),
                         controller: typhNameController,
                         decoration: InputDecoration(
-                          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                            labelStyle: textStyles.lato_light(
-                                color: Colors.grey.withOpacity(0.9)),
-                            border: OutlineInputBorder(),
+                            contentPadding: EdgeInsets.symmetric(
+                                vertical: 0, horizontal: 10),
+                            labelStyle:
+                                textStyles.lato_light(color: Colors.black),
+                            enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color:
+                                        Colors.grey.shade600.withOpacity(0.5),
+                                    width: 1,
+                                    style: BorderStyle.solid)),
+                            focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Colors.grey.shade600,
+                                    width: 1,
+                                    style: BorderStyle.solid)),
+                            border: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color:
+                                        Colors.grey.shade600.withOpacity(0.5),
+                                    width: 1,
+                                    style: BorderStyle.solid)),
                             labelText: "Name"),
                       ),
-                      SizedBox(height: 15,),
+                      SizedBox(
+                        height: 15,
+                      ),
                       TextField(
                         style: textStyles.lato_regular(),
                         controller: windspeedController,
                         decoration: InputDecoration(
-                          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                            labelStyle: textStyles.lato_light(
-                                color: Colors.grey.withOpacity(0.9)),
-                            border: OutlineInputBorder(),
+                            contentPadding: EdgeInsets.symmetric(
+                                vertical: 0, horizontal: 10),
+                            labelStyle:
+                                textStyles.lato_light(color: Colors.black),
+                            enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color:
+                                        Colors.grey.shade600.withOpacity(0.5),
+                                    width: 1,
+                                    style: BorderStyle.solid)),
+                            focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Colors.grey.shade600,
+                                    width: 1,
+                                    style: BorderStyle.solid)),
+                            border: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color:
+                                        Colors.grey.shade600.withOpacity(0.5),
+                                    width: 1,
+                                    style: BorderStyle.solid)),
                             labelText: "Windspeed"),
                       ),
-                      SizedBox(height: 15,),
+                      SizedBox(
+                        height: 15,
+                      ),
                       TextField(
                         style: textStyles.lato_regular(),
                         controller: rainfall24hController,
                         decoration: InputDecoration(
-                          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                            labelStyle: textStyles.lato_light(
-                                color: Colors.grey.withOpacity(0.9)),
-                            border: OutlineInputBorder(),
+                            contentPadding: EdgeInsets.symmetric(
+                                vertical: 0, horizontal: 10),
+                            labelStyle:
+                                textStyles.lato_light(color: Colors.black),
+                            enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color:
+                                        Colors.grey.shade600.withOpacity(0.5),
+                                    width: 1,
+                                    style: BorderStyle.solid)),
+                            focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Colors.grey.shade600,
+                                    width: 1,
+                                    style: BorderStyle.solid)),
+                            border: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color:
+                                        Colors.grey.shade600.withOpacity(0.5),
+                                    width: 1,
+                                    style: BorderStyle.solid)),
                             labelText: "Rainfall (24 hour)"),
                       ),
-                      SizedBox(height: 15,),
+                      SizedBox(
+                        height: 15,
+                      ),
                       TextField(
                         style: textStyles.lato_regular(),
                         controller: rainfall6hController,
                         decoration: InputDecoration(
-                          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                            labelStyle: textStyles.lato_light(
-                                color: Colors.grey.withOpacity(0.9)),
-                            border: OutlineInputBorder(),
+                            contentPadding: EdgeInsets.symmetric(
+                                vertical: 0, horizontal: 10),
+                            labelStyle:
+                                textStyles.lato_light(color: Colors.black),
+                            enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color:
+                                        Colors.grey.shade600.withOpacity(0.5),
+                                    width: 1,
+                                    style: BorderStyle.solid)),
+                            focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Colors.grey.shade600,
+                                    width: 1,
+                                    style: BorderStyle.solid)),
+                            border: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color:
+                                        Colors.grey.shade600.withOpacity(0.5),
+                                    width: 1,
+                                    style: BorderStyle.solid)),
                             labelText: "Rainfall (6 hour)"),
                       ),
-                      SizedBox(height: 15,),
+                      SizedBox(
+                        height: 15,
+                      ),
                       TextField(
                         style: textStyles.lato_regular(),
                         controller: priceController,
                         decoration: InputDecoration(
-                          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                            labelStyle: textStyles.lato_light(
-                                color: Colors.grey.withOpacity(0.9)),
-                            border: OutlineInputBorder(),
+                            contentPadding: EdgeInsets.symmetric(
+                                vertical: 0, horizontal: 10),
+                            labelStyle:
+                                textStyles.lato_light(color: Colors.black),
+                            enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color:
+                                        Colors.grey.shade600.withOpacity(0.5),
+                                    width: 1,
+                                    style: BorderStyle.solid)),
+                            focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Colors.grey.shade600,
+                                    width: 1,
+                                    style: BorderStyle.solid)),
+                            border: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color:
+                                        Colors.grey.shade600.withOpacity(0.5),
+                                    width: 1,
+                                    style: BorderStyle.solid)),
                             labelText: "Rice Price (per kilo)"),
                       ),
-                      SizedBox(height: 15,),
+                      SizedBox(
+                        height: 15,
+                      ),
                       InkWell(
                         borderRadius: BorderRadius.circular(5),
                         onTap: (() {
@@ -247,83 +344,22 @@ class _estimator_pageState extends State<estimator_page> {
                           height: 48,
                           decoration: BoxDecoration(
                               border: Border.all(
-                                  color: Colors.grey.shade600,
+                                  color: Colors.grey.shade600.withOpacity(0.5),
                                   width: 1,
                                   style: BorderStyle.solid),
                               borderRadius: BorderRadius.circular(5)),
                           child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 20),
                             child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    selectedMunicipalName,
-                                    style:
-                                        textStyles.lato_regular(fontSize: 17),
-                                  ),
-                                  Icon(
-                                    Icons.arrow_drop_down,
-                                    size: 22,
-                                    color: Colors.black,
-                                  )
-                                ],
-                              ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 15,),
-                      InkWell(
-                        borderRadius: BorderRadius.circular(5),
-                        onTap: (() {
-                          if (selectedMunicipalName == 'Select Location') {
-                            showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return AlertDialog(
-                                    content: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                            'Please provide your location first.'),
-                                      ],
-                                    ),
-                                    actions: [
-                                      ElevatedButton(
-                                        child: Text('OK'),
-                                        onPressed: (() {
-                                          Navigator.pop(context);
-                                        }),
-                                      )
-                                    ],
-                                  );
-                                });
-                          } else {
-                            showDistrackminOptions();
-                          }
-                        }),
-                        child: Container(
-                          width: double.maxFinite,
-                          height: 48,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(5),
-                              border: Border.all(
-                                  width: 1,
-                                  color: Colors.grey.shade600,
-                                  style: BorderStyle.solid)),
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 20),
-                            child: Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Text(
-                                  distrackminfinal,
-                                  style:
-                                      textStyles.lato_regular(fontSize: 17),
+                                  selectedMunicipalName,
+                                  style: (selectedMunicipalName ==
+                                          'Select Location')
+                                      ? textStyles.lato_light(fontSize: 17)
+                                      : textStyles.lato_regular(fontSize: 17),
                                 ),
                                 Icon(
                                   Icons.arrow_drop_down,
@@ -335,7 +371,61 @@ class _estimator_pageState extends State<estimator_page> {
                           ),
                         ),
                       ),
-                      SizedBox(height: 30,),
+                      SizedBox(
+                        height: 15,
+                      ),
+                      InkWell(
+                        borderRadius: BorderRadius.circular(5),
+                        onTap: (selectedMunicipalName == 'Select Location')
+                            ? null
+                            : (() {
+                                showDistrackminOptions();
+                              }),
+                        child: Container(
+                          width: double.maxFinite,
+                          height: 48,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(5),
+                              border: Border.all(
+                                  width: 1,
+                                  color: Colors.grey.shade600.withOpacity(0.5),
+                                  style: BorderStyle.solid)),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  distrackminfinal,
+                                  style: (distrackminfinal ==
+                                          'Distance of Typhoon to Location')
+                                      ? textStyles.lato_light(fontSize: 17)
+                                      : textStyles.lato_regular(fontSize: 17),
+                                ),
+                                (selectedMunicipalName == 'Select Location')
+                                    ? Tooltip(
+                                        message:
+                                            "Please provide your location first.",
+                                        child: Icon(
+                                          Icons.info,
+                                          size: 16,
+                                          color: Colors.blue,
+                                        ),
+                                      )
+                                    : Icon(
+                                        Icons.arrow_drop_down,
+                                        size: 22,
+                                        color: Colors.black,
+                                      )
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 30,
+                      ),
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8),
                         child: Material(
@@ -360,8 +450,7 @@ class _estimator_pageState extends State<estimator_page> {
                                 isFetchingPrediction = false;
                                 print("koto nai");
                               });
-                              print(
-                                  "BRUHHH ${damageCostPredictionFromAPI}");
+                              print("BRUHHH ${damageCostPredictionFromAPI}");
                               try {
                                 setState(() {
                                   isAddingTyphoon = true;
@@ -376,12 +465,10 @@ class _estimator_pageState extends State<estimator_page> {
                                         rainfall24hController.text.trim()),
                                     rainfall6: double.parse(
                                         rainfall6hController.text.trim()),
-                                    disTrackMin:
-                                        double.parse(distrackminfinal),
+                                    disTrackMin: double.parse(distrackminfinal),
                                     location: selectedMunicipalName,
                                     locationCode: selectedMunicipalCode,
-                                    typhoonName:
-                                        typhNameController.text.trim(),
+                                    typhoonName: typhNameController.text.trim(),
                                     isFirstDay: true,
                                     price: double.parse(
                                         priceController.text.trim()));
@@ -394,7 +481,7 @@ class _estimator_pageState extends State<estimator_page> {
                                 isAddingTyphoon = false;
                                 print("drake");
                               });
-            
+
                               setState(() {
                                 print("resetting");
                                 selectedMunicipalName = "Choose Location";
@@ -402,7 +489,7 @@ class _estimator_pageState extends State<estimator_page> {
                                 distrackminfinal = "Enter distrackmin...";
                                 print("resetted");
                               });
-            
+
                               typhNameController.clear();
                               windspeedController.clear();
                               rainfall24hController.clear();
@@ -437,52 +524,49 @@ class _estimator_pageState extends State<estimator_page> {
                 )),
                 Expanded(
                     child: Container(
-                      // child: Stack(
-                      //   children: [
-                      //     Positioned(
-                      //       right: 0,
-                      //       top: 1,
-                      //       child: Image.asset('lib/assets/images/largevector.png', height: MediaQuery.of(context).size.height,)),
-                          
-                      //   ],
-                      // ),
-                      child: (isFetchingPrediction) ?
-                          Center(
-                            child: Container(
-                              child: Column(
-                                children: [
-                                  Center(
-                                    child: Container(
+                  // child: Stack(
+                  //   children: [
+                  //     Positioned(
+                  //       right: 0,
+                  //       top: 1,
+                  //       child: Image.asset('lib/assets/images/largevector.png', height: MediaQuery.of(context).size.height,)),
+
+                  //   ],
+                  // ),
+                  child: (isFetchingPrediction)
+                      ? Center(
+                          child: Container(
+                            child: Column(
+                              children: [
+                                Center(
+                                  child: Container(
                                       height: 300,
                                       child: CircularProgressIndicator()),
-                                  ),
-                                  Text("Fetching Estimation...")
-                                ],
-                              ),
+                                ),
+                                Text("Fetching Estimation...")
+                              ],
                             ),
-                          )
-                          :(isAddingTyphoon) ?
-                          Center(
-                            child: Container(
-                              child: Column(
-                                children: [
-                                  Center(
-                                    child: Container(
-                                      height: 300,
-                                      child: CircularProgressIndicator()),
-                                  ),
-                                  Text("Adding to Database...")
-                                ],
+                          ),
+                        )
+                      : (isAddingTyphoon)
+                          ? Center(
+                              child: Container(
+                                child: Column(
+                                  children: [
+                                    Center(
+                                      child: Container(
+                                          height: 300,
+                                          child: CircularProgressIndicator()),
+                                    ),
+                                    Text("Adding to Database...")
+                                  ],
+                                ),
                               ),
-                            ),
-                          )
-                          :
-                          SizedBox(),
-                    )
-                )
+                            )
+                          : SizedBox(),
+                ))
               ],
-            )
-            ),
+            )),
           ],
         ));
   }
