@@ -179,6 +179,18 @@ class FirestoreService {
     return TyphoonDay.fromJson(x.docs.first.data());
   }
 
+  Stream<bool> isThereOngoingTyphoon(){
+    return FirebaseFirestore.instance.collection('users').doc('test-user').collection('typhoons').snapshots().map((snapshot){
+      
+      if(snapshot.docs.isEmpty){
+        return false;
+      }
+      
+      bool hasOngoingTyphoon = snapshot.docs.any((doc) => doc['status'] == 'ongoing');
+      return hasOngoingTyphoon;
+    });
+  }
+
   Future<Typhoon> getTyphoon(String typhoonID) async {
     DocumentSnapshot v = await FirebaseFirestore.instance
         .collection('users')

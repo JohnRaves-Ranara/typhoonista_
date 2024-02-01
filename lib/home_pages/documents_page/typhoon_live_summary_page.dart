@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:typhoonista_thesis/entities/Location_.dart';
@@ -25,7 +26,7 @@ class _typhoon_live_summary_pageState extends State<typhoon_live_summary_page> {
   Widget build(BuildContext context) {
     return Container(
       width: double.maxFinite,
-      color: Colors.grey.shade800,
+      color: Colors.black26,
       child: Consumer<page_provider>(
         builder: (context, prov, child) {
           final Typhoon selectedTyphoon = prov.selectedTyphoon!;
@@ -35,13 +36,14 @@ class _typhoon_live_summary_pageState extends State<typhoon_live_summary_page> {
               child: Center(
                 child: Container(
                   width: MediaQuery.of(context).size.width * 0.6,
-                  padding: EdgeInsets.symmetric(horizontal: 35, vertical: 40),
+                  padding: EdgeInsets.symmetric(horizontal: 35, vertical: 60),
                   decoration: BoxDecoration(
                       color: Colors.white,
                       border: Border.all(
                           style: BorderStyle.solid,
                           color: Colors.grey,
-                          width: 1)),
+                          width: 1
+                          )),
                   child: Column(
                     children: [
                       Container(
@@ -261,7 +263,7 @@ class _typhoon_live_summary_pageState extends State<typhoon_live_summary_page> {
                                   ),
                                 );
                               } else {
-                                return Text("no data");
+                                return Center(child: SpinKitSpinningLines(size: 40, lineWidth: 3.5, color: Colors.blue));
                               }
                             }),
                       ),
@@ -356,7 +358,7 @@ class _typhoon_live_summary_pageState extends State<typhoon_live_summary_page> {
                                 }).toList(),
                               );
                             } else {
-                              return Text("no data");
+                              return Center(child: SpinKitSpinningLines(size: 40, lineWidth: 3.5, color: Colors.blue));
                             }
                           },
                         ),

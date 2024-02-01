@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import 'package:typhoonista_thesis/assets/themes/textStyles.dart';
 import 'package:typhoonista_thesis/entities/Typhoon.dart';
@@ -26,13 +27,12 @@ class _typhoonDocsListState extends State<typhoonDocsList> {
           builder: (context, snapshot) {
             if (snapshot.hasError) {
               return Center(
-                child: Text("ERROR"),
+                child: Text("ERROR", style: textStyles.lato_regular(fontSize: 16),),
               );
             } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return Center(
-                child: Text("No data."),
-              );
-            } else {
+              return Center(child: SpinKitSpinningLines(size: 60, lineWidth: 3.5, color: Colors.blue));
+            }
+             else {
               final List<Typhoon> typhoons = snapshot.data!;
 
               return ListView(

@@ -1,10 +1,14 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:typhoonista_thesis/assets/themes/textStyles.dart';
 import 'package:typhoonista_thesis/entities/Location_.dart';
 import 'package:typhoonista_thesis/entities/TyphoonDay.dart';
+import 'package:typhoonista_thesis/home_pages/sidebar_widgets/logo.dart';
+import 'package:typhoonista_thesis/providers/page_provider.dart';
 import 'package:typhoonista_thesis/services/FirestoreService.dart';
 import 'package:typhoonista_thesis/services/estimatorModel.dart';
 import 'package:typhoonista_thesis/services/locations.dart';
@@ -29,6 +33,7 @@ class _estimator_pageState extends State<estimator_page> {
   final ctrlr = TextEditingController();
   List<Location_> locs = Locations_().getLocations();
   List<Location_> suggestions = [];
+  bool haveAdded = false;
 
   bool isSearchLocation = false;
   final manualDistanceCtrlr = TextEditingController();
@@ -53,6 +58,10 @@ class _estimator_pageState extends State<estimator_page> {
   bool isAddingTyphoon = false;
   double? test_area;
   double? test_yield;
+  bool isEstimationError = false;
+  bool isEstimationSuccess = false;
+  TyphoonDay? newlyAddedDayInformation;
+  String? errorMessage;
 
   Future<void> sendCoordinatesRequest() async {
     try {
@@ -138,437 +147,761 @@ class _estimator_pageState extends State<estimator_page> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        padding: EdgeInsets.only(left: 70),
+        // padding: EdgeInsets.only(left: 70),
         child: Column(
+      children: [
+        Expanded(
+            child: Row(
           children: [
-            // Container(
-            //   child: Column(
-            //     mainAxisAlignment: MainAxisAlignment.center,
-            //     crossAxisAlignment: CrossAxisAlignment.start,
-            //     children: [
-            //       Text(
-            //         "Damage Cost Estimator",
-            //         style: textStyles.lato_black(fontSize: 32),
-            //       ),
-            //       SizedBox(
-            //         height: 20,
-            //       ),
-            //       Text(
-            //         "The impact of the industrial revolution has began to uprise in terms of the rice and skermberlu it ornare accumsan. Justo vulputate in pretium integer vulputate vitae proin congue etiam. Sollicitudin egestas est in ultrices molestie lacus iaculis risus. Velit habitasse felis auctor at.",
-            //         style: textStyles.lato_light(fontSize: 18),
-            //       )
-            //     ],
-            //   ),
-            // ),
-            // SizedBox(
-            //   height: 25,
-            // ),
-            // Divider(
-            //   thickness: 1,
-            // ),
             Expanded(
-                child: Row(
-              children: [
-                Expanded(
+                child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 30),
+              // color: Colors.green,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Add New Typhoon",
+                    style: textStyles.lato_black(fontSize: 30),
+                  ),
+                  SizedBox(
+                    height: 30,
+                  ),
+                  TextField(
+                    enabled: !haveAdded,
+                    style: textStyles.lato_regular(),
+                    controller: typhNameController,
+                    decoration: InputDecoration(
+                        contentPadding:
+                            EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                        labelStyle: textStyles.lato_light(color: Colors.black),
+                        enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                                color: Colors.grey.shade600.withOpacity(0.5),
+                                width: 1,
+                                style: BorderStyle.solid)),
+                        focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                                color: Colors.grey.shade600,
+                                width: 1,
+                                style: BorderStyle.solid)),
+                        border: OutlineInputBorder(
+                            borderSide: BorderSide(
+                                color: Colors.grey.shade600.withOpacity(0.5),
+                                width: 1,
+                                style: BorderStyle.solid)),
+                        labelText: "Name"),
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  TextField(
+                    enabled: !haveAdded,
+                    style: textStyles.lato_regular(),
+                    controller: windspeedController,
+                    decoration: InputDecoration(
+                        contentPadding:
+                            EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                        labelStyle: textStyles.lato_light(color: Colors.black),
+                        enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                                color: Colors.grey.shade600.withOpacity(0.5),
+                                width: 1,
+                                style: BorderStyle.solid)),
+                        focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                                color: Colors.grey.shade600,
+                                width: 1,
+                                style: BorderStyle.solid)),
+                        border: OutlineInputBorder(
+                            borderSide: BorderSide(
+                                color: Colors.grey.shade600.withOpacity(0.5),
+                                width: 1,
+                                style: BorderStyle.solid)),
+                        labelText: "Windspeed"),
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  TextField(
+                    enabled: !haveAdded,
+                    style: textStyles.lato_regular(),
+                    controller: rainfall24hController,
+                    decoration: InputDecoration(
+                        contentPadding:
+                            EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                        labelStyle: textStyles.lato_light(color: Colors.black),
+                        enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                                color: Colors.grey.shade600.withOpacity(0.5),
+                                width: 1,
+                                style: BorderStyle.solid)),
+                        focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                                color: Colors.grey.shade600,
+                                width: 1,
+                                style: BorderStyle.solid)),
+                        border: OutlineInputBorder(
+                            borderSide: BorderSide(
+                                color: Colors.grey.shade600.withOpacity(0.5),
+                                width: 1,
+                                style: BorderStyle.solid)),
+                        labelText: "Rainfall (24 hour)"),
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  TextField(
+                    enabled: !haveAdded,
+                    style: textStyles.lato_regular(),
+                    controller: rainfall6hController,
+                    decoration: InputDecoration(
+                        contentPadding:
+                            EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                        labelStyle: textStyles.lato_light(color: Colors.black),
+                        enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                                color: Colors.grey.shade600.withOpacity(0.5),
+                                width: 1,
+                                style: BorderStyle.solid)),
+                        focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                                color: Colors.grey.shade600,
+                                width: 1,
+                                style: BorderStyle.solid)),
+                        border: OutlineInputBorder(
+                            borderSide: BorderSide(
+                                color: Colors.grey.shade600.withOpacity(0.5),
+                                width: 1,
+                                style: BorderStyle.solid)),
+                        labelText: "Rainfall (6 hour)"),
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  TextField(
+                    enabled: !haveAdded,
+                    style: textStyles.lato_regular(),
+                    controller: priceController,
+                    decoration: InputDecoration(
+                        contentPadding:
+                            EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                        labelStyle: textStyles.lato_light(color: Colors.black),
+                        enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                                color: Colors.grey.shade600.withOpacity(0.5),
+                                width: 1,
+                                style: BorderStyle.solid)),
+                        focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                                color: Colors.grey.shade600,
+                                width: 1,
+                                style: BorderStyle.solid)),
+                        border: OutlineInputBorder(
+                            borderSide: BorderSide(
+                                color: Colors.grey.shade600.withOpacity(0.5),
+                                width: 1,
+                                style: BorderStyle.solid)),
+                        labelText: "Rice Price (per kilo)"),
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  InkWell(
+                    borderRadius: BorderRadius.circular(5),
+                    onTap: (haveAdded) ? null : ((){showLocationDialog();}),
                     child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 30),
-                  // color: Colors.green,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Add New Typhoon",
-                        style: textStyles.lato_black(fontSize: 30),
-                      ),
-                      SizedBox(
-                        height: 30,
-                      ),
-                      TextField(
-                        style: textStyles.lato_regular(),
-                        controller: typhNameController,
-                        decoration: InputDecoration(
-                            contentPadding: EdgeInsets.symmetric(
-                                vertical: 0, horizontal: 10),
-                            labelStyle:
-                                textStyles.lato_light(color: Colors.black),
-                            enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color:
-                                        Colors.grey.shade600.withOpacity(0.5),
-                                    width: 1,
-                                    style: BorderStyle.solid)),
-                            focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: Colors.grey.shade600,
-                                    width: 1,
-                                    style: BorderStyle.solid)),
-                            border: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color:
-                                        Colors.grey.shade600.withOpacity(0.5),
-                                    width: 1,
-                                    style: BorderStyle.solid)),
-                            labelText: "Name"),
-                      ),
-                      SizedBox(
-                        height: 15,
-                      ),
-                      TextField(
-                        style: textStyles.lato_regular(),
-                        controller: windspeedController,
-                        decoration: InputDecoration(
-                            contentPadding: EdgeInsets.symmetric(
-                                vertical: 0, horizontal: 10),
-                            labelStyle:
-                                textStyles.lato_light(color: Colors.black),
-                            enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color:
-                                        Colors.grey.shade600.withOpacity(0.5),
-                                    width: 1,
-                                    style: BorderStyle.solid)),
-                            focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: Colors.grey.shade600,
-                                    width: 1,
-                                    style: BorderStyle.solid)),
-                            border: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color:
-                                        Colors.grey.shade600.withOpacity(0.5),
-                                    width: 1,
-                                    style: BorderStyle.solid)),
-                            labelText: "Windspeed"),
-                      ),
-                      SizedBox(
-                        height: 15,
-                      ),
-                      TextField(
-                        style: textStyles.lato_regular(),
-                        controller: rainfall24hController,
-                        decoration: InputDecoration(
-                            contentPadding: EdgeInsets.symmetric(
-                                vertical: 0, horizontal: 10),
-                            labelStyle:
-                                textStyles.lato_light(color: Colors.black),
-                            enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color:
-                                        Colors.grey.shade600.withOpacity(0.5),
-                                    width: 1,
-                                    style: BorderStyle.solid)),
-                            focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: Colors.grey.shade600,
-                                    width: 1,
-                                    style: BorderStyle.solid)),
-                            border: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color:
-                                        Colors.grey.shade600.withOpacity(0.5),
-                                    width: 1,
-                                    style: BorderStyle.solid)),
-                            labelText: "Rainfall (24 hour)"),
-                      ),
-                      SizedBox(
-                        height: 15,
-                      ),
-                      TextField(
-                        style: textStyles.lato_regular(),
-                        controller: rainfall6hController,
-                        decoration: InputDecoration(
-                            contentPadding: EdgeInsets.symmetric(
-                                vertical: 0, horizontal: 10),
-                            labelStyle:
-                                textStyles.lato_light(color: Colors.black),
-                            enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color:
-                                        Colors.grey.shade600.withOpacity(0.5),
-                                    width: 1,
-                                    style: BorderStyle.solid)),
-                            focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: Colors.grey.shade600,
-                                    width: 1,
-                                    style: BorderStyle.solid)),
-                            border: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color:
-                                        Colors.grey.shade600.withOpacity(0.5),
-                                    width: 1,
-                                    style: BorderStyle.solid)),
-                            labelText: "Rainfall (6 hour)"),
-                      ),
-                      SizedBox(
-                        height: 15,
-                      ),
-                      TextField(
-                        style: textStyles.lato_regular(),
-                        controller: priceController,
-                        decoration: InputDecoration(
-                            contentPadding: EdgeInsets.symmetric(
-                                vertical: 0, horizontal: 10),
-                            labelStyle:
-                                textStyles.lato_light(color: Colors.black),
-                            enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color:
-                                        Colors.grey.shade600.withOpacity(0.5),
-                                    width: 1,
-                                    style: BorderStyle.solid)),
-                            focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: Colors.grey.shade600,
-                                    width: 1,
-                                    style: BorderStyle.solid)),
-                            border: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color:
-                                        Colors.grey.shade600.withOpacity(0.5),
-                                    width: 1,
-                                    style: BorderStyle.solid)),
-                            labelText: "Rice Price (per kilo)"),
-                      ),
-                      SizedBox(
-                        height: 15,
-                      ),
-                      InkWell(
-                        borderRadius: BorderRadius.circular(5),
-                        onTap: (() {
-                          showLocationDialog();
-                        }),
-                        child: Container(
-                          width: double.maxFinite,
-                          height: 48,
-                          decoration: BoxDecoration(
-                              border: Border.all(
-                                  color: Colors.grey.shade600.withOpacity(0.5),
-                                  width: 1,
-                                  style: BorderStyle.solid),
-                              borderRadius: BorderRadius.circular(5)),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text(
-                                  selectedMunicipalName,
-                                  style: (selectedMunicipalName ==
-                                          'Select Location')
+                      width: double.maxFinite,
+                      height: 48,
+                      decoration: BoxDecoration(
+                          border: Border.all(
+                              color: Colors.grey.shade600.withOpacity(0.5),
+                              width: 1,
+                              style: BorderStyle.solid),
+                          borderRadius: BorderRadius.circular(5)),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              selectedMunicipalName,
+                              style:
+                                  (selectedMunicipalName == 'Select Location')
                                       ? textStyles.lato_light(fontSize: 17)
                                       : textStyles.lato_regular(fontSize: 17),
-                                ),
+                            ),
+                            Icon(
+                              Icons.arrow_drop_down,
+                              size: 22,
+                              color: Colors.black,
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  InkWell(
+                    borderRadius: BorderRadius.circular(5),
+                    onTap: (selectedMunicipalName == 'Select Location' || haveAdded == true)
+                        ? null
+                        : (() {
+                            showDistrackminOptions();
+                          }),
+                    child: Container(
+                      width: double.maxFinite,
+                      height: 48,
+                      decoration: BoxDecoration(
+                          color: (selectedMunicipalName == 'Select Location') ? Colors.grey.shade300 : Colors.white,
+                          borderRadius: BorderRadius.circular(5),
+                          border: Border.all(
+                              width: 1,
+                              color: Colors.grey.shade600.withOpacity(0.5),
+                              style: BorderStyle.solid)),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              distrackminfinal,
+                              style: (distrackminfinal ==
+                                      'Distance of Typhoon to Location')
+                                  ? textStyles.lato_light(fontSize: 17)
+                                  : textStyles.lato_regular(fontSize: 17),
+                            ),
+                            (selectedMunicipalName == 'Select Location')
+                                ? Tooltip(
+                                    message:
+                                        "Please provide your location first.",
+                                    child: Icon(
+                                      Icons.info,
+                                      size: 16,
+                                      color: Colors.blue,
+                                    ),
+                                  )
+                                : 
                                 Icon(
-                                  Icons.arrow_drop_down,
-                                  size: 22,
-                                  color: Colors.black,
+                                    Icons.arrow_drop_down,
+                                    size: 22,
+                                    color: Colors.black,
+                                  )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 30,
+                  ),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Material(
+                      color: (haveAdded) ? Colors.grey : Colors.blue,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(8),
+                        onTap: (haveAdded) ? null : (() async {
+                          TyphoonDay? addDay;
+                        try {
+                          setState(() {
+                            haveAdded = true;
+                            isFetchingPrediction = true;
+                          });
+                          for (Location_ loc in locs) {
+                            if (loc.munCode == selectedMunicipalCode) {
+                              print("LILUZIVERT");
+                              print(loc);
+                              await sendPredictionRequest();
+                              print("NA SET NA DILI NA NULL");
+                              break;
+                            }
+                          }
+                          setState(() {
+                            isFetchingPrediction = false;
+                          });
+                          print("BRUHHH ${damageCostPredictionFromAPI}");
+                          setState(() {
+                            isAddingTyphoon = true;
+                          });
+                          addDay = await FirestoreService().addDay(
+                              damageCost: double.parse(
+                                  damageCostPredictionFromAPI!
+                                      .toStringAsFixed(2)),
+                              windSpeed:
+                                  double.parse(windspeedController.text.trim()),
+                              rainfall24:
+                                  double.parse(rainfall24hController.text.trim()),
+                              rainfall6:
+                                  double.parse(rainfall6hController.text.trim()),
+                              disTrackMin: double.parse(distrackminfinal),
+                              location: selectedMunicipalName,
+                              locationCode: selectedMunicipalCode,
+                              typhoonName: typhNameController.text.trim(),
+                              isFirstDay: true,
+                              price: double.parse(priceController.text.trim()));
+                          setState(() {
+                            isAddingTyphoon = false;
+                            
+                            try {
+                              newlyAddedDayInformation = addDay;
+                            } catch (e) {
+                              print("ERROR SA NEWLYADDEDDAY: ${e}");
+                            }
+                            isEstimationSuccess = true;
+                          });
+                        } catch (e) {
+                          setState(() {
+                            isAddingTyphoon = false;
+                            isFetchingPrediction = false;
+                            isEstimationError = true;
+                            errorMessage = e.toString();
+                          });
+                        }
+                        setState(() {
+                          print("resetting");
+                          selectedMunicipalName = "Choose Location";
+                          selectedMunicipalCode = "";
+                          selectedTyphoonLocation = "Choose Location";
+                          selectedTyphoonCode = "";
+                          selectedLocationProvname = "";
+                          distrackminfinal = "Distance of Typhoon to Location";
+                          typhNameController.clear();
+                          windspeedController.clear();
+                          rainfall24hController.clear();
+                          rainfall6hController.clear();
+                          priceController.clear();
+                          print("resetted");
+                        });
+                        }),
+                        child: Ink(
+                          padding: EdgeInsets.symmetric(horizontal: 30),
+                          width: double.maxFinite,
+                          height: 55,
+                          child: Row(
+                            children: [
+                              Text(
+                                "Estimate Damage Cost",
+                                style: textStyles.lato_bold(
+                                    fontSize: 20, color: Colors.white),
+                              ),
+                              Spacer(),
+                              Icon(
+                                Icons.arrow_right_alt_sharp,
+                                size: 40,
+                                color: Colors.white,
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            )),
+            Expanded(
+                child: Container(
+              // color: Colors.red,
+              child: 
+              (isAddingTyphoon) 
+              ?  
+              addingToDatabase()
+              :
+              (isFetchingPrediction)
+              ?
+              fetchingPrediction()
+              :
+              (isEstimationError)
+              ?
+              estimationError(errorMessage!)
+              :
+              (isEstimationSuccess)
+              ?
+              Information()
+              :
+              logoLarge()
+            ))
+          ],
+        )),
+      ],
+    ));
+  }
+
+  Widget logoLarge(){
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Image.asset('lib/assets/images/largevector.png', height: MediaQuery.of(context).size.height,)
+      ],
+    );
+  }
+
+  Widget Information() {
+    // var newlyAddedDayInformation = TyphoonDay(
+    //     price: 19.23,
+    //     distrackmin: 250,
+    //     rainfall24: 12,
+    //     rainfall6: 6.121,
+    //     windSpeed: 21,
+    //     id: '12331',
+    //     typhoonID: '12313',
+    //     location: 'Arakan',
+    //     locationCode: 'bruh',
+    //     dateRecorded: '2020-14-12 18:23',
+    //     typhoonName: 'Pasilyo',
+    //     damageCost: 1234567.12,
+    //     day: 3);
+    return Container(
+      // color: Colors.red,
+      padding: EdgeInsets.symmetric(horizontal: 40),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(height: 40),
+          Container(
+              constraints: BoxConstraints(
+                  minHeight: MediaQuery.of(context).size.height * 0.66),
+              padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+              width: double.maxFinite,
+              decoration: BoxDecoration(
+                boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 2,
+                  blurRadius: 5,
+                  offset: Offset(0, 3),
+                ),
+              ],
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: (haveAdded)
+                  ? Container(
+                    // color: Colors.green,
+                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // SizedBox(height: 20),
+                          Text(
+                            "Estimation",
+                            style: textStyles.lato_black(fontSize: 30),
+                          ),
+                          Divider(),
+                          SizedBox(height: 30,),
+                          Container(
+                            // color: Colors.yellow,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  flex: 60,
+                                  child: Container(
+                                    // color: Colors.blue,
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Typhoon Name:',
+                                          style:
+                                              textStyles.lato_light(fontSize: 14),
+                                        ),
+                                        Text(
+                                          '${newlyAddedDayInformation!.typhoonName}',
+                                          style:
+                                              textStyles.lato_black(fontSize: 20),
+                                        ),
+                                        SizedBox(height: 10),
+                                        Text(
+                                          'Predicted Damage Cost:',
+                                          style:
+                                              textStyles.lato_light(fontSize: 14),
+                                        ),
+                                        Text(
+                                          '₱ ${NumberFormat('#,##0.00', 'en_US').format(newlyAddedDayInformation!.damageCost)}',
+                                          style:
+                                              textStyles.lato_black(fontSize: 20),
+                                        ),
+                                        SizedBox(height: 10),
+                                        Text(
+                                          'Day:',
+                                          style:
+                                              textStyles.lato_light(fontSize: 14),
+                                        ),
+                                        Text(
+                                          '${newlyAddedDayInformation!.day}',
+                                          style:
+                                              textStyles.lato_black(fontSize: 20),
+                                        ),
+                                        SizedBox(height: 10),
+                                        Text(
+                                          'Date Recorded:',
+                                          style:
+                                              textStyles.lato_light(fontSize: 14),
+                                        ),
+                                        Text(
+                                          '${DateTime.parse(newlyAddedDayInformation!.dateRecorded).year}-${DateTime.parse(newlyAddedDayInformation!.dateRecorded).month}-${DateTime.parse(newlyAddedDayInformation!.dateRecorded).day} ${DateTime.parse(newlyAddedDayInformation!.dateRecorded).hour}:${DateTime.parse(newlyAddedDayInformation!.dateRecorded).minute}',
+                                          style:
+                                              textStyles.lato_black(fontSize: 20),
+                                        ),
+                                        SizedBox(height: 10),
+                                        Text(
+                                          'Windspeed:',
+                                          style:
+                                              textStyles.lato_light(fontSize: 14),
+                                        ),
+                                        Text(
+                                          '${newlyAddedDayInformation!.windSpeed} kph',
+                                          style:
+                                              textStyles.lato_black(fontSize: 20),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 40,
+                                  child: Container(
+                                    // color: Colors.red,
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Rainfall (24H):',
+                                          style:
+                                              textStyles.lato_light(fontSize: 14),
+                                        ),
+                                        Text(
+                                          '${newlyAddedDayInformation!.rainfall24} mm',
+                                          style:
+                                              textStyles.lato_black(fontSize: 20),
+                                        ),
+                                        SizedBox(height: 10),
+                                        Text(
+                                          'Rainfall (6H):',
+                                          style:
+                                              textStyles.lato_light(fontSize: 14),
+                                        ),
+                                        Text(
+                                          '${newlyAddedDayInformation!.rainfall6} mm',
+                                          style:
+                                              textStyles.lato_black(fontSize: 20),
+                                        ),
+                                        SizedBox(height: 10),
+                                        Text(
+                                          'Location:',
+                                          style:
+                                              textStyles.lato_light(fontSize: 14),
+                                        ),
+                                        Text(
+                                          '${newlyAddedDayInformation!.location}',
+                                          style:
+                                              textStyles.lato_black(fontSize: 20),
+                                        ),
+                                        SizedBox(height: 10),
+                                        Text(
+                                          'Typhoon to Location Distance:',
+                                          style:
+                                              textStyles.lato_light(fontSize: 14),
+                                        ),
+                                        Text(
+                                          '${newlyAddedDayInformation!.distrackmin} km',
+                                          style:
+                                              textStyles.lato_black(fontSize: 20),
+                                        ),
+                                        SizedBox(height: 10),
+                                        Text(
+                                          'Rice Price (per kilo):',
+                                          style:
+                                              textStyles.lato_light(fontSize: 14),
+                                        ),
+                                        Text(
+                                          '${newlyAddedDayInformation!.price}',
+                                          style:
+                                              textStyles.lato_black(fontSize: 20),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 )
                               ],
                             ),
                           ),
-                        ),
+                        ],
                       ),
-                      SizedBox(
-                        height: 15,
+                  )
+                  : SizedBox()),
+          SizedBox(
+            height: 20,
+          ),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Material(
+              color: (haveAdded) ? Colors.blue : Colors.grey,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(8),
+                onTap: (haveAdded)
+                    ? (() {
+                        setState(() {
+                          haveAdded = false;
+                          newlyAddedDayInformation = null;
+                          isEstimationSuccess = false;
+                        });
+                        context.read<page_provider>().changePage(1);
+                      })
+                    : null,
+                child: Ink(
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  width: double.maxFinite,
+                  height: 55,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Proceed to Dashboard",
+                        style: textStyles.lato_bold(
+                            fontSize: 18, color: Colors.white),
                       ),
-                      InkWell(
-                        borderRadius: BorderRadius.circular(5),
-                        onTap: (selectedMunicipalName == 'Select Location')
-                            ? null
-                            : (() {
-                                showDistrackminOptions();
-                              }),
-                        child: Container(
-                          width: double.maxFinite,
-                          height: 48,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(5),
-                              border: Border.all(
-                                  width: 1,
-                                  color: Colors.grey.shade600.withOpacity(0.5),
-                                  style: BorderStyle.solid)),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text(
-                                  distrackminfinal,
-                                  style: (distrackminfinal ==
-                                          'Distance of Typhoon to Location')
-                                      ? textStyles.lato_light(fontSize: 17)
-                                      : textStyles.lato_regular(fontSize: 17),
-                                ),
-                                (selectedMunicipalName == 'Select Location')
-                                    ? Tooltip(
-                                        message:
-                                            "Please provide your location first.",
-                                        child: Icon(
-                                          Icons.info,
-                                          size: 16,
-                                          color: Colors.blue,
-                                        ),
-                                      )
-                                    : Icon(
-                                        Icons.arrow_drop_down,
-                                        size: 22,
-                                        color: Colors.black,
-                                      )
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 30,
-                      ),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: Material(
-                          color: Colors.blue,
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(8),
-                            onTap: (() async {
-                              setState(() {
-                                isFetchingPrediction = true;
-                              });
-                              for (Location_ loc in locs) {
-                                if (loc.munCode == selectedMunicipalCode) {
-                                  print("LILUZIVERT");
-                                  print(loc);
-                                  await sendPredictionRequest();
-                                  print("NA SET NA DILI NA NULL");
-                                  break;
-                                }
-                              }
-                              setState(() {
-                                print("beat the ");
-                                isFetchingPrediction = false;
-                                print("koto nai");
-                              });
-                              print("BRUHHH ${damageCostPredictionFromAPI}");
-                              try {
-                                setState(() {
-                                  isAddingTyphoon = true;
-                                });
-                                await FirestoreService().addDay(
-                                    damageCost: double.parse(
-                                        damageCostPredictionFromAPI!
-                                            .toStringAsFixed(2)),
-                                    windSpeed: double.parse(
-                                        windspeedController.text.trim()),
-                                    rainfall24: double.parse(
-                                        rainfall24hController.text.trim()),
-                                    rainfall6: double.parse(
-                                        rainfall6hController.text.trim()),
-                                    disTrackMin: double.parse(distrackminfinal),
-                                    location: selectedMunicipalName,
-                                    locationCode: selectedMunicipalCode,
-                                    typhoonName: typhNameController.text.trim(),
-                                    isFirstDay: true,
-                                    price: double.parse(
-                                        priceController.text.trim()));
-                              } catch (e) {
-                                print("ERROR SA DB OH: $e");
-                              }
-                              print("HUMANA OG ADD SA DB");
-                              setState(() {
-                                print("pssy");
-                                isAddingTyphoon = false;
-                                print("drake");
-                              });
-
-                              setState(() {
-                                print("resetting");
-                                selectedMunicipalName = "Choose Location";
-                                selectedMunicipalCode = "";
-                                distrackminfinal = "Enter distrackmin...";
-                                print("resetted");
-                              });
-
-                              typhNameController.clear();
-                              windspeedController.clear();
-                              rainfall24hController.clear();
-                              rainfall6hController.clear();
-                              priceController.clear();
-                            }),
-                            child: Ink(
-                              padding: EdgeInsets.symmetric(horizontal: 30),
-                              width: double.maxFinite,
-                              height: 55,
-                              child: Row(
-                                children: [
-                                  Text(
-                                    "Estimate Damage Cost",
-                                    style: textStyles.lato_bold(
-                                        fontSize: 20, color: Colors.white),
-                                  ),
-                                  Spacer(),
-                                  Icon(
-                                    Icons.arrow_right_alt_sharp,
-                                    size: 40,
-                                    color: Colors.white,
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
+                      Icon(
+                        Icons.arrow_right,
+                        size: 30,
+                        color: Colors.white,
                       )
                     ],
                   ),
-                )),
-                Expanded(
-                    child: Container(
-                  // child: Stack(
-                  //   children: [
-                  //     Positioned(
-                  //       right: 0,
-                  //       top: 1,
-                  //       child: Image.asset('lib/assets/images/largevector.png', height: MediaQuery.of(context).size.height,)),
+                ),
+              ),
+            ),
+          ),
+          SizedBox(
+            height: 20,
+          ),
+        ],
+      ),
+    );
+  }
 
-                  //   ],
-                  // ),
-                  child: (isFetchingPrediction)
-                      ? Center(
-                          child: Container(
-                            child: Column(
-                              children: [
-                                Center(
-                                  child: Container(
-                                      height: 300,
-                                      child: CircularProgressIndicator()),
-                                ),
-                                Text("Fetching Estimation...")
-                              ],
-                            ),
-                          ),
-                        )
-                      : (isAddingTyphoon)
-                          ? Center(
-                              child: Container(
-                                child: Column(
-                                  children: [
-                                    Center(
-                                      child: Container(
-                                          height: 300,
-                                          child: CircularProgressIndicator()),
-                                    ),
-                                    Text("Adding to Database...")
-                                  ],
-                                ),
-                              ),
-                            )
-                          : SizedBox(),
-                ))
-              ],
-            )),
-          ],
-        ));
+  Widget estimationError(String err) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Icon(
+          Icons.error,
+          size: 130,
+          color: Colors.red,
+        ),
+        SizedBox(
+          height: 30,
+        ),
+        Text(
+          'ERROR: $err',
+          style: textStyles.lato_bold(fontSize: 22),
+        ),
+      ],
+    );
+  }
+
+
+  Widget fetchingPrediction(){
+    return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    height: 60,
+                  ),
+                  const SpinKitSpinningLines(
+                      lineWidth: 4, size: 150, color: Colors.blue),
+                  SizedBox(height: 60),
+                  Text(
+                    'Estimating.',
+                    style: textStyles.lato_bold(
+                        fontSize: 22, color: Colors.black.withOpacity(0.4)),
+                  ),
+                  Text(
+                    'This may take a while...',
+                    style: textStyles.lato_bold(
+                        fontSize: 22, color: Colors.black.withOpacity(0.4)),
+                  ),
+                  SizedBox(
+                    height: 80,
+                  ),
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          'lib/assets/images/typhoonista_logo.png',
+                          height: 22,
+                          color: Color(0xff0090D9).withOpacity(0.3),
+                        ),
+                        SizedBox(width: 5),
+                        Text('TYPHOONISTA',
+                            style: textStyles.lato_bold(
+                                fontSize: 14,
+                                color: Color(0xff0090D9).withOpacity(0.3)))
+                      ]),
+                  SizedBox(
+                    height: 30,
+                  ),
+                ],
+    );
+  }
+
+
+  Widget addingToDatabase(){
+    return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    height: 60,
+                  ),
+                  const SpinKitSpinningLines(
+                      lineWidth: 4, size: 150, color: Colors.blue),
+                  SizedBox(height: 60),
+                  Text(
+                    'Adding Estimation to',
+                    style: textStyles.lato_bold(
+                        fontSize: 22, color: Colors.black.withOpacity(0.4)),
+                  ),
+                  Text(
+                    'Database...',
+                    style: textStyles.lato_bold(
+                        fontSize: 22, color: Colors.black.withOpacity(0.4)),
+                  ),
+                  SizedBox(
+                    height: 80,
+                  ),
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          'lib/assets/images/typhoonista_logo.png',
+                          height: 22,
+                          color: Color(0xff0090D9).withOpacity(0.3),
+                        ),
+                        SizedBox(width: 5),
+                        Text('TYPHOONISTA - ${DateTime.now().year}',
+                            style: textStyles.lato_bold(
+                                fontSize: 14,
+                                color: Color(0xff0090D9).withOpacity(0.3)))
+                      ]),
+                  SizedBox(
+                    height: 30,
+                  ),
+                ],
+    );
   }
 
   bruh({required double num}) {
@@ -778,6 +1111,7 @@ class _estimator_pageState extends State<estimator_page> {
                         children: [
                           Expanded(
                             child: InkWell(
+                              borderRadius: BorderRadius.circular(15),
                               onTap: (() {
                                 showAutomaticDistanceCalculation();
                               }),
@@ -862,6 +1196,7 @@ class _estimator_pageState extends State<estimator_page> {
                           ),
                           Expanded(
                             child: InkWell(
+                              borderRadius: BorderRadius.circular(15),
                               onTap: (() {
                                 showManualDistanceCalculation();
                               }),

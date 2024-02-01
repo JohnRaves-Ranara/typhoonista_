@@ -46,7 +46,7 @@ class _weather_forecastState extends State<weather_forecast> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        const SpinKitPouringHourGlassRefined(size: 50, color: Colors.blue),
+                        const SpinKitSpinningLines(size: 50, lineWidth: 3.5, color: Colors.blue),
                       ],
                     )
                     : SingleChildScrollView(

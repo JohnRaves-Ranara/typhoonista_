@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:typhoonista_thesis/services/FirestoreService.dart';
 import 'package:typhoonista_thesis/entities/TyphoonDay.dart';
 import 'package:typhoonista_thesis/assets/themes/textStyles.dart';
@@ -38,10 +39,14 @@ class _history_pageState extends State<history_page> {
                           .toList()),
                   builder: (context, snapshot) {
                     if (snapshot.hasError) {
-                      return Text("ERROR");
+                      return Center(child: Text('An error has occured.', style: textStyles.lato_regular(fontSize: 16),));
                     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return Text("No data.");
-                    } else {
+                      return Center(child: Text('No Data.', style: textStyles.lato_regular(fontSize: 16),));
+                    }
+                    else if (snapshot.connectionState==ConnectionState.waiting){
+                      return Center(child: SpinKitSpinningLines(size: 50, lineWidth: 3.5, color: Colors.blue));
+                    }
+                     else {
                       final List<TyphoonDay> days = snapshot.data!;
                       return Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -121,49 +126,45 @@ class _history_pageState extends State<history_page> {
             ),
             SizedBox(height: 30,),
             Expanded(
-              child: Container(
-                child: ListView(
-                  children: [Container(
-                    width: double.maxFinite,
-                    child: StreamBuilder<List<TyphoonDay>>(
-                      stream: daysStream(),
-                      builder: (context, snapshot) {
-                        if (snapshot.hasError) {
-                          return Center(child: Text('An error has occured.', style: textStyles.lato_regular(fontSize: 16),));
-                        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                          return Center(child: Text("No data.", style: textStyles.lato_regular(fontSize: 16),));
-                        } else if(snapshot.connectionState == ConnectionState.waiting){
-                          return Center(child: Text("Loading data...", style: textStyles.lato_regular(fontSize: 16),));
-                        } 
-                        else {
-                          final List<TyphoonDay> days = snapshot.data!;
-                          return DataTable(
-                            showCheckboxColumn: false,
-                            columns: 
-                          [
-                            DataColumn(label: Text('Typhoon Name', style: textStyles.lato_bold(),)),
-                            DataColumn(label: Text('Day Number', style: textStyles.lato_bold())),
-                            DataColumn(label: Text('Location', style: textStyles.lato_bold())),
-                            DataColumn(label: Text('Damage Cost', style: textStyles.lato_bold())),
-                          ]
-                          , rows: days.map((day) => DataRow(
-                            // selected: false,
-                            onSelectChanged: (isSelected) {
-                              //todo
-                              print(day.damageCost);
-                            },
-                            cells: [
-                              DataCell(Text(day.typhoonName, style: textStyles.lato_regular())),
-                              DataCell(Text(day.day.toString(), style: textStyles.lato_regular())),
-                              DataCell(Text(day.location, style: textStyles.lato_regular())),
-                              DataCell(Text(day.damageCost.toString(), style: textStyles.lato_regular()))
-                            ]
-                           )).toList());
-                        }
-                      },
-                    ),
-                  )],
-                ),
+              child: StreamBuilder<List<TyphoonDay>>(
+                stream: daysStream(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return Center(child: Text('An error has occured.', style: textStyles.lato_regular(fontSize: 16),));
+                  } else if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: SpinKitSpinningLines(size: 50, lineWidth: 3.5, color: Colors.blue));
+                  } else if(!snapshot.hasData || snapshot.data!.isEmpty){
+                    return Center(child: Text('No Data.', style: textStyles.lato_regular(fontSize: 16),));
+                  } 
+                  else {
+                    final List<TyphoonDay> days = snapshot.data!;
+                    return Container(
+                      width: double.maxFinite,
+                      child: DataTable(
+                        showCheckboxColumn: false,
+                        columns: 
+                      [
+                        DataColumn(label: Text('Typhoon Name', style: textStyles.lato_bold(),)),
+                        DataColumn(label: Text('Day Number', style: textStyles.lato_bold())),
+                        DataColumn(label: Text('Location', style: textStyles.lato_bold())),
+                        DataColumn(label: Text('Damage Cost', style: textStyles.lato_bold())),
+                      ]
+                      , rows: days.map((day) => DataRow(
+                        // selected: false,
+                        onSelectChanged: (isSelected) {
+                          //todo
+                          print(day.damageCost);
+                        },
+                        cells: [
+                          DataCell(Text(day.typhoonName, style: textStyles.lato_regular())),
+                          DataCell(Text(day.day.toString(), style: textStyles.lato_regular())),
+                          DataCell(Text(day.location, style: textStyles.lato_regular())),
+                          DataCell(Text(day.damageCost.toString(), style: textStyles.lato_regular()))
+                        ]
+                       )).toList()),
+                    );
+                  }
+                },
               ),
             ),
           ],
@@ -208,7 +209,6 @@ class _history_pageState extends State<history_page> {
         .collection('users')
         .doc('test-user')
         .collection('allDays')
-        .orderBy('dateRecorded')
         ;
 
     if (selectedDayNumber != 'All') {

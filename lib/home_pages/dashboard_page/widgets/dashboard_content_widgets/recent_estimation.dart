@@ -344,10 +344,11 @@ class _recent_estimationState extends State<recent_estimation> {
                                                                       //         .size
                                                                       //         .height *
                                                                       //     0.8,
-                                                                      width: MediaQuery.of(context)
-                                                                              .size
-                                                                              .width *
-                                                                          0.4,
+                                                                      width: (isEstimationSuccess)
+                                                                          ? MediaQuery.of(context).size.width *
+                                                                              0.4
+                                                                          : MediaQuery.of(context).size.width *
+                                                                              0.25,
                                                                       child: (isFetchingPrediction)
                                                                           ? fetchingPrediction()
                                                                           : (isAddingTyphoon)
@@ -391,7 +392,9 @@ class _recent_estimationState extends State<recent_estimation> {
                 ),
               );
             } else {
-              return Text("EMPTY");
+              return Center(
+                  child: SpinKitSpinningLines(
+                      size: 50, lineWidth: 3.5, color: Colors.blue));
             }
           }),
     );
@@ -441,16 +444,39 @@ class _recent_estimationState extends State<recent_estimation> {
     return Column(
       children: [
         SizedBox(
-          height: 50,
+          height: 60,
         ),
-        const SpinKitPouringHourGlassRefined(size: 120, color: Colors.blue),
-        SizedBox(height: 40),
+        const SpinKitSpinningLines(lineWidth: 4, size: 100, color: Colors.blue),
+        SizedBox(height: 60),
         Text(
-          'Estimating. This may take a while...',
-          style: textStyles.lato_bold(fontSize: 22),
+          'Estimating.',
+          style: textStyles.lato_bold(
+              fontSize: 18, color: Colors.black.withOpacity(0.4)),
+        ),
+        Text(
+          'This may take a while...',
+          style: textStyles.lato_bold(
+              fontSize: 18, color: Colors.black.withOpacity(0.4)),
         ),
         SizedBox(
-          height: 40,
+          height: 80,
+        ),
+        Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Image.asset(
+                'lib/assets/images/typhoonista_logo.png',
+                height: 20,
+                color: Color(0xff0090D9).withOpacity(0.3),
+              ),
+              SizedBox(width: 5),
+              Text('TYPHOONISTA - ${DateTime.now().year}',
+                  style: textStyles.lato_bold(
+                      fontSize: 12, color: Color(0xff0090D9).withOpacity(0.3)))
+            ]),
+        SizedBox(
+          height: 30,
         ),
       ],
     );
@@ -460,16 +486,39 @@ class _recent_estimationState extends State<recent_estimation> {
     return Column(
       children: [
         SizedBox(
-          height: 50,
+          height: 60,
         ),
-        const SpinKitPouringHourGlassRefined(size: 120, color: Colors.blue),
-        SizedBox(height: 40),
+        const SpinKitSpinningLines(lineWidth: 4, size: 100, color: Colors.blue),
+        SizedBox(height: 60),
         Text(
-          'Adding Estimation to Database...',
-          style: textStyles.lato_bold(fontSize: 22),
+          'Adding Estimation to',
+          style: textStyles.lato_bold(
+              fontSize: 18, color: Colors.black.withOpacity(0.4)),
+        ),
+        Text(
+          'Database...',
+          style: textStyles.lato_bold(
+              fontSize: 18, color: Colors.black.withOpacity(0.4)),
         ),
         SizedBox(
-          height: 40,
+          height: 80,
+        ),
+        Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Image.asset(
+                'lib/assets/images/typhoonista_logo.png',
+                height: 20,
+                color: Color(0xff0090D9).withOpacity(0.3),
+              ),
+              SizedBox(width: 5),
+              Text('TYPHOONISTA - ${DateTime.now().year}',
+                  style: textStyles.lato_bold(
+                      fontSize: 12, color: Color(0xff0090D9).withOpacity(0.3)))
+            ]),
+        SizedBox(
+          height: 30,
         ),
       ],
     );
@@ -664,8 +713,7 @@ class _recent_estimationState extends State<recent_estimation> {
                       contentPadding:
                           EdgeInsets.symmetric(vertical: 0, horizontal: 10),
                       fillColor: Colors.white,
-                      labelStyle: textStyles.lato_light(
-                          color: Colors.black),
+                      labelStyle: textStyles.lato_light(color: Colors.black),
                       enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(
                               color: Colors.grey.shade600.withOpacity(0.5),
@@ -694,8 +742,7 @@ class _recent_estimationState extends State<recent_estimation> {
                       contentPadding:
                           EdgeInsets.symmetric(vertical: 0, horizontal: 10),
                       fillColor: Colors.white,
-                      labelStyle: textStyles.lato_light(
-                          color: Colors.black),
+                      labelStyle: textStyles.lato_light(color: Colors.black),
                       enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(
                               color: Colors.grey.shade600.withOpacity(0.5),
@@ -724,8 +771,7 @@ class _recent_estimationState extends State<recent_estimation> {
                       contentPadding:
                           EdgeInsets.symmetric(vertical: 0, horizontal: 10),
                       fillColor: Colors.white,
-                      labelStyle: textStyles.lato_light(
-                          color: Colors.black),
+                      labelStyle: textStyles.lato_light(color: Colors.black),
                       enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(
                               color: Colors.grey.shade600.withOpacity(0.5),
@@ -754,8 +800,7 @@ class _recent_estimationState extends State<recent_estimation> {
                       contentPadding:
                           EdgeInsets.symmetric(vertical: 0, horizontal: 10),
                       fillColor: Colors.white,
-                      labelStyle: textStyles.lato_light(
-                          color: Colors.black),
+                      labelStyle: textStyles.lato_light(color: Colors.black),
                       enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(
                               color: Colors.grey.shade600.withOpacity(0.5),
@@ -801,7 +846,9 @@ class _recent_estimationState extends State<recent_estimation> {
                         children: [
                           Text(
                             selectedMunicipalName,
-                            style: (selectedMunicipalName == 'Select Location') ? textStyles.lato_light(fontSize: 17) : textStyles.lato_regular(fontSize: 17),
+                            style: (selectedMunicipalName == 'Select Location')
+                                ? textStyles.lato_light(fontSize: 17)
+                                : textStyles.lato_regular(fontSize: 17),
                           ),
                           Icon(
                             Icons.arrow_drop_down,
@@ -841,7 +888,10 @@ class _recent_estimationState extends State<recent_estimation> {
                         children: [
                           Text(
                             distrackminfinal,
-                            style: (distrackminfinal=='Distance of Typhoon to Location') ? textStyles.lato_light(fontSize: 17) : textStyles.lato_regular(fontSize: 17),
+                            style: (distrackminfinal ==
+                                    'Distance of Typhoon to Location')
+                                ? textStyles.lato_light(fontSize: 17)
+                                : textStyles.lato_regular(fontSize: 17),
                           ),
                           (selectedMunicipalName == 'Select Location')
                               ? Tooltip(
@@ -981,25 +1031,28 @@ class _recent_estimationState extends State<recent_estimation> {
   }
 
   Widget Information(Function customState) {
-    customState(() {
-      haveAdded = true;
-    });
+    // var newlyAddedDayInformation = TyphoonDay(
+    //     price: 19.23,
+    //     distrackmin: 250,
+    //     rainfall24: 12,
+    //     rainfall6: 6.121,
+    //     windSpeed: 21,
+    //     id: '12331',
+    //     typhoonID: '12313',
+    //     location: 'Arakan',
+    //     locationCode: 'bruh',
+    //     dateRecorded: '2020-14-12 18:23',
+    //     typhoonName: 'Pasilyo',
+    //     damageCost: 1234567.12,
+    //     day: 3);
     return Container(
+      // color: ,
       padding: EdgeInsets.symmetric(horizontal: 40),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            height: 20,
-          ),
-          Text(
-            "Estimation",
-            style: textStyles.lato_black(fontSize: 35),
-          ),
-          SizedBox(
-            height: 20,
-          ),
+          SizedBox(height: 40),
           Container(
               constraints: BoxConstraints(
                   minHeight: MediaQuery.of(context).size.height * 0.28),
@@ -1007,119 +1060,159 @@ class _recent_estimationState extends State<recent_estimation> {
               width: double.maxFinite,
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(15),
               ),
               child: (haveAdded)
-                  ? Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
+                  ? Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
-                          child: Container(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Typhoon Name:',
-                                  style: textStyles.lato_light(fontSize: 12),
-                                ),
-                                Text(
-                                  '${newlyAddedDayInformation!.typhoonName}',
-                                  style: textStyles.lato_black(fontSize: 16),
-                                ),
-                                SizedBox(height: 10),
-                                Text(
-                                  'Predicted Damage Cost:',
-                                  style: textStyles.lato_light(fontSize: 12),
-                                ),
-                                Text(
-                                  '₱ ${NumberFormat('#,##0.00', 'en_US').format(newlyAddedDayInformation!.damageCost)}',
-                                  style: textStyles.lato_black(fontSize: 16),
-                                ),
-                                SizedBox(height: 10),
-                                Text(
-                                  'Day:',
-                                  style: textStyles.lato_light(fontSize: 12),
-                                ),
-                                Text(
-                                  '${newlyAddedDayInformation!.day}',
-                                  style: textStyles.lato_black(fontSize: 16),
-                                ),
-                                SizedBox(height: 10),
-                                Text(
-                                  'Date Recorded:',
-                                  style: textStyles.lato_light(fontSize: 12),
-                                ),
-                                Text(
-                                  '${DateTime.parse(newlyAddedDayInformation!.dateRecorded).year}-${DateTime.parse(newlyAddedDayInformation!.dateRecorded).month}-${DateTime.parse(newlyAddedDayInformation!.dateRecorded).day} ${DateTime.parse(newlyAddedDayInformation!.dateRecorded).hour}:${DateTime.parse(newlyAddedDayInformation!.dateRecorded).minute}',
-                                  style: textStyles.lato_black(fontSize: 16),
-                                ),
-                                SizedBox(height: 10),
-                                Text(
-                                  'Windspeed:',
-                                  style: textStyles.lato_light(fontSize: 12),
-                                ),
-                                Text(
-                                  '${newlyAddedDayInformation!.windSpeed} kph',
-                                  style: textStyles.lato_black(fontSize: 16),
-                                ),
-                              ],
-                            ),
-                          ),
+                        SizedBox(height: 20),
+                        Text(
+                          "Estimation",
+                          style: textStyles.lato_black(fontSize: 30),
                         ),
-                        Expanded(
-                          child: Container(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Rainfall (24H):',
-                                  style: textStyles.lato_light(fontSize: 12),
+                        Divider(),
+                        SizedBox(
+                          height: 15,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(width: 20),
+                            Expanded(
+                              flex: 60,
+                              child: Container(
+                                // color: Colors.blue,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Typhoon Name:',
+                                      style:
+                                          textStyles.lato_light(fontSize: 12),
+                                    ),
+                                    Text(
+                                      '${newlyAddedDayInformation!.typhoonName}',
+                                      style:
+                                          textStyles.lato_black(fontSize: 16),
+                                    ),
+                                    SizedBox(height: 10),
+                                    Text(
+                                      'Predicted Damage Cost:',
+                                      style:
+                                          textStyles.lato_light(fontSize: 12),
+                                    ),
+                                    Text(
+                                      '₱ ${NumberFormat('#,##0.00', 'en_US').format(newlyAddedDayInformation!.damageCost)}',
+                                      style:
+                                          textStyles.lato_black(fontSize: 16),
+                                    ),
+                                    SizedBox(height: 10),
+                                    Text(
+                                      'Day:',
+                                      style:
+                                          textStyles.lato_light(fontSize: 12),
+                                    ),
+                                    Text(
+                                      '${newlyAddedDayInformation!.day}',
+                                      style:
+                                          textStyles.lato_black(fontSize: 16),
+                                    ),
+                                    SizedBox(height: 10),
+                                    Text(
+                                      'Date Recorded:',
+                                      style:
+                                          textStyles.lato_light(fontSize: 12),
+                                    ),
+                                    Text(
+                                      '${DateTime.parse(newlyAddedDayInformation!.dateRecorded).year}-${DateTime.parse(newlyAddedDayInformation!.dateRecorded).month}-${DateTime.parse(newlyAddedDayInformation!.dateRecorded).day} ${DateTime.parse(newlyAddedDayInformation!.dateRecorded).hour}:${DateTime.parse(newlyAddedDayInformation!.dateRecorded).minute}',
+                                      style:
+                                          textStyles.lato_black(fontSize: 16),
+                                    ),
+                                    SizedBox(height: 10),
+                                    Text(
+                                      'Windspeed:',
+                                      style:
+                                          textStyles.lato_light(fontSize: 12),
+                                    ),
+                                    Text(
+                                      '${newlyAddedDayInformation!.windSpeed} kph',
+                                      style:
+                                          textStyles.lato_black(fontSize: 16),
+                                    ),
+                                  ],
                                 ),
-                                Text(
-                                  '${newlyAddedDayInformation!.rainfall24} mm',
-                                  style: textStyles.lato_black(fontSize: 16),
-                                ),
-                                SizedBox(height: 10),
-                                Text(
-                                  'Rainfall (6H):',
-                                  style: textStyles.lato_light(fontSize: 12),
-                                ),
-                                Text(
-                                  '${newlyAddedDayInformation!.rainfall6} mm',
-                                  style: textStyles.lato_black(fontSize: 16),
-                                ),
-                                SizedBox(height: 10),
-                                Text(
-                                  'Location:',
-                                  style: textStyles.lato_light(fontSize: 12),
-                                ),
-                                Text(
-                                  '${newlyAddedDayInformation!.location}',
-                                  style: textStyles.lato_black(fontSize: 16),
-                                ),
-                                SizedBox(height: 10),
-                                Text(
-                                  'Typhoon to Location Distance:',
-                                  style: textStyles.lato_light(fontSize: 12),
-                                ),
-                                Text(
-                                  '${newlyAddedDayInformation!.distrackmin} km',
-                                  style: textStyles.lato_black(fontSize: 16),
-                                ),
-                                SizedBox(height: 10),
-                                Text(
-                                  'Rice Price (per kilo):',
-                                  style: textStyles.lato_light(fontSize: 12),
-                                ),
-                                Text(
-                                  '${newlyAddedDayInformation!.price}',
-                                  style: textStyles.lato_black(fontSize: 16),
-                                ),
-                              ],
+                              ),
                             ),
-                          ),
-                        )
+                            Expanded(
+                              flex: 40,
+                              child: Container(
+                                // color: Colors.red,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Rainfall (24H):',
+                                      style:
+                                          textStyles.lato_light(fontSize: 12),
+                                    ),
+                                    Text(
+                                      '${newlyAddedDayInformation!.rainfall24} mm',
+                                      style:
+                                          textStyles.lato_black(fontSize: 16),
+                                    ),
+                                    SizedBox(height: 10),
+                                    Text(
+                                      'Rainfall (6H):',
+                                      style:
+                                          textStyles.lato_light(fontSize: 12),
+                                    ),
+                                    Text(
+                                      '${newlyAddedDayInformation!.rainfall6} mm',
+                                      style:
+                                          textStyles.lato_black(fontSize: 16),
+                                    ),
+                                    SizedBox(height: 10),
+                                    Text(
+                                      'Location:',
+                                      style:
+                                          textStyles.lato_light(fontSize: 12),
+                                    ),
+                                    Text(
+                                      '${newlyAddedDayInformation!.location}',
+                                      style:
+                                          textStyles.lato_black(fontSize: 16),
+                                    ),
+                                    SizedBox(height: 10),
+                                    Text(
+                                      'Typhoon to Location Distance:',
+                                      style:
+                                          textStyles.lato_light(fontSize: 12),
+                                    ),
+                                    Text(
+                                      '${newlyAddedDayInformation!.distrackmin} km',
+                                      style:
+                                          textStyles.lato_black(fontSize: 16),
+                                    ),
+                                    SizedBox(height: 10),
+                                    Text(
+                                      'Rice Price (per kilo):',
+                                      style:
+                                          textStyles.lato_light(fontSize: 12),
+                                    ),
+                                    Text(
+                                      '${newlyAddedDayInformation!.price}',
+                                      style:
+                                          textStyles.lato_black(fontSize: 16),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                        SizedBox(height: 20),
                       ],
                     )
                   : SizedBox()),
@@ -1143,7 +1236,7 @@ class _recent_estimationState extends State<recent_estimation> {
                       })
                     : null,
                 child: Ink(
-                  padding: EdgeInsets.symmetric(horizontal: 30),
+                  padding: EdgeInsets.symmetric(horizontal: 20),
                   width: double.maxFinite,
                   height: 55,
                   child: Row(
@@ -1155,8 +1248,8 @@ class _recent_estimationState extends State<recent_estimation> {
                             fontSize: 18, color: Colors.white),
                       ),
                       Icon(
-                        Icons.arrow_right_alt_sharp,
-                        size: 40,
+                        Icons.arrow_right,
+                        size: 30,
                         color: Colors.white,
                       )
                     ],
@@ -1172,49 +1265,6 @@ class _recent_estimationState extends State<recent_estimation> {
       ),
     );
   }
-
-  // showDistrackminOptions(Function customState) {
-  //   showDialog(
-  //       context: context,
-  //       builder: (context) {
-  //         return AlertDialog(
-  //           content: Container(
-  //             height: MediaQuery.of(context).size.height * 0.5,
-  //             width: MediaQuery.of(context).size.width * 0.5,
-  //             child: Row(
-  //               children: [
-  //                 Expanded(
-  //                   child: InkWell(
-  //                     onTap: (() {
-  //                       showAutomaticDistanceCalculation(customState);
-  //                     }),
-  //                     child: Container(
-  //                       color: Colors.blue,
-  //                       child: Center(
-  //                         child: Text('AUTOMATIC'),
-  //                       ),
-  //                     ),
-  //                   ),
-  //                 ),
-  //                 Expanded(
-  //                   child: InkWell(
-  //                     onTap: (() {
-  //                       showManualDistanceCalculation(customState);
-  //                     }),
-  //                     child: Container(
-  //                       color: Colors.red,
-  //                       child: Center(
-  //                         child: Text('MANUAL'),
-  //                       ),
-  //                     ),
-  //                   ),
-  //                 )
-  //               ],
-  //             ),
-  //           ),
-  //         );
-  //       });
-  // }
 
   showDistrackminOptions(Function customState) {
     showDialog(
