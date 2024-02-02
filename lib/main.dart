@@ -11,6 +11,7 @@ import 'package:typhoonista_thesis/tests/idk.dart';
 import 'package:typhoonista_thesis/tests/idk2.dart';
 import 'package:typhoonista_thesis/tests/idk3.dart';
 import 'package:typhoonista_thesis/tests/idkkk.dart';
+import 'package:typhoonista_thesis/tests/screen2.dart';
 import 'package:typhoonista_thesis/tests/textDataProvider.dart';
 import 'home_pages/estimator_page/estimator_page.dart';
 

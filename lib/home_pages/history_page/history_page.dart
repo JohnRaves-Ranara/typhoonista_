@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:intl/intl.dart';
 import 'package:typhoonista_thesis/services/FirestoreService.dart';
 import 'package:typhoonista_thesis/entities/TyphoonDay.dart';
 import 'package:typhoonista_thesis/assets/themes/textStyles.dart';
@@ -159,7 +160,7 @@ class _history_pageState extends State<history_page> {
                           DataCell(Text(day.typhoonName, style: textStyles.lato_regular())),
                           DataCell(Text(day.day.toString(), style: textStyles.lato_regular())),
                           DataCell(Text(day.location, style: textStyles.lato_regular())),
-                          DataCell(Text(day.damageCost.toString(), style: textStyles.lato_regular()))
+                          DataCell(Text('${NumberFormat('#,##0.00', 'en_US').format(day.damageCost)}', style: textStyles.lato_regular()))
                         ]
                        )).toList()),
                     );

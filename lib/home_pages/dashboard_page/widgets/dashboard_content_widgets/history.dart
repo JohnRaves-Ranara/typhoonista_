@@ -26,11 +26,7 @@ class _historyState extends State<history> {
             Container(
               height: 55,
               decoration: const BoxDecoration(
-                  border: Border(
-                      bottom: BorderSide(
-                          color: Colors.grey,
-                          width: 1,
-                          style: BorderStyle.solid))),
+                  ),
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 20),
                 child: Row(
@@ -68,7 +64,9 @@ class _historyState extends State<history> {
                 ),
               ),
             ),
-            // Expanded(child: ListView(children: [allDaysTable()])) //todo
+            Expanded(child: ListView(
+              shrinkWrap: true,
+              children: [allDaysTable()])) //todo
           ],
         ),
       ),

@@ -53,6 +53,7 @@ class FirestoreService {
     late TyphoonDay newlyAddedDay;
     var dayJson;
     final currentDateTime = DateTime.now();
+    final currentYear = currentDateTime.year;
     if (isFirstDay) {
       print("REDVLET");
       //line below creates a new typhoon document inside typhoons collection
@@ -69,7 +70,8 @@ class FirestoreService {
         "peakRainfall6" : rainfall6,
         "endDate" : "",
         "currentDay": 1,
-        "status": "ongoing"
+        "status": "ongoing",
+        "year" : currentYear.toString()
       };
 
       await typhoonDocRef.set(typhoon);
@@ -319,10 +321,6 @@ class FirestoreService {
         .doc('test-user')
         .collection('typhoons')
         .get();
-
-    // return typhSnapshot.docs
-    //     .map((doc) => Typhoon.fromJson(doc.data() as Map<String, dynamic>))
-    //     .toList();
     List<Typhoon> typhoons = [];
 
     typhSnapshot.docs.forEach((doc) { 
@@ -337,6 +335,74 @@ class FirestoreService {
     });
     return typhoons.map((typhoon)=> DamageCostBar(typhoon.typhoonName, typhoon.totalDamageCost)).toList();
   }
+
+  Stream<List<int>> getYearsListStream() {
+    return FirebaseFirestore.instance
+        .collection('users')
+        .doc('test-user')
+        .collection('typhoons')
+        .snapshots()
+        .map((snapshot) {
+      List<int> yearsList = [];
+
+      snapshot.docs.forEach((document) {
+        Map<String, dynamic> data = document.data() as Map<String, dynamic>;
+        DateTime startDate = DateTime.parse(data['startDate']);
+        int year = startDate.year; // Replace 'year' with your actual attribute name
+
+        // Add the year to the list if it is not already present
+        if (!yearsList.contains(year)) {
+          yearsList.add(year);
+        }
+      });
+
+      yearsList.sort((a, b) => b.compareTo(a)); // Sort in descending order
+      return yearsList;
+    });
+  }
+
+  Stream<List<DamageCostBar>> getAllDamageCostBarsBasedOnYearint(int selectedYear){
+    return FirebaseFirestore.instance
+    .collection('users')
+    .doc('test-user')
+    .collection('typhoons')
+    .where('year', isEqualTo: selectedYear.toString())
+    .snapshots()
+    .map((snapshot) {
+      List<Typhoon> typhoons = [];
+
+      snapshot.docs.forEach((doc) {
+        Map<String,dynamic> data = doc.data() as Map<String,dynamic>;
+        typhoons.add(
+          Typhoon.fromJson(data)
+        );
+      });
+      return typhoons.map((typhoon) => DamageCostBar(typhoon.typhoonName, typhoon.totalDamageCost)).toList();
+    });
+  }
+
+//   Stream<List<int>> getYearsListStream() {
+//   return FirebaseFirestore.instance
+//       .collection('your_collection_name')
+//       .snapshots()
+//       .map((QuerySnapshot<Map<String, dynamic>> snapshot) {
+//     List<int> yearsList = [];
+
+//     snapshot.docs.forEach((DocumentSnapshot document) {
+//       Map<String, dynamic> data = document.data() as Map<String, dynamic>;
+//       DateTime startDate = DateTime.parse(data['startDate']);
+//       int year = startDate.year;
+//       // int year = data['year'] ?? 0; // Replace 'year' with your actual attribute name
+
+//       // Add the year to the list if it is not already present
+//       if (!yearsList.contains(year)) {
+//         yearsList.add(year);
+//       }
+//     });
+
+//     return yearsList;
+//   });
+// }
 
   Future<List<int>> getTyphoonYears() async {
     QuerySnapshot yearsSnapshot = await FirebaseFirestore.instance

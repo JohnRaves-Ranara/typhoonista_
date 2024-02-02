@@ -10,7 +10,18 @@ class sidebar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(border: Border(right: BorderSide(color: Colors.grey.shade300, style: BorderStyle.solid, width: 2))),
+      decoration: BoxDecoration(
+        // color: Colors.white,
+        // boxShadow: [
+        //         BoxShadow(
+        //           color: Colors.black.withOpacity(0.6),
+        //           offset: Offset(5, 0), // Only shadow to the right
+        //           blurRadius: 7,
+        //           spreadRadius: 5,
+        //         ),
+        //       ],
+        border: Border(right: BorderSide(color: Colors.grey.shade300, style: BorderStyle.solid, width: 2))
+        ),
       padding: EdgeInsets.symmetric(vertical: 30),
       height: double.infinity,
       width: 225,

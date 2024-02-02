@@ -369,7 +369,7 @@ class _recent_estimationState extends State<recent_estimation> {
                                                     BorderRadius.circular(10),
                                                 child: Center(
                                                   child: Text(
-                                                    "ADD DAY",
+                                                    "ADD DAILY ESTIMATION",
                                                     style:
                                                         textStyles.lato_regular(
                                                             color: Colors.black,
@@ -392,9 +392,174 @@ class _recent_estimationState extends State<recent_estimation> {
                 ),
               );
             } else {
-              return Center(
-                  child: SpinKitSpinningLines(
-                      size: 50, lineWidth: 3.5, color: Colors.blue));
+              return Container(
+                // color: Colors.purple,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                        padding: EdgeInsets.only(left: 15),
+                        child: Text(
+                          "ONGOING TYPHOON ESTIMATION",
+                          style: textStyles.lato_bold(
+                              color: Colors.black, fontSize: 15),
+                        )),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Expanded(
+                      child: Container(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(26),
+                              color: Color(0xff0690d7)),
+                          child: Column(
+                            children: [
+                              Expanded(
+                                flex: 7,
+                                child: LayoutBuilder(
+                                  builder: (context, constraints) {
+                                    double containerHeight =
+                                        constraints.maxHeight;
+                                    double containerWidth =
+                                        constraints.maxWidth;
+                                    return Container(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: containerWidth * 0.04,
+                                          vertical: containerHeight * 0.15),
+                                      width: double.infinity,
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(26),
+                                          color: Color(0xff02a0f1)),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "No Data Available",
+                                            style: textStyles.lato_regular(
+                                                color: Colors.white.withOpacity(0.2),
+                                                fontSize: 35),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                              Expanded(
+                                flex: 3,
+                                child: LayoutBuilder(
+                                    builder: (context, constraints) {
+                                  double containerHeight =
+                                      constraints.maxHeight;
+                                  double containerWidth = constraints.maxWidth;
+                                  return Container(
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: containerHeight * 0.2,
+                                        horizontal: containerWidth * 0.04),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.only(
+                                          bottomLeft: Radius.circular(26),
+                                          bottomRight: Radius.circular(26)),
+                                      // color: Colors.blue
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Expanded(
+                                          child: Material(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            color: Colors.white.withOpacity(0.2),
+                                            child: Ink(
+                                              child: InkWell(
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                                onTap: null,
+                                                child: Center(
+                                                  child: Text(
+                                                    "DELETE COMPUTATION",
+                                                    style:
+                                                        textStyles.lato_regular(
+                                                            color: Colors.white.withOpacity(0.2),
+                                                            fontSize: 10),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: 20,
+                                        ),
+                                        Expanded(
+                                          child: Material(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            color: Colors.white.withOpacity(0.2),
+                                            child: Ink(
+                                              child: InkWell(
+                                                onTap: null,
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                                child: Center(
+                                                  child: Text(
+                                                    "MARK AS FINISHED",
+                                                    style:
+                                                        textStyles.lato_regular(
+                                                            color: Colors.white.withOpacity(0.2),
+                                                            fontSize: 10),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: 20,
+                                        ),
+                                        Expanded(
+                                          child: Material(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            color: Colors.white.withOpacity(0.2),
+                                            child: Ink(
+                                              child: InkWell(
+                                                onTap: null,
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                                child: Center(
+                                                  child: Text(
+                                                    "ADD DAILY ESTIMATION",
+                                                    style:
+                                                        textStyles.lato_regular(
+                                                            color: Colors.white.withOpacity(0.2),
+                                                            fontSize: 10),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }),
+                              )
+                            ],
+                          )),
+                    )
+                  ],
+                ),
+              );
+
+              // return Center(
+              //     child: SpinKitSpinningLines(
+              //         size: 50, lineWidth: 3.5, color: Colors.blue));
             }
           }),
     );
@@ -529,29 +694,30 @@ class _recent_estimationState extends State<recent_estimation> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            actionsPadding: EdgeInsets.only(left: 30, right: 30, bottom: 30),
+            actionsPadding: EdgeInsets.only(left: 15, right: 15, bottom: 30),
             content: Container(
               width: MediaQuery.of(context).size.width * 0.1,
               height: MediaQuery.of(context).size.height * 0.2,
               child: Center(
-                  child: RichText(
-                textAlign: TextAlign.justify,
-                text: TextSpan(
-                    text: "Deleting a computation ",
-                    style: textStyles.lato_regular(
-                        fontSize: 20, color: Color(0xffAD0000)),
-                    children: [
-                      TextSpan(
-                          text:
-                              "will erase all of its estimations. Do you wish to proceed? ",
-                          style: textStyles.lato_regular(color: Colors.black)),
-                      TextSpan(
-                          text:
-                              "(If the Typhoon is finished, you can choose 'Mark as Finished' instead)",
-                          style:
-                              textStyles.lato_regular(color: Color(0xffAD0000)))
-                    ]),
-              )),
+                child: RichText(
+                                textAlign: TextAlign.justify,
+                                text: TextSpan(
+                  text: "Deleting a computation ",
+                  style: textStyles.lato_regular(
+                      fontSize: 20, color: Color(0xffAD0000)),
+                  children: [
+                    TextSpan(
+                        text:
+                            "will erase all of its estimations. Do you wish to proceed? ",
+                        style: textStyles.lato_regular(color: Colors.black)),
+                    TextSpan(
+                        text:
+                            "(If the Typhoon is finished, you can choose 'Mark as Finished' instead)",
+                        style:
+                            textStyles.lato_regular(color: Color(0xffAD0000)))
+                  ]),
+                              ),
+              ),
             ),
             actions: [
               ButtonBar(
@@ -606,7 +772,7 @@ class _recent_estimationState extends State<recent_estimation> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            actionsPadding: EdgeInsets.only(left: 30, right: 30, bottom: 30),
+            actionsPadding: EdgeInsets.only(left: 15, right: 15, bottom: 30),
             content: Container(
               width: MediaQuery.of(context).size.width * 0.1,
               height: MediaQuery.of(context).size.height * 0.2,
@@ -641,6 +807,7 @@ class _recent_estimationState extends State<recent_estimation> {
                       Navigator.pop(context);
                     }),
                     child: Container(
+                      
                       height: 60,
                       width: 185,
                       color: Color(0xff00109F),
@@ -694,7 +861,7 @@ class _recent_estimationState extends State<recent_estimation> {
             height: 30,
           ),
           Text(
-            "Add Day",
+            "Add Daily Estimation",
             style: textStyles.lato_black(fontSize: 35),
           ),
           SizedBox(

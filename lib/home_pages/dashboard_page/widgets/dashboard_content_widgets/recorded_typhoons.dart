@@ -16,45 +16,24 @@ class _recorded_typhoonsState extends State<recorded_typhoons> {
     return Expanded(
         flex: 45,
         child: Container(
-            padding: EdgeInsets.all(20),
+            padding: EdgeInsets.only(left: 20, right: 20, top: 20),
             decoration: BoxDecoration(
                 // color: Colors.red.shade100,
                 borderRadius: BorderRadius.circular(26),
                 color: Colors.white),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Container(
-                  child: Row(
-                    children: [
-                      Expanded(
-                        flex: 85,
-                        child: Text(
-                          "RECORDED TYPHOONS",
-                          style: textStyles.lato_bold(
-                              color: Colors.black, fontSize: 15),
-                        ),
-                      ),
-                      // Expanded(
-                      //   flex: 15,
-                      //   child: Container(
-                      //     height: 30,
-                      //     child: yada(),
-                      //   ),
-                      // )
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  // color: Colors.yellow,
-                  height: 30,
-                ),
+                yada()
                 // Expanded(
                 //   child: Container(
                 //       // color: Colors.blue,
                 //       child: barChart()),
                 // ),
               ],
-            )));
+            )
+            )
+            );
   }
 }
