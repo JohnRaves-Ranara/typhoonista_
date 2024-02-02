@@ -42,7 +42,9 @@ class _history_pageState extends State<history_page> {
                     if (snapshot.hasError) {
                       return Center(child: Text('An error has occured.', style: textStyles.lato_regular(fontSize: 16),));
                     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return Center(child: Text('No Data.', style: textStyles.lato_regular(fontSize: 16),));
+                      return 
+                      SizedBox();
+                      // Center(child: Text('No Data.', style: textStyles.lato_regular(fontSize: 16),));
                     }
                     else if (snapshot.connectionState==ConnectionState.waiting){
                       return Center(child: SpinKitSpinningLines(size: 50, lineWidth: 3.5, color: Colors.blue));
@@ -135,34 +137,45 @@ class _history_pageState extends State<history_page> {
                   } else if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(child: SpinKitSpinningLines(size: 50, lineWidth: 3.5, color: Colors.blue));
                   } else if(!snapshot.hasData || snapshot.data!.isEmpty){
-                    return Center(child: Text('No Data.', style: textStyles.lato_regular(fontSize: 16),));
+                    
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Image.asset('lib/assets/images/wind.png'),
+                        SizedBox(height: 30,),
+                        Text('No Data.',style: textStyles.lato_bold(fontSize: 25, color: Colors.grey),),
+                      ],
+                    );
                   } 
                   else {
                     final List<TyphoonDay> days = snapshot.data!;
-                    return Container(
-                      width: double.maxFinite,
-                      child: DataTable(
-                        showCheckboxColumn: false,
-                        columns: 
-                      [
-                        DataColumn(label: Text('Typhoon Name', style: textStyles.lato_bold(),)),
-                        DataColumn(label: Text('Day Number', style: textStyles.lato_bold())),
-                        DataColumn(label: Text('Location', style: textStyles.lato_bold())),
-                        DataColumn(label: Text('Damage Cost', style: textStyles.lato_bold())),
-                      ]
-                      , rows: days.map((day) => DataRow(
-                        // selected: false,
-                        onSelectChanged: (isSelected) {
-                          //todo
-                          print(day.damageCost);
-                        },
-                        cells: [
-                          DataCell(Text(day.typhoonName, style: textStyles.lato_regular())),
-                          DataCell(Text(day.day.toString(), style: textStyles.lato_regular())),
-                          DataCell(Text(day.location, style: textStyles.lato_regular())),
-                          DataCell(Text('${NumberFormat('#,##0.00', 'en_US').format(day.damageCost)}', style: textStyles.lato_regular()))
+                    return SingleChildScrollView(
+                      child: Container(
+                        width: double.maxFinite,
+                        child: DataTable(
+                          showCheckboxColumn: false,
+                          columns: 
+                        [
+                          DataColumn(label: Text('Typhoon Name', style: textStyles.lato_bold(),)),
+                          DataColumn(label: Text('Day Number', style: textStyles.lato_bold())),
+                          DataColumn(label: Text('Location', style: textStyles.lato_bold())),
+                          DataColumn(label: Text('Damage Cost', style: textStyles.lato_bold())),
                         ]
-                       )).toList()),
+                        , rows: days.map((day) => DataRow(
+                          // selected: false,
+                          onSelectChanged: (isSelected) {
+                            //todo
+                            print(day.damageCost);
+                          },
+                          cells: [
+                            DataCell(Text(day.typhoonName, style: textStyles.lato_regular())),
+                            DataCell(Text(day.day.toString(), style: textStyles.lato_regular())),
+                            DataCell(Text(day.location, style: textStyles.lato_regular())),
+                            DataCell(Text('${NumberFormat('#,##0.00', 'en_US').format(day.damageCost)}', style: textStyles.lato_regular()))
+                          ]
+                         )).toList()),
+                      ),
                     );
                   }
                 },

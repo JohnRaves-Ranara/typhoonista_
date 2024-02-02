@@ -10,6 +10,8 @@ class page_provider with ChangeNotifier{
   int get page => _page;
 
   List<Location_>? _locations;
+
+  int _mainpage = 0;
   
   int? _recordedTyphoonsSelectedYear;
 
@@ -17,6 +19,8 @@ class page_provider with ChangeNotifier{
     _page = pageNum;
     notifyListeners();
   }
+
+  int get mainpage => _mainpage;
 
   int _documentsPage = 1;
 
@@ -27,6 +31,12 @@ class page_provider with ChangeNotifier{
   Typhoon? get selectedTyphoon => _selectedTyphoon;
 
   List<Location_>? get locations => _locations;
+
+
+  void changeMainPage(int pageNum){
+    _mainpage = pageNum;
+    notifyListeners();
+  }
 
   int? get recordedTyphoonsSelectedYear => _recordedTyphoonsSelectedYear;
 

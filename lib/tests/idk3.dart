@@ -18,14 +18,14 @@ class yada extends StatefulWidget {
 }
 
 class _yadaState extends State<yada> {
-  late Stream<List<int>> _yearsStream;
+  // late Stream<List<int>> _yearsStream;
   late int _selectedYear;
 
   @override
   void initState() {
     super.initState();
     setState(() {
-      _yearsStream = FirestoreService().getYearsListStream();
+      // _yearsStream = FirestoreService().getYearsListStream();
       _selectedYear = 2024;
     });
   }
@@ -107,7 +107,7 @@ class _yadaState extends State<yada> {
                           ),
                           series: [
                             StackedColumnSeries<DamageCostBar, String>(
-                                color: Color(0xffa9e5e9),
+                                color: Color(0xffff8007 ),
                                 dataSource: damageCostBars,
                                 xValueMapper: (DamageCostBar ch, _) =>
                                     ch.typhoonName,

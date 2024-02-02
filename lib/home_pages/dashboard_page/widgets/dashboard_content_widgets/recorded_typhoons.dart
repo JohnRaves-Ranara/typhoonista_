@@ -25,7 +25,7 @@ class _recorded_typhoonsState extends State<recorded_typhoons> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                yada()
+                Expanded(child: yada())
                 // Expanded(
                 //   child: Container(
                 //       // color: Colors.blue,

@@ -836,7 +836,7 @@ class _recent_estimationState extends State<recent_estimation> {
                       color: Color(0xffAD0000),
                       child: Center(
                         child: Text(
-                          "Generate",
+                          "Mark Finished",
                           style: textStyles.lato_regular(
                               fontSize: 20, color: Colors.white),
                         ),
@@ -896,7 +896,7 @@ class _recent_estimationState extends State<recent_estimation> {
                               color: Colors.grey.shade600.withOpacity(0.5),
                               width: 1,
                               style: BorderStyle.solid)),
-                      labelText: "Windspeed"),
+                      labelText: "Peak Windspeed"),
                 ),
                 SizedBox(
                   height: 10,
@@ -925,7 +925,7 @@ class _recent_estimationState extends State<recent_estimation> {
                               color: Colors.grey.shade600.withOpacity(0.5),
                               width: 1,
                               style: BorderStyle.solid)),
-                      labelText: "Rainfall (24H)"),
+                      labelText: "Peak Rainfall (24H)"),
                 ),
                 SizedBox(
                   height: 10,
@@ -954,7 +954,7 @@ class _recent_estimationState extends State<recent_estimation> {
                               color: Colors.grey.shade600.withOpacity(0.5),
                               width: 1,
                               style: BorderStyle.solid)),
-                      labelText: "Rainfall (6H)"),
+                      labelText: "Peak Rainfall (6H)"),
                 ),
                 SizedBox(
                   height: 10,
@@ -1299,7 +1299,7 @@ class _recent_estimationState extends State<recent_estimation> {
                                     ),
                                     SizedBox(height: 10),
                                     Text(
-                                      'Windspeed:',
+                                      'Peak Windspeed:',
                                       style:
                                           textStyles.lato_light(fontSize: 12),
                                     ),
@@ -1320,7 +1320,7 @@ class _recent_estimationState extends State<recent_estimation> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'Rainfall (24H):',
+                                      'Peak Rainfall (24H):',
                                       style:
                                           textStyles.lato_light(fontSize: 12),
                                     ),
@@ -1331,7 +1331,7 @@ class _recent_estimationState extends State<recent_estimation> {
                                     ),
                                     SizedBox(height: 10),
                                     Text(
-                                      'Rainfall (6H):',
+                                      'Peak Rainfall (6H):',
                                       style:
                                           textStyles.lato_light(fontSize: 12),
                                     ),
@@ -2447,6 +2447,16 @@ class _recent_estimationState extends State<recent_estimation> {
                                                               color:
                                                                   Colors.grey)),
                                                   onTap: null,
+                                                  trailing: Tooltip(
+                                                //todo add 'this location already has prediction for [date last recorded]
+                                                message:
+                                                    "This location already has prediction for today. Please try again tomorrow.",
+                                                child: Icon(
+                                                  Icons.info,
+                                                  size: 16,
+                                                  color: Colors.blue,
+                                                ),
+                                              ),
                                                 );
                                               } else {
                                                 return ListTile(

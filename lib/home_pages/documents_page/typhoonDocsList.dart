@@ -38,6 +38,7 @@ class _typhoonDocsListState extends State<typhoonDocsList> {
               return ListView(
                 children: typhoons
                     .map((typhoon) => Container(
+                          margin: EdgeInsets.all(10),
                           padding: EdgeInsets.symmetric(horizontal: 30),
                           width: double.maxFinite,
                           height: 80,
@@ -59,15 +60,15 @@ class _typhoonDocsListState extends State<typhoonDocsList> {
                                   splashFactory: NoSplash.splashFactory,
                                   highlightColor: Colors.transparent,
                                   hoverColor: Colors.transparent,
-                                  onHover: ((bool isHovered) {
-                                    setState(() {
-                                      if (isHovered) {
-                                        underlined = true;
-                                      } else {
-                                        underlined = false;
-                                      }
-                                    });
-                                  }),
+                                  // onHover: ((bool isHovered) {
+                                  //   setState(() {
+                                  //     if (isHovered) {
+                                  //       underlined = true;
+                                  //     } else {
+                                  //       underlined = false;
+                                  //     }
+                                  //   });
+                                  // }),
                                   onTap: (() async{
 
                                     final locations = await FirestoreService().getDistinctLocations(typhoon.id);

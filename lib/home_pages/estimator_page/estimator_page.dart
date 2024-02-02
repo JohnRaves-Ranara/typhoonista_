@@ -219,7 +219,7 @@ class _estimator_pageState extends State<estimator_page> {
                                 color: Colors.grey.shade600.withOpacity(0.5),
                                 width: 1,
                                 style: BorderStyle.solid)),
-                        labelText: "Windspeed"),
+                        labelText: "Peak Windspeed"),
                   ),
                   SizedBox(
                     height: 15,
@@ -247,7 +247,7 @@ class _estimator_pageState extends State<estimator_page> {
                                 color: Colors.grey.shade600.withOpacity(0.5),
                                 width: 1,
                                 style: BorderStyle.solid)),
-                        labelText: "Rainfall (24 hour)"),
+                        labelText: "Peak Rainfall (24 hour)"),
                   ),
                   SizedBox(
                     height: 15,
@@ -275,7 +275,7 @@ class _estimator_pageState extends State<estimator_page> {
                                 color: Colors.grey.shade600.withOpacity(0.5),
                                 width: 1,
                                 style: BorderStyle.solid)),
-                        labelText: "Rainfall (6 hour)"),
+                        labelText: "Peak Rainfall (6 hour)"),
                   ),
                   SizedBox(
                     height: 15,
@@ -316,7 +316,7 @@ class _estimator_pageState extends State<estimator_page> {
                       height: 48,
                       decoration: BoxDecoration(
                           border: Border.all(
-                              color: Colors.grey.shade600.withOpacity(0.5),
+                              color: (haveAdded) ? Colors.grey.shade300 : Colors.grey.shade600.withOpacity(0.5),
                               width: 1,
                               style: BorderStyle.solid),
                           borderRadius: BorderRadius.circular(5)),
@@ -329,14 +329,14 @@ class _estimator_pageState extends State<estimator_page> {
                             Text(
                               selectedMunicipalName,
                               style:
-                                  (selectedMunicipalName == 'Select Location')
+                                  (selectedMunicipalName == 'Select Location' || haveAdded)
                                       ? textStyles.lato_light(fontSize: 17)
                                       : textStyles.lato_regular(fontSize: 17),
                             ),
                             Icon(
                               Icons.arrow_drop_down,
                               size: 22,
-                              color: Colors.black,
+                              color: (haveAdded) ? Colors.grey.shade300 : Colors.grey.shade600.withOpacity(0.5),
                             )
                           ],
                         ),
@@ -361,7 +361,7 @@ class _estimator_pageState extends State<estimator_page> {
                           borderRadius: BorderRadius.circular(5),
                           border: Border.all(
                               width: 1,
-                              color: Colors.grey.shade600.withOpacity(0.5),
+                              color: (haveAdded) ? Colors.grey.shade300 : Colors.grey.shade600.withOpacity(0.5),
                               style: BorderStyle.solid)),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -372,7 +372,7 @@ class _estimator_pageState extends State<estimator_page> {
                             Text(
                               distrackminfinal,
                               style: (distrackminfinal ==
-                                      'Distance of Typhoon to Location')
+                                      'Distance of Typhoon to Location' || haveAdded)
                                   ? textStyles.lato_light(fontSize: 17)
                                   : textStyles.lato_regular(fontSize: 17),
                             ),
@@ -390,7 +390,7 @@ class _estimator_pageState extends State<estimator_page> {
                                 Icon(
                                     Icons.arrow_drop_down,
                                     size: 22,
-                                    color: Colors.black,
+                                    color: (haveAdded) ? Colors.grey.shade300 : Colors.grey.shade600.withOpacity(0.5),
                                   )
                           ],
                         ),
@@ -656,7 +656,7 @@ class _estimator_pageState extends State<estimator_page> {
                                         ),
                                         SizedBox(height: 10),
                                         Text(
-                                          'Windspeed:',
+                                          'Peak Windspeed:',
                                           style:
                                               textStyles.lato_light(fontSize: 14),
                                         ),
@@ -677,7 +677,7 @@ class _estimator_pageState extends State<estimator_page> {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          'Rainfall (24H):',
+                                          'Peak Rainfall (24H):',
                                           style:
                                               textStyles.lato_light(fontSize: 14),
                                         ),
@@ -688,7 +688,7 @@ class _estimator_pageState extends State<estimator_page> {
                                         ),
                                         SizedBox(height: 10),
                                         Text(
-                                          'Rainfall (6H):',
+                                          'Peak Rainfall (6H):',
                                           style:
                                               textStyles.lato_light(fontSize: 14),
                                         ),

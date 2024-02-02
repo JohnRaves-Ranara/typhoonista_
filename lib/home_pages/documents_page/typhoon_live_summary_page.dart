@@ -203,7 +203,7 @@ class _typhoon_live_summary_pageState extends State<typhoon_live_summary_page> {
                                                   Text("Typhoon Status",
                                                       style: titleStyle),
                                                   Text(
-                                                    "${typhoon.status}",
+                                                    "${typhoon.status![0].toUpperCase() + typhoon.status!.substring(1)}",
                                                     style: valueStyle,
                                                   )
                                                 ],

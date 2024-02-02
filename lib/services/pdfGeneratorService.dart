@@ -161,7 +161,7 @@ class pdfGeneratorService {
                             style: titleStyle
                           ),
                           Text(
-                            "${typhoon!.status}",
+                            "${typhoon!.status![0].toUpperCase() + typhoon!.status!.substring(1)}",
                             style: valueStyle,
                           )
                         ],

@@ -85,7 +85,7 @@ class _documents_pageState extends State<documents_page> {
                       ),
                       (prov.documentsPage == 1)
                           ? Text(
-                              "The impact of the industrial revolution has began to uprise in terms of the rice and skermberlu it ornare accumsan. Justo vulputate in pretium integer vulputate vitae proin congue etiam. Sollicitudin egestas est in ultrices molestie lacus iaculis risus. Velit habitasse felis auctor at.",
+                              "Discover in-depth insights into recorded typhoons and their impact on rice cultivation in our Documents section. Generate and access concise PDF reports detailing the characteristics of each typhoon, aiding in a better understanding of potential damage costs to rice crops.",
                               style: textStyles.lato_light(fontSize: 18),
                             )
                           : SizedBox()

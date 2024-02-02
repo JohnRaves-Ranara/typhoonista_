@@ -51,7 +51,30 @@ class settings extends StatelessWidget {
             shrinkWrap: true,
             itemCount: icons.length,
             itemBuilder: (context, index) {
-              return Ink(
+              if(index==1){
+                 return Ink(
+                // color: Colors.green,
+                height: 50,
+                child: InkWell(
+                  splashFactory: NoSplash.splashFactory,
+                  onTap: ((){
+                    context.read<page_provider>().changeMainPage(0);
+                  }),
+                  child: Row(
+                    children: [
+                      SizedBox(width: 20,),
+                      icons[index],
+                      SizedBox(
+                        width: 16,
+                      ),
+                      labels[index]
+                    ],
+                  ),
+                ),
+              ); 
+              }
+              else{
+                return Ink(
                 // color: Colors.green,
                 height: 50,
                 child: InkWell(
@@ -70,6 +93,8 @@ class settings extends StatelessWidget {
                   ),
                 ),
               );
+              }
+              
             },
           )
         ],
