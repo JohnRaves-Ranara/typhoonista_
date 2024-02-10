@@ -25,9 +25,9 @@ class _actionsState extends State<actions> {
                       color: Colors.white,
                       boxShadow: [
                         BoxShadow(
-                          color: Color(0xFF9c9797).withOpacity(1),
-                          offset: Offset(0, 2),
-                          blurRadius: 3,
+                          color: Colors.black.withOpacity(0.2),
+                          offset: Offset(0, 3),
+                          blurRadius: 2,
                           spreadRadius: 1,
                         ),
                       ],
@@ -41,9 +41,9 @@ class _actionsState extends State<actions> {
                       color: Colors.white,
                       boxShadow: [
                         BoxShadow(
-                          color: Color(0xFF9c9797).withOpacity(1),
-                          offset: Offset(0, 2),
-                          blurRadius: 3,
+                          color: Colors.black.withOpacity(0.2),
+                          offset: Offset(0, 3),
+                          blurRadius: 2,
                           spreadRadius: 1,
                         ),
                       ],
@@ -66,9 +66,9 @@ class _actionsState extends State<actions> {
                       color: Colors.white,
                       boxShadow: [
                         BoxShadow(
-                          color: Color(0xFF9c9797).withOpacity(1),
-                          offset: Offset(0, 2),
-                          blurRadius: 3,
+                          color: Colors.black.withOpacity(0.2),
+                          offset: Offset(0, 3),
+                          blurRadius: 2,
                           spreadRadius: 1,
                         ),
                       ],
@@ -82,9 +82,9 @@ class _actionsState extends State<actions> {
                       color: Colors.white,
                       boxShadow: [
                         BoxShadow(
-                          color: Color(0xFF9c9797).withOpacity(1),
-                          offset: Offset(0, 2),
-                          blurRadius: 3,
+                          color: Colors.black.withOpacity(0.2),
+                          offset: Offset(0, 3),
+                          blurRadius: 2,
                           spreadRadius: 1,
                         ),
                       ],

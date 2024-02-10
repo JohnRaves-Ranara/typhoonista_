@@ -25,9 +25,16 @@ class _typhoon_donutchartState extends State<typhoon_donutchart> {
         child: Container(
             padding: EdgeInsets.all(20),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              color: Colors.white,
-            ),
+                borderRadius: BorderRadius.circular(15),
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    offset: Offset(0, 3),
+                    blurRadius: 2,
+                    spreadRadius: 1,
+                  ),
+                ]),
             child: Row(children: [
               Container(
                 child: SfCircularChart(
@@ -49,7 +56,7 @@ class _typhoon_donutchartState extends State<typhoon_donutchart> {
                   Text(
                     'Total Damage Cost of \nTyphoon to Rice Crops',
                     textAlign: TextAlign.center,
-                    style: textStyles.lato_bold(fontSize: 20),
+                    style: textStyles.lato_bold(fontSize: 18),
                   ),
                   Spacer(),
                   Row(
