@@ -59,6 +59,7 @@ class _typhoon_forecastState extends State<typhoon_forecast> {
                 ),
                 Expanded(
                   child: SfCartesianChart(
+                    trackballBehavior: TrackballBehavior(enable: true, activationMode: ActivationMode.singleTap),
                     series: (selectedLocs.isEmpty)
                         ? locsData
                             .map((loc) => AreaSeries<LocationDayDamage, String>(
