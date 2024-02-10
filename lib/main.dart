@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:typhoonista_thesis/Home.dart';
+import 'package:typhoonista_thesis/Home_2.dart';
 import 'package:typhoonista_thesis/LoginScreen.dart';
 import 'package:typhoonista_thesis/providers/TyphoonProvider.dart';
 import 'package:typhoonista_thesis/providers/page_provider.dart';
@@ -12,6 +13,7 @@ import 'package:typhoonista_thesis/tests/idk2.dart';
 import 'package:typhoonista_thesis/tests/idk3.dart';
 import 'package:typhoonista_thesis/tests/idkkk.dart';
 import 'package:typhoonista_thesis/tests/screen2.dart';
+import 'package:typhoonista_thesis/tests/test2.dart';
 import 'package:typhoonista_thesis/tests/textDataProvider.dart';
 import 'home_pages/estimator_page/estimator_page.dart';
 
@@ -53,16 +55,17 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
-        home: Consumer<page_provider>(
-          builder: (context, prov, child){
-            if(prov.mainpage == 0){
-              return LoginScreen();
-            }
-            else{
-              return Home();
-            }
-          }
-          ),
+        home: Home_2(),
+        // home: Consumer<page_provider>(
+        //   builder: (context, prov, child){
+        //     if(prov.mainpage == 0){
+        //       return LoginScreen();
+        //     }
+        //     else{
+        //       return Home();
+        //     }
+        //   }
+        //   ),
       ),
     );
   }

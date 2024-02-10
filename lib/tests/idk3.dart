@@ -103,6 +103,7 @@ class _yadaState extends State<yada> {
                             labelStyle: textStyles.lato_regular(),
                           ),
                           primaryYAxis: NumericAxis(
+                            
                             labelStyle: textStyles.lato_regular(),
                           ),
                           series: [
