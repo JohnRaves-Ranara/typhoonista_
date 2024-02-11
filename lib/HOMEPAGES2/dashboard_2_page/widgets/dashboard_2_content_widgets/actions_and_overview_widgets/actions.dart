@@ -19,7 +19,6 @@ class _actionsState extends State<actions> {
                 children: [
                   Expanded(
                       child: Container(
-                    margin: EdgeInsets.only(right: 7),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
                       color: Colors.white,
@@ -33,9 +32,9 @@ class _actionsState extends State<actions> {
                       ],
                     ),
                   )),
+                  SizedBox(width: 15,),
                   Expanded(
                       child: Container(
-                    margin: EdgeInsets.only(left: 7),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
                       color: Colors.white,
@@ -52,15 +51,12 @@ class _actionsState extends State<actions> {
                 ],
               ),
             ),
-            SizedBox(
-              height: 10,
-            ),
+            SizedBox(height: 15),
             Expanded(
               child: Row(
                 children: [
                   Expanded(
                       child: Container(
-                    margin: EdgeInsets.only(right: 7),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
                       color: Colors.white,
@@ -74,9 +70,9 @@ class _actionsState extends State<actions> {
                       ],
                     ),
                   )),
+                  SizedBox(width: 15,),
                   Expanded(
                       child: Container(
-                    margin: EdgeInsets.only(left: 7),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
                       color: Colors.white,
@@ -89,7 +85,15 @@ class _actionsState extends State<actions> {
                         ),
                       ],
                     ),
-                  )),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text("hi"),
+                      ],
+                    ),
+                  )
+                  ),
                 ],
               ),
             )
