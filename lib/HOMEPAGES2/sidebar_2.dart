@@ -15,12 +15,13 @@ class _Sidebar_2State extends State<Sidebar_2> {
       flex: 6,
       child: Container(
       // color: Colors.orange,
+      padding: EdgeInsets.symmetric(vertical: 40),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Image.asset('lib/assets/images/typhoonista_logo.png'),
+          Image.asset('lib/assets/images/typhoonista_logo_smallest.png', height: 25,),
           RotatedBox(quarterTurns: 3, child: Text("TYPHOONISTA", style: textStyles.lato_black(fontSize: 20, color: Colors.blue, letterSpacing: 8)),),
-          Image.asset('lib/assets/images/logout.png', color: Colors.blue)
+          Image.asset('lib/assets/images/2paper.png', color: Colors.blue, height: 27,)
         ],
       ),
     ));
