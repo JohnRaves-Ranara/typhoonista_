@@ -29,7 +29,6 @@ class recent_estimation extends StatefulWidget {
 
 class _recent_estimationState extends State<recent_estimation> {
   final windspeedCtlr = TextEditingController();
-  // final rainfallCtlr = TextEditingController();
   final rainfall6Ctlr = TextEditingController();
   final rainfall24Ctlr = TextEditingController();
   final ricePriceCtlr = TextEditingController();
@@ -363,7 +362,8 @@ class _recent_estimationState extends State<recent_estimation> {
                                                             },
                                                           ),
                                                         );
-                                                      });
+                                                      }
+                                                      );
                                                 }),
                                                 borderRadius:
                                                     BorderRadius.circular(10),

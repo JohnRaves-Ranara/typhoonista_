@@ -21,7 +21,7 @@ class _typhoon_donutchartState extends State<typhoon_donutchart> {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-        flex: 50,
+        flex: 40,
         child: Container(
             padding: EdgeInsets.all(20),
             decoration: BoxDecoration(

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:typhoonista_thesis/HOMEPAGES2/dashboard_2_page/widgets/dashboard_2_content_widgets/actions_and_overview_widgets/actions.dart';
+import 'package:typhoonista_thesis/HOMEPAGES2/dashboard_2_page/widgets/dashboard_2_content_widgets/actions_and_overview_widgets/actions/actions.dart';
 import 'package:typhoonista_thesis/HOMEPAGES2/dashboard_2_page/widgets/dashboard_2_content_widgets/actions_and_overview_widgets/typhoon_averages_overview.dart';
 import 'package:typhoonista_thesis/HOMEPAGES2/dashboard_2_page/widgets/dashboard_2_content_widgets/actions_and_overview_widgets/typhoon_donutchart.dart';
 
