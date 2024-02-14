@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:typhoonista_thesis/HOMEPAGES2/services/FirestoreService2.dart';
+import 'package:typhoonista_thesis/HOMEPAGES2/services2/FirestoreService2.dart';
 import 'package:typhoonista_thesis/assets/themes/textStyles.dart';
 
 class add_typhoon extends StatefulWidget {

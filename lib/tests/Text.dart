@@ -1,5 +1,6 @@
+import 'package:uuid/uuid.dart';
 
-class Text{
-  String text;
-  Text(this.text);
+
+void main(){
+  print(Uuid().v1());
 }

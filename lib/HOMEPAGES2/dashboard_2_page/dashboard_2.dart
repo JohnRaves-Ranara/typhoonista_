@@ -18,7 +18,7 @@ class _dashboard_2State extends State<dashboard_2> {
       color: Color(0xfff6f6f6),
       child: Column(
         children: [
-          header(),
+          // header(),
           dashboard_2_content()
         ],
       ),
