@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:typhoonista_thesis/HOMEPAGES2/entities2/new/Municipality.dart';
+import 'package:typhoonista_thesis/HOMEPAGES2/entities2/new/Province.dart';
+import 'package:typhoonista_thesis/HOMEPAGES2/entities2/new/Typhoon.dart';
+import 'package:typhoonista_thesis/HOMEPAGES2/services2/FirestoreService2.dart';
 import 'package:typhoonista_thesis/assets/themes/textStyles.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 
 class typhoon_donutchart extends StatefulWidget {
   const typhoon_donutchart({super.key});
@@ -10,12 +16,13 @@ class typhoon_donutchart extends StatefulWidget {
 }
 
 class _typhoon_donutchartState extends State<typhoon_donutchart> {
-  late List<LocationDamage> data;
+  List<String> options = ['Municipal', 'Provincial'];
+  late String selectedOption;
 
   @override
   void initState() {
     super.initState();
-    data = getData();
+    selectedOption = options[0];
   }
 
   @override
@@ -23,111 +30,389 @@ class _typhoon_donutchartState extends State<typhoon_donutchart> {
     return Expanded(
         flex: 40,
         child: Container(
-            padding: EdgeInsets.all(20),
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    offset: Offset(0, 3),
-                    blurRadius: 2,
-                    spreadRadius: 1,
-                  ),
-                ]),
-            child: Row(children: [
-              Container(
-                child: SfCircularChart(
-                  series: <CircularSeries>[
-                    DoughnutSeries<LocationDamage, String>(
-                      pointColorMapper: (LocationDamage data, _) =>
-                          data.pointColor,
-                      dataSource: data,
-                      xValueMapper: (LocationDamage data, _) =>
-                          data.locationName,
-                      yValueMapper: (LocationDamage data, _) =>
-                          data.damageInPercentage,
-                    )
-                  ],
+          padding: EdgeInsets.all(20),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  offset: Offset(0, 3),
+                  blurRadius: 2,
+                  spreadRadius: 1,
                 ),
-              ),
-              Column(
-                children: [
-                  Text(
-                    'Total Damage Cost of \nTyphoon to Rice Crops',
-                    textAlign: TextAlign.center,
-                    style: textStyles.lato_bold(fontSize: 18),
+              ]),
+          child: Stack(
+            children: [
+              (selectedOption == 'Municipal')
+                  ? StreamBuilder<List<Municipality>>(
+                      stream: FirestoreService2().streamAllMunicipalities(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          List<Municipality> municipalities = snapshot.data!;
+                          List<int> damagePercentages =
+                              municipalConvertToPercentages(municipalities);
+                          for (int i = 0; i < municipalities.length; i++) {
+                            municipalities[i].damageCostInPercentage =
+                                damagePercentages[i];
+                          }
+                          return Row(
+                              mainAxisAlignment:
+                                  MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Container(
+                                  // color: Colors.amber,
+                                  child: SfCircularChart(
+                                    tooltipBehavior: TooltipBehavior(
+                                        enable: true,
+                                        activationMode:
+                                            ActivationMode.longPress,
+                                        animationDuration: 100),
+                                    series: <CircularSeries>[
+                                      DoughnutSeries<Municipality, String>(
+                                        dataLabelSettings:
+                                            DataLabelSettings(
+                                          textStyle: textStyles
+                                              .lato_regular(fontSize: 12),
+                                          isVisible: true,
+                                          margin: EdgeInsets.zero,
+                                          connectorLineSettings:
+                                              ConnectorLineSettings(
+                                                  length: '20%',
+                                                  type:
+                                                      ConnectorType.curve),
+                                          labelPosition:
+                                              ChartDataLabelPosition
+                                                  .outside,
+                                          overflowMode: OverflowMode.shift,
+                                          labelIntersectAction:
+                                              LabelIntersectAction.shift,
+                                        ),
+                                        dataLabelMapper: (Municipality data,
+                                                _) =>
+                                            "₱ ${NumberFormat('#,##0.00', 'en_US').format(data.totalDamageCost)}",
+                                        pointColorMapper:
+                                            (Municipality data, _) =>
+                                                data.colorMarker,
+                                        dataSource: municipalities,
+                                        xValueMapper:
+                                            (Municipality data, _) =>
+                                                data.munName,
+                                        yValueMapper:
+                                            (Municipality data, _) =>
+                                                data.totalDamageCost,
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                  // color: Colors.blue,
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        'Total Damage Cost\nto Rice Crops\n(Municipal)',
+                                        textAlign: TextAlign.center,
+                                        style: textStyles.lato_bold(
+                                            fontSize: 18),
+                                      ),
+                                      SizedBox(
+                                        height: 30,
+                                      ),
+                                      SingleChildScrollView(
+                                        scrollDirection: Axis.vertical,
+                                        child: Row(
+                                          children: [
+                                            Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: municipalities
+                                                  .map((municipality) =>
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .only(
+                                                                bottom: 5),
+                                                        child: Row(
+                                                          children: [
+                                                            CircleAvatar(
+                                                              radius: 10,
+                                                              backgroundColor:
+                                                                  municipality
+                                                                      .colorMarker,
+                                                            ),
+                                                            SizedBox(
+                                                              width: 10,
+                                                            ),
+                                                            Text(
+                                                              municipality
+                                                                  .munName,
+                                                              style: textStyles
+                                                                  .lato_light(
+                                                                      fontSize:
+                                                                          16),
+                                                            ),
+                                                            SizedBox(
+                                                              width: 10,
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ))
+                                                  .toList(),
+                                            ),
+                                            Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: municipalities
+                                                  .map((municipality) =>
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .only(
+                                                                bottom: 5),
+                                                        child: Row(
+                                                          children: [
+                                                            Text(
+                                                              '${municipality.damageCostInPercentage}%',
+                                                              style: textStyles
+                                                                  .lato_light(
+                                                                      fontSize:
+                                                                          16),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ))
+                                                  .toList(),
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ]);
+                        } else {
+                          return Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+                      },
+                    )
+                  : StreamBuilder<List<Province>>(
+                      stream: FirestoreService2().streamAllProvinces(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          List<Province> provinces = snapshot.data!;
+                          List<int> damagePercentages =
+                              provincialConvertToPercentages(provinces);
+                          for (int i = 0; i < provinces.length; i++) {
+                            provinces[i].damageCostInPercentage =
+                                damagePercentages[i];
+                          }
+                          return Row(
+                              mainAxisAlignment:
+                                  MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Container(
+                                  // color: Colors.amber,
+                                  child: SfCircularChart(
+                                    tooltipBehavior: TooltipBehavior(
+                                        enable: true,
+                                        activationMode:
+                                            ActivationMode.longPress,
+                                        animationDuration: 100),
+                                    series: <CircularSeries>[
+                                      DoughnutSeries<Province, String>(
+                                        dataLabelSettings:
+                                            DataLabelSettings(
+                                          textStyle: textStyles
+                                              .lato_regular(fontSize: 12),
+                                          isVisible: true,
+                                          margin: EdgeInsets.zero,
+                                          connectorLineSettings:
+                                              ConnectorLineSettings(
+                                                  length: '20%',
+                                                  type:
+                                                      ConnectorType.curve),
+                                          labelPosition:
+                                              ChartDataLabelPosition
+                                                  .outside,
+                                          overflowMode: OverflowMode.shift,
+                                          labelIntersectAction:
+                                              LabelIntersectAction.shift,
+                                        ),
+                                        dataLabelMapper: (Province data,
+                                                _) =>
+                                            "₱ ${NumberFormat('#,##0.00', 'en_US').format(data.totalDamageCost)}",
+                                        pointColorMapper:
+                                            (Province data, _) =>
+                                                data.colorMarker,
+                                        dataSource: provinces,
+                                        xValueMapper: (Province data, _) =>
+                                            data.provName,
+                                        yValueMapper: (Province data, _) =>
+                                            data.totalDamageCost,
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                  // color: Colors.blue,
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        'Total Damage Cost\nto Rice Crops\n(Provincial)',
+                                        textAlign: TextAlign.center,
+                                        style: textStyles.lato_bold(
+                                            fontSize: 18),
+                                      ),
+                                      SizedBox(
+                                        height: 30,
+                                      ),
+                                      SingleChildScrollView(
+                                        scrollDirection: Axis.vertical,
+                                        child: Row(
+                                          children: [
+                                            Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: provinces
+                                                  .map((prov) => Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .only(
+                                                                bottom: 5),
+                                                        child: Row(
+                                                          children: [
+                                                            CircleAvatar(
+                                                              radius: 10,
+                                                              backgroundColor:
+                                                                  prov.colorMarker,
+                                                            ),
+                                                            SizedBox(
+                                                              width: 10,
+                                                            ),
+                                                            Text(
+                                                              prov.provName,
+                                                              style: textStyles
+                                                                  .lato_light(
+                                                                      fontSize:
+                                                                          16),
+                                                            ),
+                                                            SizedBox(
+                                                              width: 10,
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ))
+                                                  .toList(),
+                                            ),
+                                            Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: provinces
+                                                  .map((prov) => Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .only(
+                                                                bottom: 5),
+                                                        child: Row(
+                                                          children: [
+                                                            Text(
+                                                              '${prov.damageCostInPercentage}%',
+                                                              style: textStyles
+                                                                  .lato_light(
+                                                                      fontSize:
+                                                                          16),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ))
+                                                  .toList(),
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ]);
+                        } else {
+                          return Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+                      },
+                    ),
+              Positioned(
+                top: 0,
+                left: 0,
+                child: Container(
+                  height: 30,
+                  width: 130,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5),
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          offset: Offset(0, 3),
+                          blurRadius: 2,
+                          spreadRadius: 1,
+                        ),
+                      ]),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton2<String>(
+                      isExpanded: true,
+                      iconStyleData: IconStyleData(iconSize: 20),
+                      items: options
+                          .map((opt) => DropdownMenuItem<String>(
+                                child: Text(
+                                  opt,
+                                  style: textStyles.lato_regular(fontSize: 13),
+                                ),
+                                value: opt,
+                              ))
+                          .toList(),
+                      value: selectedOption,
+                      onChanged: (newOption) {
+                        setState(() {
+                          selectedOption = newOption!;
+                        });
+                      },
+                    ),
                   ),
-                  Spacer(),
-                  Row(
-                    children: [
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: data
-                            .map((d) => Padding(
-                                  padding: const EdgeInsets.only(bottom: 5),
-                                  child: Row(
-                                    children: [
-                                      CircleAvatar(
-                                        radius: 10,
-                                        backgroundColor: d.pointColor,
-                                      ),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                      Text(
-                                        d.locationName!,
-                                        style:
-                                            textStyles.lato_light(fontSize: 16),
-                                      ),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                    ],
-                                  ),
-                                ))
-                            .toList(),
-                      ),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: data
-                            .map((d) => Padding(
-                                  padding: const EdgeInsets.only(bottom: 5),
-                                  child: Row(
-                                    children: [
-                                      Text(
-                                        '${d.damageInPercentage}%',
-                                        style:
-                                            textStyles.lato_light(fontSize: 16),
-                                      ),
-                                    ],
-                                  ),
-                                ))
-                            .toList(),
-                      ),
-                    ],
-                  )
-                ],
-              ),
-            ])));
+                ),
+              )
+            ],
+          ),
+        ));
   }
 
-  List<LocationDamage> getData() {
-    final List<LocationDamage> data = [
-      LocationDamage('Aklan', 30, Colors.green),
-      LocationDamage('Tagum', 15, Colors.red),
-      LocationDamage('Aborlan', 15, Colors.orange),
-      LocationDamage('Hevabi', 40, Colors.blue)
-    ];
-    return data;
-  }
-}
+  List<int> municipalConvertToPercentages(List<Municipality> municipalities) {
+    List<double> damageCosts =
+        municipalities.map((mun) => mun.totalDamageCost).toList();
+    double sum = damageCosts.reduce((value, element) => value + element);
+    List<int> percentages =
+        damageCosts.map((number) => (number * 100) ~/ sum).toList();
 
-class LocationDamage {
-  String? locationName;
-  double? damageInPercentage;
-  Color? pointColor;
-  LocationDamage(this.locationName, this.damageInPercentage, this.pointColor);
+    return percentages;
+  }
+
+  List<int> provincialConvertToPercentages(List<Province> provinces) {
+    List<double> damageCosts =
+        provinces.map((mun) => mun.totalDamageCost).toList();
+    double sum = damageCosts.reduce((value, element) => value + element);
+    List<int> percentages =
+        damageCosts.map((number) => (number * 100) ~/ sum).toList();
+
+    return percentages;
+  }
 }

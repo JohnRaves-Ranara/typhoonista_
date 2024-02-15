@@ -1,22 +1,88 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:typhoonista_thesis/HOMEPAGES2/entities2/Day.dart';
-import 'package:typhoonista_thesis/HOMEPAGES2/entities2/Municipality.dart';
-import 'package:typhoonista_thesis/HOMEPAGES2/entities2/Owner.dart';
-import 'package:typhoonista_thesis/HOMEPAGES2/entities2/Province.dart';
-import 'package:typhoonista_thesis/HOMEPAGES2/entities2/Typhoon.dart';
+import 'package:typhoonista_thesis/HOMEPAGES2/entities2/new/Day.dart';
+import 'package:typhoonista_thesis/HOMEPAGES2/entities2/new/Municipality.dart';
+import 'package:typhoonista_thesis/HOMEPAGES2/entities2/new/Owner.dart';
+import 'package:typhoonista_thesis/HOMEPAGES2/entities2/new/Province.dart';
+import 'package:typhoonista_thesis/HOMEPAGES2/entities2/new/Typhoon.dart';
 import 'package:typhoonista_thesis/tests/city.dart';
 
 class FirestoreService2 {
   DocumentReference userRef =
       FirebaseFirestore.instance.collection('users3').doc('test-user3');
 
-  Future<void> addTyphoon(String typhoonName) async {
-    DocumentReference typhRef = userRef.collection('typhoons').doc();
-    await typhRef.set({
-      'id': typhRef.id,
-      'name': typhoonName,
-    });
+  Future<Typhoon?> getOngoingTyphoon() async {
+    QuerySnapshot typhoons =
+        await userRef.collection('typhoons').limit(1).get();
+    Typhoon? ongoingTyphoon;
+    for (var typhoonDoc in typhoons.docs) {
+      Map<String, dynamic> doc = typhoonDoc.data() as Map<String, dynamic>;
+      if (doc['status'] == 'ongoing') {
+        ongoingTyphoon = Typhoon(
+            id: doc['id'],
+            typhoonName: doc['typhoonName'],
+            totalDamageCost: doc['totalDamageCost']);
+      }
+    }
+    return ongoingTyphoon;
+  }
+
+  Stream<List<Owner>> streamAllOwners() async* {
+    Typhoon? ongoingTyphoon = await getOngoingTyphoon();
+    DocumentReference ongoingTyphoonDocRef =
+        userRef.collection('typhoons').doc(ongoingTyphoon!.id);
+    yield* FirebaseFirestore.instance
+        .collectionGroup('owners')
+        .orderBy(FieldPath.documentId)
+        .startAt([ongoingTyphoonDocRef.path])
+        .endAt([ongoingTyphoonDocRef.path + "\uf8ff"])
+        .snapshots()
+        .map((snapshot) =>
+            snapshot.docs.map((doc) => Owner.fromJson(doc.data())).toList());
+  }
+
+  Stream<List<Day>> streamAllDays() async* {
+    Typhoon? ongoingTyphoon = await getOngoingTyphoon();
+    DocumentReference ongoingTyphoonDocRef =
+        userRef.collection('typhoons').doc(ongoingTyphoon!.id);
+    yield* FirebaseFirestore.instance
+        .collectionGroup('days')
+        .orderBy(FieldPath.documentId)
+        .startAt([ongoingTyphoonDocRef.path])
+        .endAt([ongoingTyphoonDocRef.path + "\uf8ff"])
+        .snapshots()
+        .map((snapshot) =>
+            snapshot.docs.map((doc) => Day.fromJson(doc.data())).toList());
+  }
+
+  Stream<List<Municipality>> streamAllMunicipalities() async* {
+    Typhoon? ongoingTyphoon = await getOngoingTyphoon();
+    DocumentReference ongoingTyphoonDocRef =
+        userRef.collection('typhoons').doc(ongoingTyphoon!.id);
+    yield* FirebaseFirestore.instance
+        .collectionGroup('municipalities')
+        .orderBy(FieldPath.documentId)
+        .startAt([ongoingTyphoonDocRef.path])
+        .endAt([ongoingTyphoonDocRef.path + "\uf8ff"])
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map((doc) => Municipality.fromJson(doc.data()))
+            .toList());
+  }
+
+  Stream<List<Province>> streamAllProvinces() async* {
+    Typhoon? ongoingTyphoon = await getOngoingTyphoon();
+    DocumentReference ongoingTyphoonDocRef =
+        userRef.collection('typhoons').doc(ongoingTyphoon!.id);
+    yield* FirebaseFirestore.instance
+        .collectionGroup('provinces')
+        .orderBy(FieldPath.documentId)
+        .startAt([ongoingTyphoonDocRef.path])
+        .endAt([ongoingTyphoonDocRef.path + "\uf8ff"])
+        .snapshots()
+        .map((snapshot) => snapshot.docs.map((doc) {
+              return Province.fromJson(doc.data());
+            }).toList());
   }
 
   Stream<Typhoon> streamOngoingTyphoon() {
@@ -24,63 +90,6 @@ class FirestoreService2 {
         .collection('typhoons')
         .where('status', isEqualTo: 'ongoing')
         .snapshots()
-        .map((snapshot) => snapshot.docs.first)
-        .map((doc) => Typhoon.fromJson(doc.data()));
-  }
-
-  Stream<List<Province>> streamProvinces(String typhoonID) {
-    return userRef
-        .collection('typhoons')
-        .doc(typhoonID)
-        .collection('provinces')
-        .snapshots()
-        .map((snapshot) =>
-            snapshot.docs.map((doc) => Province.fromJson(doc.data())).toList());
-  }
-
-  Stream<List<Municipality>> streamMunicipalities(
-      String typhoonID, String provinceID) {
-    return userRef
-        .collection('typhoons')
-        .doc(typhoonID)
-        .collection('provinces')
-        .doc(provinceID)
-        .collection('municipalities')
-        .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => Municipality.fromJson(doc.data()))
-            .toList());
-  }
-
-  Stream<List<Owner>> streamOwners(
-      String typhoonID, String provID, String munID) {
-    return userRef
-        .collection('typhoons')
-        .doc(typhoonID)
-        .collection('provinces')
-        .doc(provID)
-        .collection('municipalities')
-        .doc(munID)
-        .collection('owners')
-        .snapshots()
-        .map((snapshot) =>
-            snapshot.docs.map((doc) => Owner.fromJson(doc.data())).toList());
-  }
-
-  Stream<List<Day>> streamDays(
-      String typhoonID, String provID, String munID, String ownerID) {
-    return userRef
-        .collection('typhoons')
-        .doc(typhoonID)
-        .collection('provinces')
-        .doc(provID)
-        .collection('municipalities')
-        .doc(munID)
-        .collection('owners')
-        .doc(ownerID)
-        .collection('days')
-        .snapshots()
-        .map((snapshot) =>
-            snapshot.docs.map((doc) => Day.fromJson(doc.data())).toList());
+        .map((snapshot) => Typhoon.fromJson(snapshot.docs.first.data()));
   }
 }

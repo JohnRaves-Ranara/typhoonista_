@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:typhoonista_thesis/HOMEPAGES2/tests/test6.dart';
 import 'package:typhoonista_thesis/Home.dart';
 import 'package:typhoonista_thesis/Home_2.dart';
 import 'package:typhoonista_thesis/LoginScreen.dart';
@@ -56,7 +57,7 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
-        home: test4(),
+        home: Home_2(),
         // home: Consumer<page_provider>(
         //   builder: (context, prov, child){
         //     if(prov.mainpage == 0){

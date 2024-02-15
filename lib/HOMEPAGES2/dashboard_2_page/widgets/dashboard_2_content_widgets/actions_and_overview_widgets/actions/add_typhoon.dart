@@ -150,7 +150,7 @@ class _add_typhoonState extends State<add_typhoon> {
               child: InkWell(
                 borderRadius: BorderRadius.circular(8),
                 onTap: (() async{
-                  await FirestoreService2().addTyphoon(typhoonNameCtrlr.text.trim());
+                  // await FirestoreService2().addTyphoon(typhoonNameCtrlr.text.trim());
                   typhoonNameCtrlr.clear();
                   Navigator.pop(context);
                 }),

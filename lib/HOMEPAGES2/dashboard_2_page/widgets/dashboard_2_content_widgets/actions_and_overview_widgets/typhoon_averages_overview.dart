@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:typhoonista_thesis/HOMEPAGES2/entities2/new/Typhoon.dart';
+import 'package:typhoonista_thesis/HOMEPAGES2/services2/FirestoreService2.dart';
 import 'package:typhoonista_thesis/assets/themes/textStyles.dart';
 
 class typhoon_averages_overview extends StatefulWidget {
@@ -37,14 +40,32 @@ class _typhoon_averages_overviewState extends State<typhoon_averages_overview> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       mainAxisSize: MainAxisSize.max,
                       children: [
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text("₱ 75,658,687.03", style: textStyles.lato_bold(fontSize: 30),),
-                            SizedBox(height: 10,),
-                            Text("Total Rice Crop Damage Cost of Typhoon Hevabi", style: textStyles.lato_bold(fontSize: 14),)
-                          ],
+                        StreamBuilder(
+                          stream: FirestoreService2().streamOngoingTyphoon(),
+                          builder: (context,snapshot){
+                            if(snapshot.hasData){
+                              Typhoon ongoingTyphoon = snapshot.data!;
+                              return Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text("₱ ${NumberFormat('#,##0.00', 'en_US').format(ongoingTyphoon.totalDamageCost)}", style: textStyles.lato_bold(fontSize: 30),),
+                              SizedBox(height: 10,),
+                              Text("Total Rice Crop Damage Cost of Typhoon ${ongoingTyphoon.typhoonName}", style: textStyles.lato_bold(fontSize: 14),)
+                            ],
+                          );
+                            }else{
+                              return Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text("No data.", style: textStyles.lato_bold(fontSize: 30),),
+                              SizedBox(height: 10,),
+                              Text("Total Rice Crop Damage Cost of Typhoon Hevabi", style: textStyles.lato_bold(fontSize: 14),)
+                            ],
+                          );
+                            }
+                          },
                         ),
                       ],
                     ),

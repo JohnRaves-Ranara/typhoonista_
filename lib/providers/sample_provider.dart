@@ -1,26 +1,25 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:typhoonista_thesis/HOMEPAGES2/entities2/new/Owner.dart';
 import 'dart:math';
 
 import '../entities/DamageCostBar.dart';
 
 class SampleProvider with ChangeNotifier {
-  List<DamageCostBar> _damageCostBars = [
-    DamageCostBar("Agaton", 1652374),
-    DamageCostBar("Yolandie", 2398746),
-    DamageCostBar("Fufu", 5872635),
-    DamageCostBar("Zebra", 10000000),
-    DamageCostBar("Zebra", 10000000),
-    DamageCostBar("Zebra", 10000000)
-  ];
+  Set<Owner> _selectedOwners = Set<Owner>();
 
+  Set<Owner> get selectedOwners => _selectedOwners;
 
-  List<DamageCostBar> get damageCostBars => _damageCostBars;
-
-
-  void changeDamageCostBarsList(List<DamageCostBar> list) {
-    _damageCostBars = list;
+  void addSelectedOwner(Owner owner) {
+    _selectedOwners.add(owner);
     notifyListeners();
+    // isSelectedMap[owner.id] = true;
+  }
+
+  void removeSelectedOwner(Owner owner) {
+    _selectedOwners.remove(owner);
+    notifyListeners();
+    // isSelectedMap[owner.id] = false;
   }
 }
