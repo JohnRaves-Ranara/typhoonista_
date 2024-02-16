@@ -76,7 +76,7 @@ flutter:
   uses-material-design: true
   assets:
     - lib/assets/images/
-    - lib\assets\MuniCities.json
+    - lib/MuniCities.minimal.json
 
   fonts:
     - family: lato_black
