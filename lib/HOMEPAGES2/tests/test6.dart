@@ -57,7 +57,7 @@ class _test6State extends State<test6> {
                             }
                           }
                           owner.days
-                              .sort((a, b) => a.dayNum.compareTo(b.dayNum));
+                              .sort((a, b) => a.dayNum!.compareTo(b.dayNum!));
                         }
 
                         return Column(

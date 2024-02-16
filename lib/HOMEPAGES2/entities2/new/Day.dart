@@ -2,34 +2,36 @@
 import 'package:flutter/material.dart';
 
 class Day{
-  String id;
+  String? id;
   String? typhoonID;
   String? provinceID;
   String? municipalityID;
   String? ownerID;
-  double damageCost;
-  int dayNum;
-  double rainfall24;
-  double rainfall6;
-  double riceArea;
-  double riceYield;
-  double ricePrice;
-  double windSpeed;
+  double? damageCost;
+  int? dayNum;
+  double? rainfall24;
+  double? rainfall6;
+  double? riceArea;
+  double? riceYield;
+  double? ricePrice;
+  double? windSpeed;
+  double? distance;
 
   Day({
-    required this.id,
+    this.id,
     this.typhoonID,
     this.provinceID,
     this.municipalityID,
     this.ownerID,
-    required this.damageCost,
-    required this.dayNum,
-    required this.rainfall24,
-    required this.rainfall6,
-    required this.riceArea,
-    required this.riceYield,
-    required this.ricePrice,
-    required this.windSpeed,
+    this.damageCost,
+    this.dayNum,
+    this.rainfall24,
+    this.rainfall6,
+    this.riceArea,
+    this.riceYield,
+    this.ricePrice,
+    this.windSpeed,
+    this.distance
   });
 
   Map<String, dynamic> toJson() => {
@@ -59,6 +61,7 @@ class Day{
       provinceID: json["provinceID"],
       municipalityID: json["municipalityID"],
       ownerID: json["ownerID"],
+      distance: json["distance"]
     );
   }
   

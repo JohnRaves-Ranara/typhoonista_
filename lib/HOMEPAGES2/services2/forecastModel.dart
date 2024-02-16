@@ -1,72 +1,89 @@
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../entities2/new/Day.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class forecastModel{
 
-  Future<List<double>> forecastDamages(
-  double windSpeed,
-  double rainfall24, 
-  double rainfall6, 
-  double area, 
-  double riceYield, 
-  double distance, 
-  double price, 
-  int dayCount,
-  ) async{
-    List<double> damageCosts = [];
+  Future<List<Day>> forecast(
+    double next_ws,
+    double next_rf24,
+    double next_rf6,
+    double next_area,
+    double next_yield,
+    double next_distance,
+    double rice_price,
+    int days,
+    String? typhoonID,
+    String? provinceID,
+    String? municipalityID,
+    String? ownerID,
+  ) async {
+    List<Day> dayDamages = [];
 
-    var typhoonista_input_initial = {
-      "features" : [
-        windSpeed,
-        rainfall24,
-        rainfall6,
-        area,
-        riceYield,
-        distance,
-        price
+    var typhoonista_input = {
+      "features": [
+        next_ws,
+        next_rf24,
+        next_rf6,
+        next_area,
+        next_yield,
+        next_distance,
+        rice_price
       ]
     };
+    
+    double predicted_cost = await predictDayOne(typhoonista_input);
+    dayDamages.add(
+      Day(
+        damageCost: predicted_cost,
+        windSpeed: next_ws,
+        rainfall24: next_rf24,
+        rainfall6: next_rf6,
+        riceArea: next_area,
+        riceYield: next_yield,
+        distance: next_distance,
+        ricePrice: rice_price,
+        dayNum: 1
+        )
 
-    double predicted_cost = await predictDayOne(typhoonista_input_initial);
-    damageCosts.add(predicted_cost);
+    );
 
-    for(int dayNum = 1; dayNum < dayCount; dayNum++){ 
-
+    for (int day = 2; day <= days; day++) {
       var windspeed_input = {
         "features": [
-          rainfall24,
-          rainfall6,
-          distance,
-          area,
-          riceYield,
+          next_rf24,
+          next_rf6,
+          next_distance,
+          next_area,
+          next_yield,
           predicted_cost
         ]
       };
-      
+
       double windspeed_response_data = await predictWindSpeed(windspeed_input);
 
       var rainfall24_input = {
         "features": [
-          windSpeed,
-          rainfall6,
-          distance,
-          area,
-          riceYield,
+          next_ws,
+          next_rf6,
+          next_distance,
+          next_area,
+          next_yield,
           predicted_cost
         ]
       };
-
-      
+     
       double rainfall24_response_data = await predictRainfall24(rainfall24_input);
 
       var rainfall6_input = {
         "features": [
-          windspeed_input,
-          rainfall24,
-          distance,
-          area,
-          riceYield,
+          next_ws,
+          next_rf24,
+          next_distance,
+          next_area,
+          next_yield,
           predicted_cost
         ]
       };
@@ -75,38 +92,57 @@ class forecastModel{
 
       var distance_input = {
         "features": [
-          windspeed_input,
-          rainfall24,
-          rainfall6,
-          area,
-          riceYield,
+          next_ws,
+          next_rf24,
+          next_rf6,
+          next_area,
+          next_yield,
           predicted_cost
         ]
       };
-
+      
       double distance_response_data = await predictDistance(distance_input);
 
-      windSpeed = windspeed_response_data;
-      rainfall24 = rainfall24_response_data;
-      rainfall6 = rainfall6_response_data;
-      distance = distance_response_data;
+      next_ws = windspeed_response_data;
+      next_rf24 = rainfall24_response_data;
+      next_rf6 = rainfall6_response_data;
+      next_distance = distance_response_data;
 
       var next_day_input = {
         "features": [
-          windSpeed,
-          rainfall24,
-          rainfall6,
-          area,
-          riceYield,
-          distance,
-          price
+          next_ws,
+          next_rf24,
+          next_rf6,
+          next_area,
+          next_yield,
+          next_distance,
+          rice_price
         ]
       };
-      var next_day_cost = await predictNextDayCost(next_day_input);
+
+
+      double day2_response_data = await predictNextDayCost(next_day_input);
+      var next_day_cost = day2_response_data;
+
+      dayDamages.add(
+        Day(
+          damageCost: predicted_cost,
+        windSpeed: next_ws,
+        rainfall24: next_rf24,
+        rainfall6: next_rf6,
+        riceArea: next_area,
+        riceYield: next_yield,
+        distance: next_distance,
+        ricePrice: rice_price,
+        dayNum: day
+        )
+      );
+      
+
       predicted_cost = next_day_cost;
-      damageCosts.add(next_day_cost);
     }
-    return damageCosts;
+
+    return dayDamages;
   }
 
   Future<double> predictDayOne(var input ) async{

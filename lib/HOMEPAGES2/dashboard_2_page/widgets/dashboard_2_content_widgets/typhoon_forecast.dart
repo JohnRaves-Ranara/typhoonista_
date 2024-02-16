@@ -56,7 +56,7 @@ class _typhoon_forecastState extends State<typhoon_forecast> {
                             }
                           }
                           owner.days
-                              .sort((a, b) => a.dayNum.compareTo(b.dayNum));
+                              .sort((a, b) => a.dayNum!.compareTo(b.dayNum!));
                         }
 
                         return Column(

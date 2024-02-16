@@ -92,4 +92,5 @@ class FirestoreService2 {
         .snapshots()
         .map((snapshot) => Typhoon.fromJson(snapshot.docs.first.data()));
   }
+
 }
