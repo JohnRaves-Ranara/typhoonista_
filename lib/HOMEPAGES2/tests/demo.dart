@@ -78,16 +78,17 @@ class _demoState extends State<demo> {
             ElevatedButton(
               onPressed: (()async{
                 List<Day> forecastDamageCosts = await forecastModel().forecast(
-                  double.parse(wsController.text.trim()),
-                  double.parse(rf24Controller.text.trim()),
-                  double.parse(rf6Controller.text.trim()),
-                  double.parse(areaController.text.trim()),
-                  double.parse(yieldController.text.trim()),
-                  double.parse(distanceController.text.trim()),
-                  double.parse(priceController.text.trim()),
-                  int.parse(daysController.text.trim())
+                  next_ws: double.parse(wsController.text.trim()),
+                  next_rf24: double.parse(rf24Controller.text.trim()),
+                  next_rf6: double.parse(rf6Controller.text.trim()),
+                  next_area: double.parse(areaController.text.trim()),
+                  next_yield: double.parse(yieldController.text.trim()),
+                  next_distance: double.parse(distanceController.text.trim()),
+                  rice_price: double.parse(priceController.text.trim()),
+                  days: int.parse(daysController.text.trim())
                   );
-
+                
+                forecastDamageCosts.forEach((dayDamage) => print(dayDamage));
                 setState(() {
                   result = forecastDamageCosts.map((dayDamage) => dayDamage.damageCost).toList().toString();
                 });

@@ -1,46 +1,3 @@
-// import 'dart:ui';
-
-// import 'Day.dart';
-
-// class Owner{
-//   String id;
-//   String? provinceID;
-//   String? municipalityID;
-//   String? typhoonID;
-//   String ownerName;
-//   double totalDamageCost;
-//   List<Day> days = [];
-//   Color? colorMarker;
-//   bool isSelected = false;
-
-//   Owner({
-//     required this.id,
-//     this.provinceID,
-//     this.municipalityID,
-//     this.typhoonID,
-//     required this.ownerName,
-//     required this.totalDamageCost,
-//     this.colorMarker,
-//   });
-
-//   Map<String, dynamic> toJson() => {
-//         "id": id,
-//         "ownerName": ownerName,
-//         "totalDamageCost": totalDamageCost,
-//       };
-
-//   static Owner fromJson(Map<String, dynamic> json) {
-//     return Owner(
-//       id: json["id"],
-//       ownerName: json["ownerName"],
-//       totalDamageCost: json["totalDamageCost"],
-//       provinceID: json["provinceID"],
-//       municipalityID : json["municipalityID"],
-//       typhoonID: json["municipalityID"],
-//       colorMarker: Color.fromARGB(255, json["color"][0], json["color"][1], json["color"][2]).withOpacity(0.3)
-//     );
-//   }
-// }
 
 import 'dart:ui';
 import 'Day.dart';
@@ -49,18 +6,21 @@ class Owner {
   String id;
   String? provinceID;
   String? municipalityID;
+  String? provName;
+  String? munName;
   String? typhoonID;
   String ownerName;
   double totalDamageCost;
   List<Day> days = [];
   Color colorMarker;
-  bool isSelected = false;
 
   Owner({
     required this.id,
     this.provinceID,
     this.municipalityID,
     this.typhoonID,
+    this.munName,
+    this.provName,
     required this.ownerName,
     required this.totalDamageCost,
     required this.colorMarker,
@@ -77,7 +37,11 @@ class Owner {
           typhoonID == other.typhoonID &&
           ownerName == other.ownerName &&
           totalDamageCost == other.totalDamageCost &&
-          colorMarker == other.colorMarker;
+          colorMarker == other.colorMarker &&
+          munName == other.munName &&
+          provName == other.provName
+          
+          ;
 
   @override
   int get hashCode =>
@@ -87,7 +51,9 @@ class Owner {
       typhoonID.hashCode ^
       ownerName.hashCode ^
       totalDamageCost.hashCode ^
-      colorMarker.hashCode;
+      colorMarker.hashCode ^
+      munName.hashCode ^
+      provName.hashCode;
 
   Map<String, dynamic> toJson() => {
         "id": id,
@@ -106,7 +72,9 @@ class Owner {
         totalDamageCost: json["totalDamageCost"],
         provinceID: json["provinceID"],
         municipalityID: json["municipalityID"],
-        typhoonID: json["municipalityID"],
+        typhoonID: json["typhoonID"],
+        munName: json['munName'],
+        provName: json['provName'],
         colorMarker: Color.fromARGB(
             255, json["color"][0], json["color"][1], json["color"][2]).withOpacity(0.3));
   }

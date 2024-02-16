@@ -1,7 +1,4 @@
-
-import 'package:flutter/material.dart';
-
-class Day{
+class Day {
   String? id;
   String? typhoonID;
   String? provinceID;
@@ -31,7 +28,7 @@ class Day{
     this.riceYield,
     this.ricePrice,
     this.windSpeed,
-    this.distance
+    this.distance,
   });
 
   Map<String, dynamic> toJson() => {
@@ -48,21 +45,24 @@ class Day{
 
   static Day fromJson(Map<String, dynamic> json) {
     return Day(
-      id: json["id"],
-      damageCost: json["damageCost"],
-      dayNum: json["dayNum"],
-      rainfall24: json["rainfall24"],
-      rainfall6: json["rainfall6"],
-      riceArea: json["riceArea"],
-      riceYield: json["riceYield"],
-      ricePrice: json["ricePrice"],
-      windSpeed: json["windSpeed"],
-      typhoonID: json["typhoonID"],
-      provinceID: json["provinceID"],
-      municipalityID: json["municipalityID"],
-      ownerID: json["ownerID"],
-      distance: json["distance"]
-    );
+        id: json["id"],
+        damageCost: json["damageCost"],
+        dayNum: json["dayNum"],
+        rainfall24: json["rainfall24"],
+        rainfall6: json["rainfall6"],
+        riceArea: json["riceArea"],
+        riceYield: json["riceYield"],
+        ricePrice: json["ricePrice"],
+        windSpeed: json["windSpeed"],
+        typhoonID: json["typhoonID"],
+        provinceID: json["provinceID"],
+        municipalityID: json["municipalityID"],
+        ownerID: json["ownerID"],
+        distance: json["distance"]);
   }
-  
+
+  @override
+  String toString() {
+    return "Day(id: $id, typhoonID: $typhoonID, provinceID: $provinceID, municipalityID: $municipalityID, ownerID: $ownerID, damageCost: $damageCost, dayNum: $dayNum, rainfall24: $rainfall24, rainfall6: $rainfall6, riceArea: $riceArea, riceYield: $riceYield, ricePrice: $ricePrice, windSpeed: $windSpeed, distance: $distance)";
+  }
 }

@@ -7,18 +7,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class forecastModel{
 
   Future<List<Day>> forecast(
-    double next_ws,
-    double next_rf24,
-    double next_rf6,
-    double next_area,
-    double next_yield,
-    double next_distance,
-    double rice_price,
-    int days,
-    String? typhoonID,
-    String? provinceID,
-    String? municipalityID,
-    String? ownerID,
+    {required double next_ws, 
+    required double next_rf24,
+    required double next_rf6,
+    required double next_area,
+    required double next_yield,
+    required double next_distance,
+    required double rice_price,
+    required int days,
+    }
   ) async {
     List<Day> dayDamages = [];
 
