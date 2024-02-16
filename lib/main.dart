@@ -2,6 +2,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:typhoonista_thesis/HOMEPAGES2/tests/demo.dart';
+import 'package:typhoonista_thesis/HOMEPAGES2/tests/test5.dart';
 import 'package:typhoonista_thesis/HOMEPAGES2/tests/test6.dart';
 import 'package:typhoonista_thesis/Home.dart';
 import 'package:typhoonista_thesis/Home_2.dart';
@@ -18,6 +20,7 @@ import 'package:typhoonista_thesis/tests/test2.dart';
 import 'package:typhoonista_thesis/HOMEPAGES2/tests/test4.dart';
 import 'package:typhoonista_thesis/tests/textDataProvider.dart';
 import 'home_pages/estimator_page/estimator_page.dart';
+
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -57,7 +60,7 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
-        home: Home_2(),
+        home: demo(),
         // home: Consumer<page_provider>(
         //   builder: (context, prov, child){
         //     if(prov.mainpage == 0){

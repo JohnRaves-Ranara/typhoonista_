@@ -505,10 +505,18 @@ packages:
     dependency: transitive
     description:
       name: syncfusion_flutter_core
-      sha256: e8580e201c7197feac830b501889e877796a9fabbe20dcdbe90a981603939101
+      sha256: "4eed0d3ae50c16b5e8e4957f3c1917e9bd0315a08dfb49a104ca8fc10244bef3"
       url: "https://pub.dev"
     source: hosted
-    version: "24.2.4"
+    version: "24.2.6"
+  syncfusion_flutter_maps:
+    dependency: "direct main"
+    description:
+      name: syncfusion_flutter_maps
+      sha256: b15ba23ab66e21dba4fe9ec9aefa0bf59c04ebc7e18aaba9ea796a5366ec8e88
+      url: "https://pub.dev"
+    source: hosted
+    version: "24.2.6"
   syncfusion_flutter_pdf:
     dependency: "direct main"
     description:

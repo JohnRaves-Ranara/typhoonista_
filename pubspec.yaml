@@ -51,6 +51,7 @@ dependencies:
   loading_indicator: ^3.1.1
   flutter_spinkit: ^5.2.0
   dropdown_button2: ^2.3.9
+  syncfusion_flutter_maps: ^24.2.6
 
 dev_dependencies:
   flutter_test:
@@ -75,6 +76,7 @@ flutter:
   uses-material-design: true
   assets:
     - lib/assets/images/
+    - lib\assets\MuniCities.json
 
   fonts:
     - family: lato_black

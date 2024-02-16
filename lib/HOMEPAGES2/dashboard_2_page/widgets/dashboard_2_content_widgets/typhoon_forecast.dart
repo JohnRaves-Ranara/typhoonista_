@@ -111,6 +111,7 @@ class _typhoon_forecastState extends State<typhoon_forecast> {
                                 Set<Owner> selectedOwners =
                                     prov.selectedOwners;
                                 return SfCartesianChart(
+                                  
                                   trackballBehavior: TrackballBehavior(
                                       enable: true,
                                       activationMode:
@@ -121,8 +122,13 @@ class _typhoon_forecastState extends State<typhoon_forecast> {
                                       ? owners
                                           .map((owner) =>
                                               AreaSeries<Day, String>(
-                                                dataLabelSettings: DataLabelSettings(
-                                                ),
+                                                //todo
+                                                // trendlines: <Trendline>[
+                                                //   Trendline(
+                                                //     type: TrendlineType.linear,
+                                                //     forwardForecast: 3,
+                                                //   )
+                                                // ],
                                                 animationDuration: 200,
                                                 dataSource: owner.days,
                                                 color: owner.colorMarker,
@@ -130,6 +136,7 @@ class _typhoon_forecastState extends State<typhoon_forecast> {
                                                     "Day ${data.dayNum}",
                                                 yValueMapper: (Day data, _) =>
                                                     data.damageCost,
+                                                
                                               ))
                                           .toList()
                                       : selectedOwners
