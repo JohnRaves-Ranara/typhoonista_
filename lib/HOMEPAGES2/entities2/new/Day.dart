@@ -14,6 +14,7 @@ class Day {
   double? windSpeed;
   double? distance;
 
+
   Day({
     this.id,
     this.typhoonID,
@@ -58,7 +59,7 @@ class Day {
         provinceID: json["provinceID"],
         municipalityID: json["municipalityID"],
         ownerID: json["ownerID"],
-        distance: json["distance"]);
+        distance: json["disTrackMin"]);
   }
 
   @override

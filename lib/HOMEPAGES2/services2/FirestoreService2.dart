@@ -152,31 +152,31 @@ class FirestoreService2 {
         'typhoonID': ongoingTyphoonID
       });
       print("ADDED NA ANG PROVINCE");
-    } 
+    }
 
     //check if municipality with given munID already exists
-      CollectionReference munColRef = userRef
-          .collection('typhoons')
-          .doc(ongoingTyphoonID)
-          .collection('provinces')
-          .doc(provinceID)
-          .collection('municipalities');
-      DocumentSnapshot munDocSnapshot =
-          await provinceColRef.doc(municipalityID).get();
-      //if it does not exist, add it to db.
-      if (!munDocSnapshot.exists) {
-        print("WALA PA GA EXIST ANG NAPILI NGA MUNICIPALITY");
-        DocumentReference munDocRef = munColRef.doc(municipalityID);
-        await munDocRef.set({
-          'color': getColorRGBList(),
-          'id': municipalityID,
-          'munName': munName,
-          'provinceID': provinceID,
-          'totalDamageCost': 0, //to be updated later if ma add na ang days
-          'typhoonID': ongoingTyphoonID
-        });
-        print("NA ADD NA ANG MUNICIPALITY");
-      }
+    CollectionReference munColRef = userRef
+        .collection('typhoons')
+        .doc(ongoingTyphoonID)
+        .collection('provinces')
+        .doc(provinceID)
+        .collection('municipalities');
+    DocumentSnapshot munDocSnapshot =
+        await provinceColRef.doc(municipalityID).get();
+    //if it does not exist, add it to db.
+    if (!munDocSnapshot.exists) {
+      print("WALA PA GA EXIST ANG NAPILI NGA MUNICIPALITY");
+      DocumentReference munDocRef = munColRef.doc(municipalityID);
+      await munDocRef.set({
+        'color': getColorRGBList(),
+        'id': municipalityID,
+        'munName': munName,
+        'provinceID': provinceID,
+        'totalDamageCost': 0, //to be updated later if ma add na ang days
+        'typhoonID': ongoingTyphoonID
+      });
+      print("NA ADD NA ANG MUNICIPALITY");
+    }
 
     //ownerColRef
     CollectionReference ownerColRef = userRef
@@ -244,10 +244,10 @@ class FirestoreService2 {
           ownerID, // NAHH, SCRATCH THAT, JUST USE UUID().V1() FOR OWNER ID, FOR PROPER ORGANIZATION.
       "munName": munName,
       "municipalityID": municipalityID,
-      "ownerName" : ownerName,
+      "ownerName": ownerName,
       "provName": provName,
       "provinceID": provinceID,
-      "totalDamageCost": totalDamageCost,
+      "totalDamageCost": double.parse(totalDamageCost.toStringAsFixed(2)),
       "typhoonID": ongoingTyphoonID,
     });
 
@@ -271,14 +271,14 @@ class FirestoreService2 {
         "disTrackMin": day.distance,
         "id": dayID,
         "municipalityID": municipalityID,
-        "ownerID" : ownerID,
+        "ownerID": ownerID,
         "provinceID": provinceID,
         "rainfall24": day.rainfall24,
         "rainfall6": day.rainfall6,
         "riceArea": day.riceArea,
         "ricePrice": day.ricePrice,
         "riceYield": day.riceYield,
-        "typhoonID" : ongoingTyphoonID,
+        "typhoonID": ongoingTyphoonID,
         "windSpeed": day.windSpeed,
       });
     }
@@ -286,7 +286,8 @@ class FirestoreService2 {
     //UPDATE TOTAL DAMAGES OF TYPHOON, PROVINCE, AND MUNICIPALITY.
     //NOTE: THIS IS ONLY FOR FIRST TIME ADDING. // ON SECOND THOUGHT, IDK.
 
-    await updateMunicipalityTotalDamageCost(ongoingTyphoonID, provinceID!, municipalityID!);
+    await updateMunicipalityTotalDamageCost(
+        ongoingTyphoonID, provinceID!, municipalityID!);
     await updateProvinceTotalDamageCost(ongoingTyphoonID, provinceID);
     await updateTyphoonTotalDamageCost(ongoingTyphoonID);
   }
@@ -372,6 +373,30 @@ class FirestoreService2 {
     // return totalDamageCost;
 
     ownerDocRef.update({'totalDamageCost': totalDamageCost});
+  }
+
+  Future<List<Day>> getAllDays(
+      String typhoonID, String provID, String munID, String ownerID) async {
+    QuerySnapshot firstDaySnapshot = await userRef
+        .collection('typhoons')
+        .doc(typhoonID)
+        .collection('provinces')
+        .doc(provID)
+        .collection('municipalities')
+        .doc(munID)
+        .collection('owners')
+        .doc(ownerID)
+        .collection('days')
+        .get();
+    List<Day> days = [];
+    for(DocumentSnapshot doc in firstDaySnapshot.docs){
+      Map<String,dynamic> data = doc.data() as Map<String,dynamic>;
+      // if(data['dayNum'] == 1){
+      //   firstDay = Day.fromJson(data);
+      // }
+      days.add(Day.fromJson(data));
+    }
+    return days;
   }
 
   List<int> getColorRGBList() {

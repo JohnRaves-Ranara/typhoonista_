@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:typhoonista_thesis/HOMEPAGES2/entities2/new/Day.dart';
 import 'package:typhoonista_thesis/HOMEPAGES2/entities2/new/GetLocations.dart';
 import 'package:typhoonista_thesis/HOMEPAGES2/entities2/new/Location.dart';
 import 'package:typhoonista_thesis/HOMEPAGES2/entities2/new/Owner.dart';
+import 'package:typhoonista_thesis/HOMEPAGES2/entities2/new/Province.dart';
 import 'package:typhoonista_thesis/HOMEPAGES2/services2/FirestoreService2.dart';
 import 'package:typhoonista_thesis/assets/themes/textStyles.dart';
 
@@ -40,6 +42,7 @@ class _edit_paramsState extends State<edit_params> {
   bool isLoadingMunicipalities = false;
   bool isSearchLocationMunicipality = false;
   final municipalityController = TextEditingController();
+  bool isSettingSelectedOwner = false;
 
   @override
   Widget build(BuildContext context) {
@@ -162,77 +165,142 @@ class _edit_paramsState extends State<edit_params> {
     );
   }
 
-  showAllOwners(Function customState){
-    showDialog(
-      context: context,
-      builder: (context){
-        return AlertDialog(
-          content: Container(
-            width: MediaQuery.of(context).size.width * 0.4,
-            child: StreamBuilder<List<Owner>>(
-              stream: FirestoreService2().streamAllOwners(),
-              builder: (context,snapshot){
-                if(snapshot.hasData){
-                  List<Owner> allOwners = snapshot.data!;
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                    "Select an Estimation",
-                    style: textStyles.lato_black(fontSize: 30),
+  Future<void> _setSelectedOwner(Function customState, Owner owner) async {
+    //SET SELECTEDOWNER, SET INPUTS TO SELECTEDOWNER'S ATTRIBUTES
+    customState(() {
+      isSettingSelectedOwner = true;
+    });
+    selectedOwner = owner;
+    List<Day> allDaysOfSelectedOwner = await FirestoreService2().getAllDays(
+        owner.typhoonID!, owner.provinceID!, owner.municipalityID!, owner.id);
+    Day selectedOwnerDay1 = allDaysOfSelectedOwner.firstWhere((day) => day.dayNum==1);
+    int totalNumberOfDays = allDaysOfSelectedOwner.length;
+    windspeedCtlr.text = selectedOwnerDay1.windSpeed.toString();
+    rainfall24Ctlr.text = selectedOwnerDay1.rainfall24.toString();
+    rainfall6Ctlr.text = selectedOwnerDay1.rainfall6.toString();
+    ricePriceCtlr.text = selectedOwnerDay1.ricePrice.toString();
+    daysCountCtrlr.text = totalNumberOfDays.toString();
+    riceAreaCtrlr.text = selectedOwnerDay1.riceArea.toString();
+    yieldCtrlr.text = selectedOwnerDay1.riceYield.toString();
+    selectedProvince = Location(
+        provID: owner.provinceID,
+        provName: owner.provName,
+        munID: owner.municipalityID,
+        munName: owner.munName);
+    selectedMunicipality = Location(
+        provID: owner.provinceID,
+        provName: owner.provName,
+        munID: owner.municipalityID,
+        munName: owner.munName);
+    distrackminfinal = selectedOwnerDay1.distance.toString();
+    customState(() {
+      isSettingSelectedOwner = false;
+    });
+  }
 
-                  ),
-                  SizedBox(height: 10,),
-                  DataTable(
-                    showCheckboxColumn: false,
-                    columns: [
-                      DataColumn(label: Text(
-                      'Name',
-                      style: textStyles.lato_bold(),
-                    )),
-                    DataColumn(label: Text(
-                      'Date Recorded',
-                      style: textStyles.lato_bold(),
-                    )),
-                    DataColumn(label: Text(
-                      'Total Damage Cost',
-                      style: textStyles.lato_bold(),
-                    ))
-                    ], 
-                    rows: allOwners.map((owner) => DataRow(
-                      onSelectChanged: (isSelected){
-                        customState(() {
-                          selectedOwner = owner;
-                          Navigator.pop(context);
-                        });
-                      },
-                      cells: [
-                        DataCell(
-                          Text(owner.ownerName,
-                                    style: textStyles.lato_regular())
+  showAllOwners(Function customState) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            content: Container(
+              width: MediaQuery.of(context).size.width * 0.53,
+              padding: EdgeInsets.all(10),
+              child: StreamBuilder<List<Owner>>(
+                stream: FirestoreService2().streamAllOwners(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    List<Owner> allOwners = snapshot.data!;
+
+                    allOwners.sort((a, b) => DateTime.parse(b.dateRecorded!)
+                        .compareTo(DateTime.parse(a.dateRecorded!)));
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: 5),
+                        Text(
+                          "Your Estimations",
+                          style: textStyles.lato_black(fontSize: 25),
                         ),
-                        DataCell(
-                          Text("${DateTime.parse(owner.dateRecorded!).month}/${DateTime.parse(owner.dateRecorded!).day}/${DateTime.parse(owner.dateRecorded!).year} ${DateTime.parse(owner.dateRecorded!).hour}:${DateTime.parse(owner.dateRecorded!).minute}:${DateTime.parse(owner.dateRecorded!).second}",
-                                    style: textStyles.lato_regular())
+                        SizedBox(
+                          height: 10,
                         ),
-                        DataCell(
-                          Text(owner.totalDamageCost.toString(),
-                                    style: textStyles.lato_regular())
-                        )
-                      ]
-                    )).toList())
-                    ],
-                  );
-                }
-                else{
-                  return Center(child: CircularProgressIndicator(),);
-                }
-              },
+                        (isSettingSelectedOwner == true)
+                            ? Expanded(
+                                child: Center(
+                                  child: CircularProgressIndicator(),
+                                ),
+                              )
+                            : SingleChildScrollView(
+                                child: Container(
+                                  width: double.maxFinite,
+                                  child: DataTable(
+                                      showCheckboxColumn: false,
+                                      columns: [
+                                        DataColumn(
+                                            label: Text(
+                                          'Name',
+                                          style: textStyles.lato_bold(),
+                                        )),
+                                        DataColumn(
+                                            label: Text(
+                                          'Date Recorded',
+                                          style: textStyles.lato_bold(),
+                                        )),
+                                        DataColumn(
+                                            label: Text(
+                                          'Time Recorded',
+                                          style: textStyles.lato_bold(),
+                                        )),
+                                        DataColumn(
+                                            label: Text(
+                                          'Total Damage Cost',
+                                          style: textStyles.lato_bold(),
+                                        ))
+                                      ],
+                                      rows: allOwners
+                                          .map((owner) => DataRow(
+                                                  onSelectChanged:
+                                                      (isSelected) {
+                                                    customState(() {
+                                                      _setSelectedOwner(customState, owner);
+                                                      Navigator.pop(context);
+                                                    });
+                                                  },
+                                                  cells: [
+                                                    DataCell(Text(
+                                                        owner.ownerName,
+                                                        style: textStyles
+                                                            .lato_regular())),
+                                                    DataCell(Text(
+                                                        "${DateTime.parse(owner.dateRecorded!).month}/${DateTime.parse(owner.dateRecorded!).day}/${DateTime.parse(owner.dateRecorded!).year}",
+                                                        style: textStyles
+                                                            .lato_regular())),
+                                                    DataCell(Text(
+                                                        "${DateTime.parse(owner.dateRecorded!).hour.toString().padLeft(2, '0')}:${DateTime.parse(owner.dateRecorded!).minute.toString().padLeft(2, '0')}:${DateTime.parse(owner.dateRecorded!).second.toString().padLeft(2, '0')}",
+                                                        style: textStyles
+                                                            .lato_regular())),
+                                                    DataCell(Text(
+                                                        owner.totalDamageCost
+                                                            .toString(),
+                                                        style: textStyles
+                                                            .lato_regular()))
+                                                  ]))
+                                          .toList()),
+                                ),
+                              )
+                      ],
+                    );
+                  } else {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                },
+              ),
             ),
-          ),
-        );
-      }
-    );
+          );
+        });
   }
 
   Widget add_day(
@@ -259,7 +327,7 @@ class _edit_paramsState extends State<edit_params> {
                 ),
                 Expanded(
                   child: InkWell(
-                    onTap: ((){
+                    onTap: (() {
                       showAllOwners(customState);
                     }),
                     child: Container(
@@ -277,7 +345,8 @@ class _edit_paramsState extends State<edit_params> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Text(
-                              "Select Estimation to Edit",
+                              selectedOwner?.ownerName ??
+                                  "Select Estimation to Edit",
                               style: textStyles.lato_regular(fontSize: 17),
                             ),
                             Icon(
@@ -297,418 +366,444 @@ class _edit_paramsState extends State<edit_params> {
           SizedBox(
             height: 30,
           ),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Container(
-                  // color: Colors.purple,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      TextField(
-                        style: textStyles.lato_regular(),
-                        enabled: selectedOwner != null,
-                        controller: windspeedCtlr,
-                        decoration: InputDecoration(
-                            contentPadding: EdgeInsets.symmetric(
-                                vertical: 0, horizontal: 10),
-                            fillColor: Colors.white,
-                            labelStyle:
-                                textStyles.lato_light(color: Colors.black),
-                            enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color:
-                                        Colors.grey.shade600.withOpacity(0.5),
-                                    width: 1,
-                                    style: BorderStyle.solid)),
-                            focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: Colors.grey.shade600,
-                                    width: 1,
-                                    style: BorderStyle.solid)),
-                            border: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color:
-                                        Colors.grey.shade600.withOpacity(0.5),
-                                    width: 1,
-                                    style: BorderStyle.solid)),
-                            labelText: "Windspeed"),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      TextField(
-                        style: textStyles.lato_regular(),
-                        enabled: selectedOwner != null,
-                        controller: rainfall24Ctlr,
-                        decoration: InputDecoration(
-                            contentPadding: EdgeInsets.symmetric(
-                                vertical: 0, horizontal: 10),
-                            fillColor: Colors.white,
-                            labelStyle:
-                                textStyles.lato_light(color: Colors.black),
-                            enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color:
-                                        Colors.grey.shade600.withOpacity(0.5),
-                                    width: 1,
-                                    style: BorderStyle.solid)),
-                            focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: Colors.grey.shade600,
-                                    width: 1,
-                                    style: BorderStyle.solid)),
-                            border: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color:
-                                        Colors.grey.shade600.withOpacity(0.5),
-                                    width: 1,
-                                    style: BorderStyle.solid)),
-                            labelText: "Rainfall (24H)"),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      TextField(
-                        style: textStyles.lato_regular(),
-                        enabled: selectedOwner != null,
-                        controller: rainfall6Ctlr,
-                        decoration: InputDecoration(
-                            contentPadding: EdgeInsets.symmetric(
-                                vertical: 0, horizontal: 10),
-                            fillColor: Colors.white,
-                            labelStyle:
-                                textStyles.lato_light(color: Colors.black),
-                            enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color:
-                                        Colors.grey.shade600.withOpacity(0.5),
-                                    width: 1,
-                                    style: BorderStyle.solid)),
-                            focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: Colors.grey.shade600,
-                                    width: 1,
-                                    style: BorderStyle.solid)),
-                            border: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color:
-                                        Colors.grey.shade600.withOpacity(0.5),
-                                    width: 1,
-                                    style: BorderStyle.solid)),
-                            labelText: "Rainfall (6H)"),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      TextField(
-                        style: textStyles.lato_regular(),
-                        enabled: selectedOwner != null,
-                        controller: ricePriceCtlr,
-                        decoration: InputDecoration(
-                            contentPadding: EdgeInsets.symmetric(
-                                vertical: 0, horizontal: 10),
-                            fillColor: Colors.white,
-                            labelStyle:
-                                textStyles.lato_light(color: Colors.black),
-                            enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color:
-                                        Colors.grey.shade600.withOpacity(0.5),
-                                    width: 1,
-                                    style: BorderStyle.solid)),
-                            focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: Colors.grey.shade600,
-                                    width: 1,
-                                    style: BorderStyle.solid)),
-                            border: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color:
-                                        Colors.grey.shade600.withOpacity(0.5),
-                                    width: 1,
-                                    style: BorderStyle.solid)),
-                            labelText: "Rice Price (per kilo)"),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      TextField(
-                        style: textStyles.lato_regular(),
-                        enabled: selectedOwner != null,
-                        controller: daysCountCtrlr,
-                        decoration: InputDecoration(
-                            contentPadding: EdgeInsets.symmetric(
-                                vertical: 0, horizontal: 10),
-                            fillColor: Colors.white,
-                            labelStyle:
-                                textStyles.lato_light(color: Colors.black),
-                            enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color:
-                                        Colors.grey.shade600.withOpacity(0.5),
-                                    width: 1,
-                                    style: BorderStyle.solid)),
-                            focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: Colors.grey.shade600,
-                                    width: 1,
-                                    style: BorderStyle.solid)),
-                            border: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color:
-                                        Colors.grey.shade600.withOpacity(0.5),
-                                    width: 1,
-                                    style: BorderStyle.solid)),
-                            labelText: "Day Count"),
-                      ),
-                    ],
+          (selectedOwner == null)
+              ? Container(
+                  height: 300,
+                  child: Center(
+                    child: Text(
+                      "No selected Estimation",
+                      style: textStyles.lato_regular(fontSize: 20),
+                    ),
                   ),
-                ),
-              ),
-              SizedBox(
-                width: 15,
-              ),
-              Expanded(
-                child: Container(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      TextField(
-                        style: textStyles.lato_regular(),
-                        enabled: selectedOwner != null,
-                        controller: riceAreaCtrlr,
-                        decoration: InputDecoration(
-                            contentPadding: EdgeInsets.symmetric(
-                                vertical: 0, horizontal: 10),
-                            fillColor: Colors.white,
-                            labelStyle:
-                                textStyles.lato_light(color: Colors.black),
-                            enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color:
-                                        Colors.grey.shade600.withOpacity(0.5),
-                                    width: 1,
-                                    style: BorderStyle.solid)),
-                            focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: Colors.grey.shade600,
-                                    width: 1,
-                                    style: BorderStyle.solid)),
-                            border: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color:
-                                        Colors.grey.shade600.withOpacity(0.5),
-                                    width: 1,
-                                    style: BorderStyle.solid)),
-                            labelText: "Rice Area (ha)"),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      TextField(
-                        style: textStyles.lato_regular(),
-                        enabled: selectedOwner != null,
-                        controller: yieldCtrlr,
-                        decoration: InputDecoration(
-                            contentPadding: EdgeInsets.symmetric(
-                                vertical: 0, horizontal: 10),
-                            fillColor: Colors.white,
-                            labelStyle:
-                                textStyles.lato_light(color: Colors.black),
-                            enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color:
-                                        Colors.grey.shade600.withOpacity(0.5),
-                                    width: 1,
-                                    style: BorderStyle.solid)),
-                            focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: Colors.grey.shade600,
-                                    width: 1,
-                                    style: BorderStyle.solid)),
-                            border: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color:
-                                        Colors.grey.shade600.withOpacity(0.5),
-                                    width: 1,
-                                    style: BorderStyle.solid)),
-                            labelText: "Yield (ton/ha)"),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: InkWell(
-                              onTap: (selectedOwner != null)
-                                  ? (() async {
-                                      setState(() {
-                                        isLoadingProvinces = true;
-                                      });
-                                      List<Location> provincesFromJSON =
-                                          await GetLocations().getLocations();
-                                      setState(() {
-                                        isLoadingProvinces = false;
-                                      });
-                                      provincesFromJSON.forEach((prov) =>
-                                          provinces.add(Location(
-                                              provID: prov.provID,
-                                              provName: prov.provName)));
-
-                                      provinces = provinces.toSet().toList();
-
-                                      showSelectProvinceDialog(customState);
-                                    })
-                                  : null,
-                              child: Container(
-                                height: 48,
-                                decoration: BoxDecoration(
-                                    border: Border.all(
-                                        width: 1,
-                                        color: Colors.grey.shade600
-                                            .withOpacity(0.5),
-                                        style: BorderStyle.solid),
-                                    borderRadius: BorderRadius.circular(5)),
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 10),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        selectedProvince?.provName ??
-                                            "Select Province",
-                                        style: textStyles.lato_regular(
-                                            fontSize: 17),
-                                      ),
-                                      Icon(
-                                        Icons.arrow_drop_down,
-                                        size: 22,
-                                        color: Colors.black,
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
+                )
+              : Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Container(
+                        // color: Colors.purple,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            TextField(
+                              style: textStyles.lato_regular(),
+                              enabled: selectedOwner != null,
+                              controller: windspeedCtlr,
+                              decoration: InputDecoration(
+                                  contentPadding: EdgeInsets.symmetric(
+                                      vertical: 0, horizontal: 10),
+                                  fillColor: Colors.white,
+                                  labelStyle: textStyles.lato_light(
+                                      color: Colors.black),
+                                  enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.grey.shade600
+                                              .withOpacity(0.5),
+                                          width: 1,
+                                          style: BorderStyle.solid)),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.grey.shade600,
+                                          width: 1,
+                                          style: BorderStyle.solid)),
+                                  border: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.grey.shade600
+                                              .withOpacity(0.5),
+                                          width: 1,
+                                          style: BorderStyle.solid)),
+                                  labelText: "Windspeed"),
                             ),
-                          ),
-                          SizedBox(
-                            width: 15,
-                          ),
-                          Expanded(
-                            child: InkWell(
-                              onTap: (selectedProvince != null)
-                                  ? (() async {
-                                      setState(() {
-                                        isLoadingMunicipalities = true;
-                                      });
-
-                                      List<Location> municipalitiesFromJSON =
-                                          await GetLocations().getLocations();
-                                      setState(() {
-                                        isLoadingMunicipalities = false;
-                                      });
-
-                                      municipalities = municipalitiesFromJSON
-                                          .where((municipality) =>
-                                              municipality.provID ==
-                                              selectedProvince!.provID)
-                                          .toList();
-
-                                      showSelectMunicipalityDialog(customState);
-                                    })
-                                  : null,
-                              child: Container(
-                                height: 48,
-                                decoration: BoxDecoration(
-                                    border: Border.all(
-                                        width: 1,
-                                        color: Colors.grey.shade600
-                                            .withOpacity(0.5),
-                                        style: BorderStyle.solid),
-                                    borderRadius: BorderRadius.circular(5)),
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 10),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        selectedMunicipality?.munName ??
-                                            'Select Municipality',
-                                        style: textStyles.lato_regular(
-                                            fontSize: 17),
-                                      ),
-                                      Icon(
-                                        Icons.arrow_drop_down,
-                                        size: 22,
-                                        color: Colors.black,
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
+                            SizedBox(
+                              height: 10,
                             ),
-                          )
-                        ],
+                            TextField(
+                              style: textStyles.lato_regular(),
+                              enabled: selectedOwner != null,
+                              controller: rainfall24Ctlr,
+                              decoration: InputDecoration(
+                                  contentPadding: EdgeInsets.symmetric(
+                                      vertical: 0, horizontal: 10),
+                                  fillColor: Colors.white,
+                                  labelStyle: textStyles.lato_light(
+                                      color: Colors.black),
+                                  enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.grey.shade600
+                                              .withOpacity(0.5),
+                                          width: 1,
+                                          style: BorderStyle.solid)),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.grey.shade600,
+                                          width: 1,
+                                          style: BorderStyle.solid)),
+                                  border: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.grey.shade600
+                                              .withOpacity(0.5),
+                                          width: 1,
+                                          style: BorderStyle.solid)),
+                                  labelText: "Rainfall (24H)"),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            TextField(
+                              style: textStyles.lato_regular(),
+                              enabled: selectedOwner != null,
+                              controller: rainfall6Ctlr,
+                              decoration: InputDecoration(
+                                  contentPadding: EdgeInsets.symmetric(
+                                      vertical: 0, horizontal: 10),
+                                  fillColor: Colors.white,
+                                  labelStyle: textStyles.lato_light(
+                                      color: Colors.black),
+                                  enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.grey.shade600
+                                              .withOpacity(0.5),
+                                          width: 1,
+                                          style: BorderStyle.solid)),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.grey.shade600,
+                                          width: 1,
+                                          style: BorderStyle.solid)),
+                                  border: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.grey.shade600
+                                              .withOpacity(0.5),
+                                          width: 1,
+                                          style: BorderStyle.solid)),
+                                  labelText: "Rainfall (6H)"),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            TextField(
+                              style: textStyles.lato_regular(),
+                              enabled: selectedOwner != null,
+                              controller: ricePriceCtlr,
+                              decoration: InputDecoration(
+                                  contentPadding: EdgeInsets.symmetric(
+                                      vertical: 0, horizontal: 10),
+                                  fillColor: Colors.white,
+                                  labelStyle: textStyles.lato_light(
+                                      color: Colors.black),
+                                  enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.grey.shade600
+                                              .withOpacity(0.5),
+                                          width: 1,
+                                          style: BorderStyle.solid)),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.grey.shade600,
+                                          width: 1,
+                                          style: BorderStyle.solid)),
+                                  border: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.grey.shade600
+                                              .withOpacity(0.5),
+                                          width: 1,
+                                          style: BorderStyle.solid)),
+                                  labelText: "Rice Price (per kilo)"),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            TextField(
+                              style: textStyles.lato_regular(),
+                              enabled: selectedOwner != null,
+                              controller: daysCountCtrlr,
+                              decoration: InputDecoration(
+                                  contentPadding: EdgeInsets.symmetric(
+                                      vertical: 0, horizontal: 10),
+                                  fillColor: Colors.white,
+                                  labelStyle: textStyles.lato_light(
+                                      color: Colors.black),
+                                  enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.grey.shade600
+                                              .withOpacity(0.5),
+                                          width: 1,
+                                          style: BorderStyle.solid)),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.grey.shade600,
+                                          width: 1,
+                                          style: BorderStyle.solid)),
+                                  border: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.grey.shade600
+                                              .withOpacity(0.5),
+                                          width: 1,
+                                          style: BorderStyle.solid)),
+                                  labelText: "Day Count"),
+                            ),
+                          ],
+                        ),
                       ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      InkWell(
-                        onTap: (selectedOwner != null)
-                            ? (() {
-                                showDistrackminOptions(customState);
-                              })
-                            : null,
-                        child: Container(
-                          height: 48,
-                          width: double.maxFinite,
-                          decoration: BoxDecoration(
-                              border: Border.all(
-                                  width: 1,
-                                  color: Colors.grey.shade600.withOpacity(0.5),
-                                  style: BorderStyle.solid),
-                              borderRadius: BorderRadius.circular(5)),
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 30),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.center,
+                    ),
+                    SizedBox(
+                      width: 15,
+                    ),
+                    Expanded(
+                      child: Container(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            TextField(
+                              style: textStyles.lato_regular(),
+                              enabled: selectedOwner != null,
+                              controller: riceAreaCtrlr,
+                              decoration: InputDecoration(
+                                  contentPadding: EdgeInsets.symmetric(
+                                      vertical: 0, horizontal: 10),
+                                  fillColor: Colors.white,
+                                  labelStyle: textStyles.lato_light(
+                                      color: Colors.black),
+                                  enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.grey.shade600
+                                              .withOpacity(0.5),
+                                          width: 1,
+                                          style: BorderStyle.solid)),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.grey.shade600,
+                                          width: 1,
+                                          style: BorderStyle.solid)),
+                                  border: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.grey.shade600
+                                              .withOpacity(0.5),
+                                          width: 1,
+                                          style: BorderStyle.solid)),
+                                  labelText: "Rice Area (ha)"),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            TextField(
+                              style: textStyles.lato_regular(),
+                              enabled: selectedOwner != null,
+                              controller: yieldCtrlr,
+                              decoration: InputDecoration(
+                                  contentPadding: EdgeInsets.symmetric(
+                                      vertical: 0, horizontal: 10),
+                                  fillColor: Colors.white,
+                                  labelStyle: textStyles.lato_light(
+                                      color: Colors.black),
+                                  enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.grey.shade600
+                                              .withOpacity(0.5),
+                                          width: 1,
+                                          style: BorderStyle.solid)),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.grey.shade600,
+                                          width: 1,
+                                          style: BorderStyle.solid)),
+                                  border: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.grey.shade600
+                                              .withOpacity(0.5),
+                                          width: 1,
+                                          style: BorderStyle.solid)),
+                                  labelText: "Yield (ton/ha)"),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Row(
                               children: [
-                                Text(
-                                  'Distance of Typhoon to Location',
-                                  style: textStyles.lato_regular(fontSize: 17),
+                                Expanded(
+                                  child: InkWell(
+                                    onTap: (selectedOwner != null)
+                                        ? (() async {
+                                            setState(() {
+                                              isLoadingProvinces = true;
+                                            });
+                                            List<Location> provincesFromJSON =
+                                                await GetLocations()
+                                                    .getLocations();
+                                            setState(() {
+                                              isLoadingProvinces = false;
+                                            });
+                                            provincesFromJSON.forEach((prov) =>
+                                                provinces.add(Location(
+                                                    provID: prov.provID,
+                                                    provName: prov.provName)));
+
+                                            provinces =
+                                                provinces.toSet().toList();
+
+                                            showSelectProvinceDialog(
+                                                customState);
+                                          })
+                                        : null,
+                                    child: Container(
+                                      height: 48,
+                                      decoration: BoxDecoration(
+                                          border: Border.all(
+                                              width: 1,
+                                              color: Colors.grey.shade600
+                                                  .withOpacity(0.5),
+                                              style: BorderStyle.solid),
+                                          borderRadius:
+                                              BorderRadius.circular(5)),
+                                      child: Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 10),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              selectedProvince?.provName ??
+                                                  "Select Province",
+                                              style: textStyles.lato_regular(
+                                                  fontSize: 17),
+                                            ),
+                                            Icon(
+                                              Icons.arrow_drop_down,
+                                              size: 22,
+                                              color: Colors.black,
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                                (distrackminfinal == null)
-                                    ? Icon(
-                                        Icons.arrow_drop_down,
-                                        size: 22,
-                                        color: Colors.black,
-                                      )
-                                    : Text(
-                                        '${distrackminfinal} km/h',
-                                        style: textStyles.lato_regular(
-                                            fontSize: 17),
-                                      )
+                                SizedBox(
+                                  width: 15,
+                                ),
+                                Expanded(
+                                  child: InkWell(
+                                    onTap: (selectedProvince != null)
+                                        ? (() async {
+                                            setState(() {
+                                              isLoadingMunicipalities = true;
+                                            });
+
+                                            List<Location>
+                                                municipalitiesFromJSON =
+                                                await GetLocations()
+                                                    .getLocations();
+                                            setState(() {
+                                              isLoadingMunicipalities = false;
+                                            });
+
+                                            municipalities =
+                                                municipalitiesFromJSON
+                                                    .where((municipality) =>
+                                                        municipality.provID ==
+                                                        selectedProvince!
+                                                            .provID)
+                                                    .toList();
+
+                                            showSelectMunicipalityDialog(
+                                                customState);
+                                          })
+                                        : null,
+                                    child: Container(
+                                      height: 48,
+                                      decoration: BoxDecoration(
+                                          border: Border.all(
+                                              width: 1,
+                                              color: Colors.grey.shade600
+                                                  .withOpacity(0.5),
+                                              style: BorderStyle.solid),
+                                          borderRadius:
+                                              BorderRadius.circular(5)),
+                                      child: Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 10),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              selectedMunicipality?.munName ??
+                                                  'Select Municipality',
+                                              style: textStyles.lato_regular(
+                                                  fontSize: 17),
+                                            ),
+                                            Icon(
+                                              Icons.arrow_drop_down,
+                                              size: 22,
+                                              color: Colors.black,
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                )
                               ],
                             ),
-                          ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            InkWell(
+                              onTap: (selectedOwner != null)
+                                  ? (() {
+                                      showDistrackminOptions(customState);
+                                    })
+                                  : null,
+                              child: Container(
+                                height: 48,
+                                width: double.maxFinite,
+                                decoration: BoxDecoration(
+                                    border: Border.all(
+                                        width: 1,
+                                        color: Colors.grey.shade600
+                                            .withOpacity(0.5),
+                                        style: BorderStyle.solid),
+                                    borderRadius: BorderRadius.circular(5)),
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 30),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        'Distance of Typhoon to Location',
+                                        style: textStyles.lato_regular(
+                                            fontSize: 17),
+                                      ),
+                                      (distrackminfinal == null)
+                                          ? Icon(
+                                              Icons.arrow_drop_down,
+                                              size: 22,
+                                              color: Colors.black,
+                                            )
+                                          : Text(
+                                              '${distrackminfinal} km/h',
+                                              style: textStyles.lato_regular(
+                                                  fontSize: 17),
+                                            )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            )
+                          ],
                         ),
-                      )
-                    ],
-                  ),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
-          ),
           SizedBox(
             height: 30,
           ),

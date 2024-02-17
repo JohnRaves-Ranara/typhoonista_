@@ -26,6 +26,7 @@ class _typhoon_forecastState extends State<typhoon_forecast> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             List<Owner> owners = snapshot.data!;
+            owners.sort((a, b) => DateTime.parse(b.dateRecorded!).compareTo(DateTime.parse(a.dateRecorded!)));
             print("REBUILD");
             return Row(children: [
               Expanded(
