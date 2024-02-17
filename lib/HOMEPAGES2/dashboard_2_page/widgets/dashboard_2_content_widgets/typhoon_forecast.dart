@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:typhoonista_thesis/HOMEPAGES2/entities2/new/Day.dart';
@@ -28,7 +29,7 @@ class _typhoon_forecastState extends State<typhoon_forecast> {
             print("REBUILD");
             return Row(children: [
               Expanded(
-                flex: 70,
+                flex: 60,
                 child: Container(
                   padding: EdgeInsets.all(20),
                   decoration: BoxDecoration(
@@ -63,8 +64,7 @@ class _typhoon_forecastState extends State<typhoon_forecast> {
                           children: [
                             //todo ibutang diri tong typhoon name og 6 day forecast shi
                             FutureBuilder<Typhoon?>(
-                                future:
-                                    FirestoreService2().getOngoingTyphoon(),
+                                future: FirestoreService2().getOngoingTyphoon(),
                                 builder: (context, snapshot) {
                                   if (snapshot.hasData) {
                                     Typhoon ongoingTyphoon = snapshot.data!;
@@ -108,16 +108,12 @@ class _typhoon_forecastState extends State<typhoon_forecast> {
                             ),
                             Expanded(child: Consumer<SampleProvider>(
                               builder: (context, prov, _) {
-                                Set<Owner> selectedOwners =
-                                    prov.selectedOwners;
+                                Set<Owner> selectedOwners = prov.selectedOwners;
                                 return SfCartesianChart(
-                                  
                                   trackballBehavior: TrackballBehavior(
+                                    
                                       enable: true,
-                                      activationMode:
-                                          ActivationMode.singleTap
-                                          ),
-                                  
+                                      activationMode: ActivationMode.singleTap),
                                   series: (selectedOwners.isEmpty)
                                       ? owners
                                           .map((owner) =>
@@ -136,15 +132,13 @@ class _typhoon_forecastState extends State<typhoon_forecast> {
                                                     "Day ${data.dayNum}",
                                                 yValueMapper: (Day data, _) =>
                                                     data.damageCost,
-                                                
                                               ))
                                           .toList()
                                       : selectedOwners
                                           .map((selectedOwner) =>
                                               AreaSeries<Day, String>(
                                                 animationDuration: 200,
-                                                dataSource:
-                                                    selectedOwner.days,
+                                                dataSource: selectedOwner.days,
                                                 color:
                                                     selectedOwner.colorMarker,
                                                 xValueMapper: (Day data, _) =>
@@ -154,10 +148,35 @@ class _typhoon_forecastState extends State<typhoon_forecast> {
                                               ))
                                           .toList(),
                                   primaryXAxis: CategoryAxis(
+                                    labelStyle: textStyles.lato_regular(),
                                     edgeLabelPlacement:
                                         EdgeLabelPlacement.shift,
                                     labelPlacement: LabelPlacement.onTicks,
                                   ),
+                                  // primaryYAxis: NumericAxis(
+                                  //   numberFormat:
+                                  //       NumberFormat.compact(locale: 'en'),
+                                  //   axisLabelFormatter:
+                                  //       (AxisLabelRenderDetails details) {
+                                  //     // Custom label formatting for millions and thousands
+                                  //     String label = details.text;
+                                  //     double value = double.parse(
+                                  //         details.value.toString());
+
+                                  //     if (value >= 1000000) {
+                                  //       // Format in millions
+                                  //       label =
+                                  //           '${(value / 1000000).toStringAsFixed(1)}M';
+                                  //     } else if (value >= 1000) {
+                                  //       // Format in thousands
+                                  //       label =
+                                  //           '${(value / 1000).toStringAsFixed(1)}K';
+                                  //     }
+
+                                  //     return ChartAxisLabel(
+                                  //         label, textStyles.lato_regular());
+                                  //   },
+                                  // ),
                                 );
                               },
                             ))
@@ -173,7 +192,7 @@ class _typhoon_forecastState extends State<typhoon_forecast> {
                 ),
               ),
               Expanded(
-                flex: 30,
+                flex: 40,
                 child: Container(
                   padding: EdgeInsets.all(20),
                   decoration: BoxDecoration(
@@ -211,14 +230,14 @@ class _typhoon_forecastState extends State<typhoon_forecast> {
                                                         owner);
                                                   }),
                                                   child: Icon(Icons
-                                                      .check_circle_outline))
+                                                      .visibility_outlined))
                                               : GestureDetector(
                                                   onTap: (() {
                                                     prov.removeSelectedOwner(
                                                         owner);
                                                   }),
                                                   child:
-                                                      Icon(Icons.check_circle)),
+                                                      Icon(Icons.visibility)),
                                         );
                                       },
                                     ),
@@ -240,6 +259,7 @@ class _typhoon_forecastState extends State<typhoon_forecast> {
                       ),
                       Spacer(),
                       Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: owners
                             .map(
                               (owner) => Padding(
@@ -254,12 +274,13 @@ class _typhoon_forecastState extends State<typhoon_forecast> {
                       ),
                       Spacer(),
                       Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
                         children: owners
                             .map(
                               (owner) => Padding(
                                 padding: const EdgeInsets.only(bottom: 10),
                                 child: Text(
-                                  owner.totalDamageCost.toString(),
+                                  "${NumberFormat('#,##0.00', 'en_US').format(owner.totalDamageCost)}",
                                   style: textStyles.lato_light(fontSize: 16),
                                 ),
                               ),

@@ -142,17 +142,19 @@ class FirestoreService2 {
         await provinceColRef.doc(provinceID).get();
     //if it does not exist, add it to db.
     if (!provinceDocSnapshot.exists) {
-      String id = uuid.v1();
-      DocumentReference provDocRef = provinceColRef.doc(id);
+      print("WALA PA GA EXIST ANG NAPILI NGA PROVINCE");
+      DocumentReference provDocRef = provinceColRef.doc(provinceID);
       await provDocRef.set({
         'color': getColorRGBList(),
-        'id': id,
+        'id': provinceID,
         'provName': provName,
         'totalDamageCost': 0, //to be updated later if ma add na ang days
         'typhoonID': ongoingTyphoonID
       });
-    } else {
-      //check if municipality with given munID already exists
+      print("ADDED NA ANG PROVINCE");
+    } 
+
+    //check if municipality with given munID already exists
       CollectionReference munColRef = userRef
           .collection('typhoons')
           .doc(ongoingTyphoonID)
@@ -163,18 +165,18 @@ class FirestoreService2 {
           await provinceColRef.doc(municipalityID).get();
       //if it does not exist, add it to db.
       if (!munDocSnapshot.exists) {
-        String id = uuid.v1();
-        DocumentReference munDocRef = munColRef.doc(id);
+        print("WALA PA GA EXIST ANG NAPILI NGA MUNICIPALITY");
+        DocumentReference munDocRef = munColRef.doc(municipalityID);
         await munDocRef.set({
           'color': getColorRGBList(),
-          'id': id,
+          'id': municipalityID,
           'munName': munName,
           'provinceID': provinceID,
           'totalDamageCost': 0, //to be updated later if ma add na ang days
           'typhoonID': ongoingTyphoonID
         });
+        print("NA ADD NA ANG MUNICIPALITY");
       }
-    }
 
     //ownerColRef
     CollectionReference ownerColRef = userRef
@@ -246,7 +248,7 @@ class FirestoreService2 {
       "provName": provName,
       "provinceID": provinceID,
       "totalDamageCost": totalDamageCost,
-      "typhoonID": ongoingTyphoon,
+      "typhoonID": ongoingTyphoonID,
     });
 
     for (Day day in forecast) {
@@ -256,7 +258,7 @@ class FirestoreService2 {
           .doc(ongoingTyphoonID)
           .collection('provinces')
           .doc(provinceID)
-          .collection('municipal	ities')
+          .collection('municipalities')
           .doc(municipalityID)
           .collection('owners')
           .doc(ownerID)

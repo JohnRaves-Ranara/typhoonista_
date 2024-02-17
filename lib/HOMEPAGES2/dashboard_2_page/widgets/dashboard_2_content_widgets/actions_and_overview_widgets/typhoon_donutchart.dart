@@ -151,7 +151,7 @@ class _typhoon_donutchartState extends State<typhoon_donutchart> {
                                                               style: textStyles
                                                                   .lato_light(
                                                                       fontSize:
-                                                                          16),
+                                                                          14),
                                                             ),
                                                             SizedBox(
                                                               width: 10,
@@ -180,7 +180,7 @@ class _typhoon_donutchartState extends State<typhoon_donutchart> {
                                                               style: textStyles
                                                                   .lato_light(
                                                                       fontSize:
-                                                                          16),
+                                                                          14),
                                                             ),
                                                           ],
                                                         ),
@@ -302,7 +302,7 @@ class _typhoon_donutchartState extends State<typhoon_donutchart> {
                                                               style: textStyles
                                                                   .lato_light(
                                                                       fontSize:
-                                                                          16),
+                                                                          14),
                                                             ),
                                                             SizedBox(
                                                               width: 10,
@@ -330,7 +330,7 @@ class _typhoon_donutchartState extends State<typhoon_donutchart> {
                                                               style: textStyles
                                                                   .lato_light(
                                                                       fontSize:
-                                                                          16),
+                                                                          14),
                                                             ),
                                                           ],
                                                         ),

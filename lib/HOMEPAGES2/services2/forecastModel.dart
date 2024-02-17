@@ -48,6 +48,7 @@ class forecastModel{
     );
 
     for (int day = 2; day <= days; day++) {
+      
       var windspeed_input = {
         "features": [
           next_rf24,
@@ -123,7 +124,7 @@ class forecastModel{
 
       dayDamages.add(
         Day(
-          damageCost: predicted_cost,
+          damageCost: next_day_cost,
         windSpeed: next_ws,
         rainfall24: next_rf24,
         rainfall6: next_rf6,
@@ -138,6 +139,12 @@ class forecastModel{
 
       predicted_cost = next_day_cost;
     }
+
+    //round off all damages to 2 decimals
+
+    dayDamages.forEach((day) {
+      day.damageCost = double.parse(day.damageCost!.toStringAsFixed(2));
+     });
 
     return dayDamages;
   }

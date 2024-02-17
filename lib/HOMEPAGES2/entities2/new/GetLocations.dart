@@ -23,8 +23,8 @@ class GetLocations{
   // Map to List<Location>
   List<Location> locations = features.map((feature) {
     return Location(
-      provID: feature['properties']['ID_1'],
-      munID: feature['properties']['ID_2'],
+      provID: feature['properties']['ID_1'].toString(),
+      munID: feature['properties']['ID_2'].toString(),
       provName: feature['properties']['NAME_1'],
       munName: feature['properties']['NAME_2'],
     );

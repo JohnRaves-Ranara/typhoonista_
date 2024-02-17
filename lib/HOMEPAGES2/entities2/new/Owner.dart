@@ -13,6 +13,7 @@ class Owner {
   double totalDamageCost;
   List<Day> days = [];
   Color colorMarker;
+  String? dateRecorded;
 
   Owner({
     required this.id,
@@ -24,6 +25,7 @@ class Owner {
     required this.ownerName,
     required this.totalDamageCost,
     required this.colorMarker,
+    this.dateRecorded
   });
 
   @override
@@ -39,7 +41,8 @@ class Owner {
           totalDamageCost == other.totalDamageCost &&
           colorMarker == other.colorMarker &&
           munName == other.munName &&
-          provName == other.provName
+          provName == other.provName &&
+          dateRecorded == other.dateRecorded
           
           ;
 
@@ -53,7 +56,9 @@ class Owner {
       totalDamageCost.hashCode ^
       colorMarker.hashCode ^
       munName.hashCode ^
-      provName.hashCode;
+      provName.hashCode ^
+      dateRecorded.hashCode
+      ;
 
   Map<String, dynamic> toJson() => {
         "id": id,
@@ -75,6 +80,7 @@ class Owner {
         typhoonID: json["typhoonID"],
         munName: json['munName'],
         provName: json['provName'],
+        dateRecorded: json["dateRecorded"],
         colorMarker: Color.fromARGB(
             255, json["color"][0], json["color"][1], json["color"][2]).withOpacity(0.3));
   }

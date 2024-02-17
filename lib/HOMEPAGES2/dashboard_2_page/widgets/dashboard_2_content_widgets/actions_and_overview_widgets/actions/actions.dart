@@ -10,6 +10,7 @@ import 'package:typhoonista_thesis/entities/Location_.dart';
 import 'package:typhoonista_thesis/entities/TyphoonDay.dart';
 import 'package:typhoonista_thesis/services/locations_.dart';
 
+
 class actions extends StatefulWidget {
   const actions({super.key});
 
@@ -29,8 +30,6 @@ class _actionsState extends State<actions> {
   String selectedLocationProvname = "";
   TyphoonDay? newlyAddedDayInformation;
 
-  List<Location_> locs = Locations_().getLocations();
-  List<Location_> suggestions = [];
   @override
   Widget build(BuildContext context) {
     return Expanded(

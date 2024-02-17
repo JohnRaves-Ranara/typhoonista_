@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:typhoonista_thesis/HOMEPAGES2/entities2/new/Typhoon.dart';
 import 'package:typhoonista_thesis/HOMEPAGES2/services2/FirestoreService2.dart';
 import 'package:typhoonista_thesis/assets/themes/textStyles.dart';
 
@@ -17,83 +18,130 @@ class _add_typhoonState extends State<add_typhoon> {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-        child: InkWell(
-      onTap: (() {
-        showDialog(
-            // barrierDismissible: false,
-            //todo barrierdismissable, add close button, and when clost button is clicked, clear selectedloc.
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                backgroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)),
-                content: StatefulBuilder(
-                  builder: (context, customState) {
-                    return Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20)),
-                            width:
-                                // (isEstimationSuccess)
-                                //     ? MediaQuery.of(context).size.width * 0.4
-                                //     :
-                                MediaQuery.of(context).size.width * 0.5,
-                            child:
-                                // (isFetchingPrediction)
-                                //     ? fetchingPrediction()
-                                //     : (isAddingTyphoon)
-                                //         ? addingToDatabase()
-                                //         : (isEstimationError)
-                                //             ? estimationError(
-                                //                 errorMessage!, customState)
-                                //             : (isEstimationSuccess)
-                                //                 ? Information(customState)
-                                //                 :
-                                add_typhoon(
-                                    // recentEstimation,
-                                    )),
-                      ],
-                    );
-                  },
+        child: StreamBuilder<Typhoon>(
+          stream: FirestoreService2().streamOngoingTyphoon(),
+          builder: (context, snapshot) {
+            if(!snapshot.hasData){
+              return InkWell(
+                  onTap: (() {
+            showDialog(
+                // barrierDismissible: false,
+                //todo barrierdismissable, add close button, and when clost button is clicked, clear selectedloc.
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    backgroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                    content: StatefulBuilder(
+                      builder: (context, customState) {
+                        return Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20)),
+                                width:
+                                    // (isEstimationSuccess)
+                                    //     ? 
+                                    MediaQuery.of(context).size.width * 0.4,
+                                    //     :
+                                    // MediaQuery.of(context).size.width * 0.5,
+                                child:
+                                    // (isFetchingPrediction)
+                                    //     ? fetchingPrediction()
+                                    //     : (isAddingTyphoon)
+                                    //         ? addingToDatabase()
+                                    //         : (isEstimationError)
+                                    //             ? estimationError(
+                                    //                 errorMessage!, customState)
+                                    //             : (isEstimationSuccess)
+                                    //                 ? Information(customState)
+                                    //                 :
+                                    add_typhoon(
+                                        // recentEstimation,
+                                        )),
+                          ],
+                        );
+                      },
+                    ),
+                  );
+                });
+                  }),
+                  child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Container(
+                    // color: Colors.red,
+                    child: Image.asset(
+                  'lib/assets/images/basil_add-outline.png',
+                  height: 24,
+                )),
+                Text(
+                  'Add Typhoon',
+                  style: textStyles.lato_bold(fontSize: 16),
                 ),
-              );
-            });
-      }),
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 20),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Container(
-                // color: Colors.red,
-                child: Image.asset(
-              'lib/assets/images/basil_add-outline.png',
-              height: 24,
-            )),
-            Text(
-              'Add Typhoon',
-              style: textStyles.lato_bold(fontSize: 16),
+              ],
             ),
-          ],
-        ),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.2),
-              offset: Offset(0, 3),
-              blurRadius: 2,
-              spreadRadius: 1,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  offset: Offset(0, 3),
+                  blurRadius: 2,
+                  spreadRadius: 1,
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
-    ));
+                  ),
+                );
+            }else if(snapshot.connectionState == ConnectionState.waiting){
+              return Center(child: CircularProgressIndicator(),);
+            } 
+            
+            else {
+              return InkWell(
+                  onTap: null,
+                  child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Container(
+                    // color: Colors.red,
+                    child: Image.asset(
+                  'lib/assets/images/basil_add-outline.png',
+                  height: 24,
+                )),
+                Text(
+                  'Add Typhoon',
+                  style: textStyles.lato_bold(fontSize: 16),
+                ),
+              ],
+            ),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: Colors.grey[300],
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  offset: Offset(0, 3),
+                  blurRadius: 2,
+                  spreadRadius: 1,
+                ),
+              ],
+            ),
+                  ),
+                );
+            }
+          }
+        ));
   }
 
   Widget add_typhoon(
