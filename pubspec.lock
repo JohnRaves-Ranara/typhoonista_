@@ -557,6 +557,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.3.3"
+  vector_map:
+    dependency: "direct main"
+    description:
+      name: vector_map
+      sha256: "48a43835af6ece07b162fd1e3412fbf2533e6fce5487ea2e58225b80f22c56e0"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.7.0"
   vector_math:
     dependency: transitive
     description:

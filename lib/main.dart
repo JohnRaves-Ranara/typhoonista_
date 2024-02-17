@@ -60,7 +60,7 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
-        home: Home_2(),
+        home: test6(),
         // home: Consumer<page_provider>(
         //   builder: (context, prov, child){
         //     if(prov.mainpage == 0){

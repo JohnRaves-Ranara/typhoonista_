@@ -52,6 +52,7 @@ dependencies:
   flutter_spinkit: ^5.2.0
   dropdown_button2: ^2.3.9
   syncfusion_flutter_maps: ^24.2.6
+  vector_map: ^0.7.0
 
 dev_dependencies:
   flutter_test:
@@ -76,7 +77,9 @@ flutter:
   uses-material-design: true
   assets:
     - lib/assets/images/
-    - lib/MuniCities.minimal.json
+    - lib\services\MuniCities.minimal.json
+    - lib\philippines-with-regions_ (2).geojson
+
 
   fonts:
     - family: lato_black

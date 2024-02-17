@@ -1,18 +1,24 @@
 
 import 'dart:io';
 import 'dart:convert';
+import 'package:flutter/services.dart';
+
 import 'Location.dart';
+import 'package:http/http.dart' as http;
 
 class GetLocations{
 
-  List<Location> getLocations(){
-  String geojsonData = File('lib/MuniCities.minimal.json').readAsStringSync();
+  Future<List<Location>> getLocations()async{
+  // String geojsonData = File('lib/services/MuniCities.minimal.json').readAsStringSync();
 
-  // Parse JSON
-  Map<String, dynamic> jsonData = json.decode(geojsonData);
+  // // Parse JSON
+  // Map<String, dynamic> jsonData = json.decode(geojsonData);
+
+  final String response = await rootBundle.loadString('lib/services/MuniCities.minimal.json');
+  Map<String,dynamic> data = await json.decode(response);
 
   // Extract "features" array
-  List<dynamic> features = jsonData['features'];
+  List<dynamic> features = data['features'];
 
   // Map to List<Location>
   List<Location> locations = features.map((feature) {
