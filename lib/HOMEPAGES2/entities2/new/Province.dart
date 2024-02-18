@@ -32,7 +32,7 @@ class Province{
       provName: json["provName"],
       totalDamageCost: json["totalDamageCost"],
       typhoonID: json["typhoonID"],
-      colorMarker: Color.fromRGBO(255, json["color"][0], json["color"][1],  json["color"][2])
+      colorMarker: Color.fromARGB(255, json["color"][0], json["color"][1],  json["color"][2])
     );
   }
 

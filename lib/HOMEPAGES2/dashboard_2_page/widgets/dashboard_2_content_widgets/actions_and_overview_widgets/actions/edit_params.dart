@@ -23,7 +23,6 @@ class _edit_paramsState extends State<edit_params> {
   final manualDistanceCtrlr = TextEditingController();
   final riceAreaCtrlr = TextEditingController();
   final yieldCtrlr = TextEditingController();
-  final distanceCtrlr = TextEditingController();
   String? distrackminfinal;
   bool isFetchingPrediction = false;
   final daysCountCtrlr = TextEditingController();
@@ -132,7 +131,7 @@ class _edit_paramsState extends State<edit_params> {
         const SpinKitSpinningLines(lineWidth: 4, size: 150, color: Colors.blue),
         SizedBox(height: 60),
         Text(
-          'Estimating.',
+          'Updating Estimation.',
           style: textStyles.lato_bold(
               fontSize: 22, color: Colors.black.withOpacity(0.4)),
         ),
@@ -173,15 +172,22 @@ class _edit_paramsState extends State<edit_params> {
     selectedOwner = owner;
     List<Day> allDaysOfSelectedOwner = await FirestoreService2().getAllDays(
         owner.typhoonID!, owner.provinceID!, owner.municipalityID!, owner.id);
-    Day selectedOwnerDay1 = allDaysOfSelectedOwner.firstWhere((day) => day.dayNum==1);
-    int totalNumberOfDays = allDaysOfSelectedOwner.length;
+    Day selectedOwnerDay1 =
+        allDaysOfSelectedOwner.firstWhere((day) => day.dayNum == 1);
+
+    //DAY
     windspeedCtlr.text = selectedOwnerDay1.windSpeed.toString();
     rainfall24Ctlr.text = selectedOwnerDay1.rainfall24.toString();
     rainfall6Ctlr.text = selectedOwnerDay1.rainfall6.toString();
     ricePriceCtlr.text = selectedOwnerDay1.ricePrice.toString();
-    daysCountCtrlr.text = totalNumberOfDays.toString();
     riceAreaCtrlr.text = selectedOwnerDay1.riceArea.toString();
     yieldCtrlr.text = selectedOwnerDay1.riceYield.toString();
+    distrackminfinal = selectedOwnerDay1.distance.toString();
+    manualDistanceCtrlr.text = distrackminfinal!;
+
+    //OWNER
+    int totalNumberOfDays = allDaysOfSelectedOwner.length;
+    daysCountCtrlr.text = totalNumberOfDays.toString();
     selectedProvince = Location(
         provID: owner.provinceID,
         provName: owner.provName,
@@ -192,7 +198,7 @@ class _edit_paramsState extends State<edit_params> {
         provName: owner.provName,
         munID: owner.municipalityID,
         munName: owner.munName);
-    distrackminfinal = selectedOwnerDay1.distance.toString();
+
     customState(() {
       isSettingSelectedOwner = false;
     });
@@ -263,7 +269,8 @@ class _edit_paramsState extends State<edit_params> {
                                                   onSelectChanged:
                                                       (isSelected) {
                                                     customState(() {
-                                                      _setSelectedOwner(customState, owner);
+                                                      _setSelectedOwner(
+                                                          customState, owner);
                                                       Navigator.pop(context);
                                                     });
                                                   },
@@ -510,38 +517,6 @@ class _edit_paramsState extends State<edit_params> {
                                           style: BorderStyle.solid)),
                                   labelText: "Rice Price (per kilo)"),
                             ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            TextField(
-                              style: textStyles.lato_regular(),
-                              enabled: selectedOwner != null,
-                              controller: daysCountCtrlr,
-                              decoration: InputDecoration(
-                                  contentPadding: EdgeInsets.symmetric(
-                                      vertical: 0, horizontal: 10),
-                                  fillColor: Colors.white,
-                                  labelStyle: textStyles.lato_light(
-                                      color: Colors.black),
-                                  enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          color: Colors.grey.shade600
-                                              .withOpacity(0.5),
-                                          width: 1,
-                                          style: BorderStyle.solid)),
-                                  focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          color: Colors.grey.shade600,
-                                          width: 1,
-                                          style: BorderStyle.solid)),
-                                  border: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          color: Colors.grey.shade600
-                                              .withOpacity(0.5),
-                                          width: 1,
-                                          style: BorderStyle.solid)),
-                                  labelText: "Day Count"),
-                            ),
                           ],
                         ),
                       ),
@@ -618,141 +593,6 @@ class _edit_paramsState extends State<edit_params> {
                             SizedBox(
                               height: 10,
                             ),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: InkWell(
-                                    onTap: (selectedOwner != null)
-                                        ? (() async {
-                                            setState(() {
-                                              isLoadingProvinces = true;
-                                            });
-                                            List<Location> provincesFromJSON =
-                                                await GetLocations()
-                                                    .getLocations();
-                                            setState(() {
-                                              isLoadingProvinces = false;
-                                            });
-                                            provincesFromJSON.forEach((prov) =>
-                                                provinces.add(Location(
-                                                    provID: prov.provID,
-                                                    provName: prov.provName)));
-
-                                            provinces =
-                                                provinces.toSet().toList();
-
-                                            showSelectProvinceDialog(
-                                                customState);
-                                          })
-                                        : null,
-                                    child: Container(
-                                      height: 48,
-                                      decoration: BoxDecoration(
-                                          border: Border.all(
-                                              width: 1,
-                                              color: Colors.grey.shade600
-                                                  .withOpacity(0.5),
-                                              style: BorderStyle.solid),
-                                          borderRadius:
-                                              BorderRadius.circular(5)),
-                                      child: Padding(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 10),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            Text(
-                                              selectedProvince?.provName ??
-                                                  "Select Province",
-                                              style: textStyles.lato_regular(
-                                                  fontSize: 17),
-                                            ),
-                                            Icon(
-                                              Icons.arrow_drop_down,
-                                              size: 22,
-                                              color: Colors.black,
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 15,
-                                ),
-                                Expanded(
-                                  child: InkWell(
-                                    onTap: (selectedProvince != null)
-                                        ? (() async {
-                                            setState(() {
-                                              isLoadingMunicipalities = true;
-                                            });
-
-                                            List<Location>
-                                                municipalitiesFromJSON =
-                                                await GetLocations()
-                                                    .getLocations();
-                                            setState(() {
-                                              isLoadingMunicipalities = false;
-                                            });
-
-                                            municipalities =
-                                                municipalitiesFromJSON
-                                                    .where((municipality) =>
-                                                        municipality.provID ==
-                                                        selectedProvince!
-                                                            .provID)
-                                                    .toList();
-
-                                            showSelectMunicipalityDialog(
-                                                customState);
-                                          })
-                                        : null,
-                                    child: Container(
-                                      height: 48,
-                                      decoration: BoxDecoration(
-                                          border: Border.all(
-                                              width: 1,
-                                              color: Colors.grey.shade600
-                                                  .withOpacity(0.5),
-                                              style: BorderStyle.solid),
-                                          borderRadius:
-                                              BorderRadius.circular(5)),
-                                      child: Padding(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 10),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            Text(
-                                              selectedMunicipality?.munName ??
-                                                  'Select Municipality',
-                                              style: textStyles.lato_regular(
-                                                  fontSize: 17),
-                                            ),
-                                            Icon(
-                                              Icons.arrow_drop_down,
-                                              size: 22,
-                                              color: Colors.black,
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
                             InkWell(
                               onTap: (selectedOwner != null)
                                   ? (() {
@@ -770,7 +610,7 @@ class _edit_paramsState extends State<edit_params> {
                                         style: BorderStyle.solid),
                                     borderRadius: BorderRadius.circular(5)),
                                 child: Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 30),
+                                  padding: EdgeInsets.symmetric(horizontal: 10),
                                   child: Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
@@ -797,7 +637,37 @@ class _edit_paramsState extends State<edit_params> {
                                   ),
                                 ),
                               ),
-                            )
+                            ),
+                            SizedBox(height: 10),
+                            TextField(
+                              style: textStyles.lato_regular(),
+                              enabled: selectedOwner != null,
+                              controller: daysCountCtrlr,
+                              decoration: InputDecoration(
+                                  contentPadding: EdgeInsets.symmetric(
+                                      vertical: 0, horizontal: 10),
+                                  fillColor: Colors.white,
+                                  labelStyle: textStyles.lato_light(
+                                      color: Colors.black),
+                                  enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.grey.shade600
+                                              .withOpacity(0.5),
+                                          width: 1,
+                                          style: BorderStyle.solid)),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.grey.shade600,
+                                          width: 1,
+                                          style: BorderStyle.solid)),
+                                  border: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.grey.shade600
+                                              .withOpacity(0.5),
+                                          width: 1,
+                                          style: BorderStyle.solid)),
+                                  labelText: "Day Count"),
+                            ),
                           ],
                         ),
                       ),
@@ -815,29 +685,28 @@ class _edit_paramsState extends State<edit_params> {
                 borderRadius: BorderRadius.circular(8),
                 onTap: (selectedOwner != null)
                     ? (() async {
-                        // customState(() {
-                        //   isFetchingPrediction = true;
-                        //   print("FETCHING PREDICTION START");
-                        // });
-                        // await FirestoreService2().addOwner(
-                        //   selectedProvince!.provID,
-                        //   selectedMunicipality!.munID,
-                        //   selectedProvince!.provName,
-                        //   selectedMunicipality!.munName,
-                        //   double.parse(windspeedCtlr.text.trim()),
-                        //   double.parse(rainfall24Ctlr.text.trim()),
-                        //   double.parse(rainfall6Ctlr.text.trim()),
-                        //   double.parse(ricePriceCtlr.text.trim()),
-                        //   double.parse(riceAreaCtrlr.text.trim()),
-                        //   double.parse(yieldCtrlr.text.trim()),
-                        //   double.parse(distrackminfinal!),
-                        //   int.parse(daysCountCtrlr.text.trim())
-                        //   );
-                        // customState(() {
-                        //   isFetchingPrediction = false;
-                        //   print("FETCHED PREDICTION FINISHED");
-                        // });
-                        // Navigator.pop(context);
+                        customState(() {
+                          isFetchingPrediction = true;
+                        });
+
+                        await FirestoreService2().addOwner(
+                            selectedOwner,
+                            selectedProvince!.provID,
+                            selectedMunicipality!.munID,
+                            selectedProvince!.provName,
+                            selectedMunicipality!.munName,
+                            double.parse(windspeedCtlr.text.trim()),
+                            double.parse(rainfall24Ctlr.text.trim()),
+                            double.parse(rainfall6Ctlr.text.trim()),
+                            double.parse(ricePriceCtlr.text.trim()),
+                            double.parse(riceAreaCtrlr.text.trim()),
+                            double.parse(yieldCtrlr.text.trim()),
+                            double.parse(distrackminfinal!),
+                            int.parse(daysCountCtrlr.text.trim()));
+                        customState(() {
+                          isFetchingPrediction = false;
+                        });
+                        Navigator.pop(context);
                       })
                     : null,
                 child: Ink(

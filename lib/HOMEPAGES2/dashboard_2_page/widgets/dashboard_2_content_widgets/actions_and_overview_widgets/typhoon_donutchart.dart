@@ -57,140 +57,187 @@ class _typhoon_donutchartState extends State<typhoon_donutchart> {
                                 damagePercentages[i];
                           }
                           return Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Container(
-                                  // color: Colors.amber,
-                                  child: SfCircularChart(
-                                    tooltipBehavior: TooltipBehavior(
-                                        enable: true,
-                                        activationMode:
-                                            ActivationMode.longPress,
-                                        animationDuration: 100),
-                                    series: <CircularSeries>[
-                                      DoughnutSeries<Municipality, String>(
-                                        dataLabelSettings:
-                                            DataLabelSettings(
-                                          textStyle: textStyles
-                                              .lato_regular(fontSize: 12),
-                                          isVisible: true,
-                                          margin: EdgeInsets.zero,
-                                          connectorLineSettings:
-                                              ConnectorLineSettings(
-                                                  length: '20%',
-                                                  type:
-                                                      ConnectorType.curve),
-                                          labelPosition:
-                                              ChartDataLabelPosition
-                                                  .outside,
-                                          overflowMode: OverflowMode.shift,
-                                          labelIntersectAction:
-                                              LabelIntersectAction.shift,
-                                        ),
-                                        dataLabelMapper: (Municipality data,
-                                                _) =>
-                                            "₱ ${NumberFormat('#,##0.00', 'en_US').format(data.totalDamageCost)}",
-                                        pointColorMapper:
-                                            (Municipality data, _) =>
-                                                data.colorMarker,
-                                        dataSource: municipalities,
-                                        xValueMapper:
-                                            (Municipality data, _) =>
-                                                data.munName,
-                                        yValueMapper:
-                                            (Municipality data, _) =>
-                                                data.totalDamageCost,
-                                      )
-                                    ],
+                                children: [
+                                Expanded(
+                                  flex: 60,
+                                  child: Container(
+                                    child: SfCircularChart(
+                                      tooltipBehavior: TooltipBehavior(
+                                          enable: true,
+                                          activationMode:
+                                              ActivationMode.longPress,
+                                          animationDuration: 100),
+                                      series: <CircularSeries>[
+                                        DoughnutSeries<Municipality, String>(
+                                          dataLabelSettings: DataLabelSettings(
+                                            textStyle: textStyles.lato_regular(
+                                                fontSize: 12),
+                                            isVisible: true,
+                                            margin: EdgeInsets.zero,
+                                            // connectorLineSettings:
+                                            //     ConnectorLineSettings(
+                                            //         length: '20%',
+                                            //         type:
+                                            //             ConnectorType.curve),
+                                            labelPosition:
+                                                ChartDataLabelPosition.outside,
+                                            overflowMode: OverflowMode.shift,
+                                            labelIntersectAction:
+                                                LabelIntersectAction.shift,
+                                          ),
+                                          dataLabelMapper: (Municipality data,
+                                                  _) =>
+                                              "₱ ${NumberFormat('#,##0.00', 'en_US').format(data.totalDamageCost)}",
+                                          pointColorMapper:
+                                              (Municipality data, _) =>
+                                                  data.colorMarker,
+                                          dataSource: municipalities,
+                                          xValueMapper: (Municipality data, _) =>
+                                              data.munName,
+                                          yValueMapper: (Municipality data, _) =>
+                                              data.totalDamageCost,
+                                        )
+                                      ],
+                                    ),
                                   ),
                                 ),
-                                Container(
-                                  // color: Colors.blue,
-                                  child: Column(
-                                    children: [
-                                      Text(
-                                        'Total Damage Cost\nto Rice Crops\n(Municipal)',
-                                        textAlign: TextAlign.center,
-                                        style: textStyles.lato_bold(
-                                            fontSize: 18),
-                                      ),
-                                      SizedBox(
-                                        height: 30,
-                                      ),
-                                      SingleChildScrollView(
-                                        scrollDirection: Axis.vertical,
-                                        child: Row(
-                                          children: [
-                                            Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: municipalities
-                                                  .map((municipality) =>
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .only(
-                                                                bottom: 5),
-                                                        child: Row(
-                                                          children: [
-                                                            CircleAvatar(
-                                                              radius: 10,
-                                                              backgroundColor:
-                                                                  municipality
-                                                                      .colorMarker,
-                                                            ),
-                                                            SizedBox(
-                                                              width: 10,
-                                                            ),
-                                                            Text(
-                                                              municipality
-                                                                  .munName,
-                                                              style: textStyles
-                                                                  .lato_light(
-                                                                      fontSize:
-                                                                          14),
-                                                            ),
-                                                            SizedBox(
-                                                              width: 10,
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ))
-                                                  .toList(),
-                                            ),
-                                            Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: municipalities
-                                                  .map((municipality) =>
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .only(
-                                                                bottom: 5),
-                                                        child: Row(
-                                                          children: [
-                                                            Text(
-                                                              '${municipality.damageCostInPercentage}%',
-                                                              style: textStyles
-                                                                  .lato_light(
-                                                                      fontSize:
-                                                                          14),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ))
-                                                  .toList(),
-                                            ),
-                                          ],
+                                Expanded(
+                                  flex: 40,
+                                  child: Container(
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          'Total Damage Cost\nto Rice Crops',
+                                          textAlign: TextAlign.center,
+                                          style:
+                                              textStyles.lato_bold(fontSize: 18),
                                         ),
-                                      )
-                                    ],
+                                        SizedBox(height: 10,),
+                                        Container(
+                                          height: 30,
+                                          width: 130,
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(5),
+                                              color: Colors.white,
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.black
+                                                      .withOpacity(0.2),
+                                                  offset: Offset(0, 3),
+                                                  blurRadius: 2,
+                                                  spreadRadius: 1,
+                                                ),
+                                              ]),
+                                          child: DropdownButtonHideUnderline(
+                                            child: DropdownButton2<String>(
+                                              isExpanded: true,
+                                              iconStyleData:
+                                                  IconStyleData(iconSize: 20),
+                                              items: options
+                                                  .map((opt) =>
+                                                      DropdownMenuItem<String>(
+                                                        child: Text(
+                                                          opt,
+                                                          style: textStyles
+                                                              .lato_regular(
+                                                                  fontSize: 13),
+                                                        ),
+                                                        value: opt,
+                                                      ))
+                                                  .toList(),
+                                              value: selectedOption,
+                                              onChanged: (newOption) {
+                                                setState(() {
+                                                  selectedOption = newOption!;
+                                                });
+                                              },
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          height: 30,
+                                        ),
+                                        SingleChildScrollView(
+                                          scrollDirection: Axis.vertical,
+                                          child: Container(
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: municipalities
+                                                      .map(
+                                                          (municipality) => Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                        .only(
+                                                                        bottom: 5),
+                                                                child: Row(
+                                                                  children: [
+                                                                    CircleAvatar(
+                                                                      radius: 8,
+                                                                      backgroundColor:
+                                                                          municipality
+                                                                              .colorMarker,
+                                                                    ),
+                                                                    SizedBox(
+                                                                      width: 10,
+                                                                    ),
+                                                                    Text(
+                                                                      municipality
+                                                                          .munName,
+                                                                      overflow: TextOverflow.ellipsis,
+                                                                      style: textStyles
+                                                                          .lato_light(
+                                                                              fontSize:
+                                                                                  14),
+                                                                    ),
+                                                                    SizedBox(
+                                                                      width: 10,
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ))
+                                                      .toList(),
+                                                ),
+                                                Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: municipalities
+                                                      .map(
+                                                          (municipality) => Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                        .only(
+                                                                        bottom: 5),
+                                                                child: Row(
+                                                                  children: [
+                                                                    Text(
+                                                                      '${municipality.damageCostInPercentage}%',
+                                                                      style: textStyles
+                                                                          .lato_light(
+                                                                              fontSize:
+                                                                                  14),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ))
+                                                      .toList(),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        )
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ]);
@@ -213,134 +260,181 @@ class _typhoon_donutchartState extends State<typhoon_donutchart> {
                                 damagePercentages[i];
                           }
                           return Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.spaceEvenly,
                               children: [
-                                Container(
-                                  // color: Colors.amber,
-                                  child: SfCircularChart(
-                                    tooltipBehavior: TooltipBehavior(
-                                        enable: true,
-                                        activationMode:
-                                            ActivationMode.longPress,
-                                        animationDuration: 100),
-                                    series: <CircularSeries>[
-                                      DoughnutSeries<Province, String>(
-                                        dataLabelSettings:
-                                            DataLabelSettings(
-                                          textStyle: textStyles
-                                              .lato_regular(fontSize: 12),
-                                          isVisible: true,
-                                          margin: EdgeInsets.zero,
-                                          connectorLineSettings:
-                                              ConnectorLineSettings(
-                                                  length: '20%',
-                                                  type:
-                                                      ConnectorType.curve),
-                                          labelPosition:
-                                              ChartDataLabelPosition
-                                                  .outside,
-                                          overflowMode: OverflowMode.shift,
-                                          labelIntersectAction:
-                                              LabelIntersectAction.shift,
-                                        ),
-                                        dataLabelMapper: (Province data,
-                                                _) =>
-                                            "₱ ${NumberFormat('#,##0.00', 'en_US').format(data.totalDamageCost)}",
-                                        pointColorMapper:
-                                            (Province data, _) =>
-                                                data.colorMarker,
-                                        dataSource: provinces,
-                                        xValueMapper: (Province data, _) =>
-                                            data.provName,
-                                        yValueMapper: (Province data, _) =>
-                                            data.totalDamageCost,
-                                      )
-                                    ],
+                                Expanded(
+                                  flex: 60,
+                                  child: Container(
+                                    child: SfCircularChart(
+                                      tooltipBehavior: TooltipBehavior(
+                                          enable: true,
+                                          activationMode:
+                                              ActivationMode.longPress,
+                                          animationDuration: 100),
+                                      series: <CircularSeries>[
+                                        DoughnutSeries<Province, String>(
+                                          dataLabelSettings: DataLabelSettings(
+                                            textStyle: textStyles.lato_regular(
+                                                fontSize: 12),
+                                            isVisible: true,
+                                            margin: EdgeInsets.zero,
+                                            // connectorLineSettings:
+                                            //     ConnectorLineSettings(
+                                            //         length: '20%',
+                                            //         type:
+                                            //             ConnectorType.curve),
+                                            labelPosition:
+                                                ChartDataLabelPosition.outside,
+                                            overflowMode: OverflowMode.shift,
+                                            labelIntersectAction:
+                                                LabelIntersectAction.shift,
+                                          ),
+                                          dataLabelMapper: (Province data, _) =>
+                                              "₱ ${NumberFormat('#,##0.00', 'en_US').format(data.totalDamageCost)}",
+                                          pointColorMapper: (Province data, _) =>
+                                              data.colorMarker,
+                                          dataSource: provinces,
+                                          xValueMapper: (Province data, _) =>
+                                              data.provName,
+                                          yValueMapper: (Province data, _) =>
+                                              data.totalDamageCost,
+                                        )
+                                      ],
+                                    ),
                                   ),
                                 ),
-                                Container(
-                                  // color: Colors.blue,
-                                  child: Column(
-                                    children: [
-                                      Text(
-                                        'Total Damage Cost\nto Rice Crops\n(Provincial)',
-                                        textAlign: TextAlign.center,
-                                        style: textStyles.lato_bold(
-                                            fontSize: 18),
-                                      ),
-                                      SizedBox(
-                                        height: 30,
-                                      ),
-                                      SingleChildScrollView(
-                                        scrollDirection: Axis.vertical,
-                                        child: Row(
-                                          children: [
-                                            Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: provinces
-                                                  .map((prov) => Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .only(
-                                                                bottom: 5),
-                                                        child: Row(
-                                                          children: [
-                                                            CircleAvatar(
-                                                              radius: 10,
-                                                              backgroundColor:
-                                                                  prov.colorMarker,
-                                                            ),
-                                                            SizedBox(
-                                                              width: 10,
-                                                            ),
-                                                            Text(
-                                                              prov.provName,
-                                                              style: textStyles
-                                                                  .lato_light(
-                                                                      fontSize:
-                                                                          14),
-                                                            ),
-                                                            SizedBox(
-                                                              width: 10,
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ))
-                                                  .toList(),
-                                            ),
-                                            Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: provinces
-                                                  .map((prov) => Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .only(
-                                                                bottom: 5),
-                                                        child: Row(
-                                                          children: [
-                                                            Text(
-                                                              '${prov.damageCostInPercentage}%',
-                                                              style: textStyles
-                                                                  .lato_light(
-                                                                      fontSize:
-                                                                          14),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ))
-                                                  .toList(),
-                                            ),
-                                          ],
+                                Expanded(
+                                  flex: 40,
+                                  child: Container(
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          'Total Damage Cost\nto Rice Crops',
+                                          textAlign: TextAlign.center,
+                                          style:
+                                              textStyles.lato_bold(fontSize: 18),
                                         ),
-                                      )
-                                    ],
+                                        SizedBox(height: 10,),
+                                        Container(
+                                          height: 30,
+                                          width: 130,
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(5),
+                                              color: Colors.white,
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.black
+                                                      .withOpacity(0.2),
+                                                  offset: Offset(0, 3),
+                                                  blurRadius: 2,
+                                                  spreadRadius: 1,
+                                                ),
+                                              ]),
+                                          child: DropdownButtonHideUnderline(
+                                            child: DropdownButton2<String>(
+                                              isExpanded: true,
+                                              iconStyleData:
+                                                  IconStyleData(iconSize: 20),
+                                              items: options
+                                                  .map((opt) =>
+                                                      DropdownMenuItem<String>(
+                                                        child: Text(
+                                                          opt,
+                                                          style: textStyles
+                                                              .lato_regular(
+                                                                  fontSize: 13),
+                                                        ),
+                                                        value: opt,
+                                                      ))
+                                                  .toList(),
+                                              value: selectedOption,
+                                              onChanged: (newOption) {
+                                                setState(() {
+                                                  selectedOption = newOption!;
+                                                });
+                                              },
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          height: 30,
+                                        ),
+                                        Container(
+                                          child: SingleChildScrollView(
+                                            scrollDirection: Axis.vertical,
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: provinces
+                                                      .map((prov) => Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .only(
+                                                                    bottom: 5),
+                                                            child: Row(
+                                                              children: [
+                                                                CircleAvatar(
+                                                                  radius: 8,
+                                                                  backgroundColor:
+                                                                      prov.colorMarker,
+                                                                ),
+                                                                SizedBox(
+                                                                  width: 10,
+                                                                ),
+                                                                Text(
+                                                                  prov.provName,
+                                                                  overflow: TextOverflow.ellipsis,
+                                                                  style: textStyles
+                                                                      .lato_light(
+                                                                          fontSize:
+                                                                              14),
+                                                                ),
+                                                                SizedBox(
+                                                                  width: 10,
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ))
+                                                      .toList(),
+                                                ),
+                                                Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: provinces
+                                                      .map((prov) => Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .only(
+                                                                    bottom: 5),
+                                                            child: Row(
+                                                              children: [
+                                                                Text(
+                                                                  '${prov.damageCostInPercentage}%',
+                                                                  style: textStyles
+                                                                      .lato_light(
+                                                                          fontSize:
+                                                                              14),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ))
+                                                      .toList(),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        )
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ]);
@@ -351,46 +445,47 @@ class _typhoon_donutchartState extends State<typhoon_donutchart> {
                         }
                       },
                     ),
-              Positioned(
-                top: 0,
-                left: 0,
-                child: Container(
-                  height: 30,
-                  width: 130,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
-                      color: Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          offset: Offset(0, 3),
-                          blurRadius: 2,
-                          spreadRadius: 1,
-                        ),
-                      ]),
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton2<String>(
-                      isExpanded: true,
-                      iconStyleData: IconStyleData(iconSize: 20),
-                      items: options
-                          .map((opt) => DropdownMenuItem<String>(
-                                child: Text(
-                                  opt,
-                                  style: textStyles.lato_regular(fontSize: 13),
-                                ),
-                                value: opt,
-                              ))
-                          .toList(),
-                      value: selectedOption,
-                      onChanged: (newOption) {
-                        setState(() {
-                          selectedOption = newOption!;
-                        });
-                      },
-                    ),
-                  ),
-                ),
-              )
+              // Positioned(
+              //   top: 0,
+              //   left: 0,
+              //   child:
+              //   Container(
+              //     height: 30,
+              //     width: 130,
+              //     decoration: BoxDecoration(
+              //         borderRadius: BorderRadius.circular(5),
+              //         color: Colors.white,
+              //         boxShadow: [
+              //           BoxShadow(
+              //             color: Colors.black.withOpacity(0.2),
+              //             offset: Offset(0, 3),
+              //             blurRadius: 2,
+              //             spreadRadius: 1,
+              //           ),
+              //         ]),
+              //     child: DropdownButtonHideUnderline(
+              //       child: DropdownButton2<String>(
+              //         isExpanded: true,
+              //         iconStyleData: IconStyleData(iconSize: 20),
+              //         items: options
+              //             .map((opt) => DropdownMenuItem<String>(
+              //                   child: Text(
+              //                     opt,
+              //                     style: textStyles.lato_regular(fontSize: 13),
+              //                   ),
+              //                   value: opt,
+              //                 ))
+              //             .toList(),
+              //         value: selectedOption,
+              //         onChanged: (newOption) {
+              //           setState(() {
+              //             selectedOption = newOption!;
+              //           });
+              //         },
+              //       ),
+              //     ),
+              //   ),
+              // )
             ],
           ),
         ));

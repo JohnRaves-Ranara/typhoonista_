@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:typhoonista_thesis/HOMEPAGES2/entities2/new/Day.dart';
+import 'package:typhoonista_thesis/HOMEPAGES2/entities2/new/Owner.dart';
 import 'package:typhoonista_thesis/HOMEPAGES2/entities2/new/Typhoon.dart';
 import 'package:typhoonista_thesis/HOMEPAGES2/services2/FirestoreService2.dart';
+import 'package:typhoonista_thesis/HOMEPAGES2/services2/averages.dart';
 import 'package:typhoonista_thesis/assets/themes/textStyles.dart';
 
 class typhoon_averages_overview extends StatefulWidget {
@@ -13,6 +16,7 @@ class typhoon_averages_overview extends StatefulWidget {
 }
 
 class _typhoon_averages_overviewState extends State<typhoon_averages_overview> {
+  List<Day>? days;
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -23,52 +27,68 @@ class _typhoon_averages_overviewState extends State<typhoon_averages_overview> {
               Expanded(
                 child: Container(
                   decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          offset: Offset(0, 3),
-                          blurRadius: 2,
-                          spreadRadius: 1,
-                        ),
-                      ],
-                    ),
-                  child: 
-                  //todo, not expanding, idk i need the row max in order to expand. expanded not behaving as i expected ?
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        StreamBuilder(
-                          stream: FirestoreService2().streamOngoingTyphoon(),
-                          builder: (context,snapshot){
-                            if(snapshot.hasData){
-                              Typhoon ongoingTyphoon = snapshot.data!;
-                              return Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text("₱ ${NumberFormat('#,##0.00', 'en_US').format(ongoingTyphoon.totalDamageCost)}", style: textStyles.lato_bold(fontSize: 30),),
-                              SizedBox(height: 10,),
-                              Text("Total Rice Crop Damage Cost of Typhoon ${ongoingTyphoon.typhoonName}", style: textStyles.lato_bold(fontSize: 14),)
-                            ],
-                          );
-                            }else{
-                              return Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text("No data.", style: textStyles.lato_bold(fontSize: 30),),
-                              SizedBox(height: 10,),
-                              Text("Total Rice Crop Damage Cost of Typhoon Hevabi", style: textStyles.lato_bold(fontSize: 14),)
-                            ],
-                          );
-                            }
-                          },
-                        ),
-                      ],
-                    ),
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        offset: Offset(0, 3),
+                        blurRadius: 2,
+                        spreadRadius: 1,
+                      ),
+                    ],
+                  ),
+                  child:
+                      //todo, not expanding, idk i need the row max in order to expand. expanded not behaving as i expected ?
+                      Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      StreamBuilder(
+                        stream: FirestoreService2().streamOngoingTyphoon(),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            Typhoon ongoingTyphoon = snapshot.data!;
+                            return Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "₱ ${NumberFormat('#,##0.00', 'en_US').format(ongoingTyphoon.totalDamageCost)}",
+                                  style: textStyles.lato_bold(fontSize: 30),
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Text(
+                                  "Total Rice Crop Damage Cost of Typhoon ${ongoingTyphoon.typhoonName}",
+                                  style: textStyles.lato_bold(fontSize: 14),
+                                )
+                              ],
+                            );
+                          } else {
+                            return Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "No data.",
+                                  style: textStyles.lato_bold(fontSize: 30),
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Text(
+                                  "Total Rice Crop Damage Cost of Typhoon Hevabi",
+                                  style: textStyles.lato_bold(fontSize: 14),
+                                )
+                              ],
+                            );
+                          }
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
               SizedBox(
@@ -78,17 +98,37 @@ class _typhoon_averages_overviewState extends State<typhoon_averages_overview> {
                 child: Row(
                   children: [
                     Expanded(
-                        flex: 30,
                         child: Container(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Text("30%", style: textStyles.lato_bold(fontSize: 26),),
-                              SizedBox(height: 15,),
-                              Text("Avg. Increase/Day", style: textStyles.lato_bold(fontSize: 12),)
-
-                              ],
+                              StreamBuilder<List<Day>>(
+                                stream: FirestoreService2().streamAllDays(),
+                                builder: (context, snapshot) {
+                                  if(snapshot.hasData){
+                                  List<Day> allDays = snapshot.data!;
+                                  double avgDamageIncreasePerDay = averages().avgDamageIncreasePerDay(allDays);
+                                  return Text(
+                                    "₱ ${NumberFormat('#,##0.00', 'en_US').format(avgDamageIncreasePerDay)}",
+                                    style: textStyles.lato_bold(fontSize: 22),
+                                  );
+                                  }else{
+                                    return Text(
+                                    "No data.",
+                                    style: textStyles.lato_bold(fontSize: 22),
+                                  );
+                                  }
+                                }
+                              ),
+                              SizedBox(
+                                height: 8,
+                              ),
+                              Text(
+                                "Avg. Increase/Day",
+                                style: textStyles.lato_bold(fontSize: 11),
+                              )
+                            ],
                           ),
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(15),
@@ -106,17 +146,7 @@ class _typhoon_averages_overviewState extends State<typhoon_averages_overview> {
                       width: 15,
                     ),
                     Expanded(
-                      flex: 70,
                       child: Container(
-                        child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text("1,325,697.24", style: textStyles.lato_bold(fontSize: 26),),
-                              SizedBox(height: 15,),
-                              Text("Avg. Damage/Day", style: textStyles.lato_bold(fontSize: 11),)
-                              ],
-                          ),
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(15),
                             color: Colors.white,
@@ -128,6 +158,43 @@ class _typhoon_averages_overviewState extends State<typhoon_averages_overview> {
                                 spreadRadius: 1,
                               ),
                             ]),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            StreamBuilder<List<Owner>>(
+                                stream: FirestoreService2().streamAllOwners(),
+                                builder: (context, snapshot) {
+                                  if (snapshot.hasData) {
+                                    final List<Owner> allOwners =
+                                        snapshot.data!;
+
+                                    allOwners.forEach((element) {
+                                      print(element.daysCount);
+                                    });
+                                    double averageDamagePerDay = averages()
+                                        .avgDamagePerDayFormulaNiGerome(
+                                            allOwners);
+                                    return Text(
+                                      "₱ ${NumberFormat('#,##0.00', 'en_US').format(averageDamagePerDay)}",
+                                      style: textStyles.lato_bold(fontSize: 22),
+                                    );
+                                  } else {
+                                    return Text(
+                                      "No data.",
+                                      style: textStyles.lato_bold(fontSize: 22),
+                                    );
+                                  }
+                                }),
+                            SizedBox(
+                              height: 8,
+                            ),
+                            Text(
+                              "Avg. Damage/Day",
+                              style: textStyles.lato_bold(fontSize: 11),
+                            )
+                          ],
+                        ),
                       ),
                     )
                   ],
@@ -137,4 +204,5 @@ class _typhoon_averages_overviewState extends State<typhoon_averages_overview> {
           ),
         ));
   }
+
 }

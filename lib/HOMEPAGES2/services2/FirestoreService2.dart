@@ -101,6 +101,7 @@ class FirestoreService2 {
   }
 
   Future<void> addOwner(
+      Owner? ownerToUpdate,
       //geo
       String? provinceID,
       String? municipalityID,
@@ -116,144 +117,83 @@ class FirestoreService2 {
       double distance,
       //forecast
       int dayCount) async {
-    String currentDateTime = DateTime.now().toString();
-    //get forecast
-    List<Day> forecast = await forecastModel().forecast(
-        next_ws: windSpeed,
-        next_rf24: rainfall24,
-        next_rf6: rainfall6,
-        next_area: riceArea,
-        next_yield: riceYield,
-        next_distance: distance,
-        rice_price: ricePrice,
-        days: dayCount);
+    if (ownerToUpdate == null) {
+      //ADD OWNER
+      String currentDateTime = DateTime.now().toString();
+      //get forecast
+      List<Day> forecast = await forecastModel().forecast(
+          initial_ws: windSpeed,
+          initial_rf24: rainfall24,
+          initial_rf6: rainfall6,
+          initial_area: riceArea,
+          initial_yield: riceYield,
+          initial_distance: distance,
+          rice_price: ricePrice,
+          days: dayCount);
 
-    //get ongoing typhoon ID
+      //get ongoing typhoon ID
 
-    Typhoon? ongoingTyphoon = await getOngoingTyphoon();
-    String ongoingTyphoonID = ongoingTyphoon!.id;
+      Typhoon? ongoingTyphoon = await getOngoingTyphoon();
+      String ongoingTyphoonID = ongoingTyphoon!.id;
 
-    //check if province with given provinceID already exists
-    CollectionReference provinceColRef = userRef
-        .collection('typhoons')
-        .doc(ongoingTyphoonID)
-        .collection('provinces');
-    DocumentSnapshot provinceDocSnapshot =
-        await provinceColRef.doc(provinceID).get();
-    //if it does not exist, add it to db.
-    if (!provinceDocSnapshot.exists) {
-      print("WALA PA GA EXIST ANG NAPILI NGA PROVINCE");
-      DocumentReference provDocRef = provinceColRef.doc(provinceID);
-      await provDocRef.set({
-        'color': getColorRGBList(),
-        'id': provinceID,
-        'provName': provName,
-        'totalDamageCost': 0, //to be updated later if ma add na ang days
-        'typhoonID': ongoingTyphoonID
-      });
-      print("ADDED NA ANG PROVINCE");
-    }
-
-    //check if municipality with given munID already exists
-    CollectionReference munColRef = userRef
-        .collection('typhoons')
-        .doc(ongoingTyphoonID)
-        .collection('provinces')
-        .doc(provinceID)
-        .collection('municipalities');
-    DocumentSnapshot munDocSnapshot =
-        await provinceColRef.doc(municipalityID).get();
-    //if it does not exist, add it to db.
-    if (!munDocSnapshot.exists) {
-      print("WALA PA GA EXIST ANG NAPILI NGA MUNICIPALITY");
-      DocumentReference munDocRef = munColRef.doc(municipalityID);
-      await munDocRef.set({
-        'color': getColorRGBList(),
-        'id': municipalityID,
-        'munName': munName,
-        'provinceID': provinceID,
-        'totalDamageCost': 0, //to be updated later if ma add na ang days
-        'typhoonID': ongoingTyphoonID
-      });
-      print("NA ADD NA ANG MUNICIPALITY");
-    }
-
-    //ownerColRef
-    CollectionReference ownerColRef = userRef
-        .collection('typhoons')
-        .doc(ongoingTyphoonID)
-        .collection('provinces')
-        .doc(provinceID)
-        .collection('municipalities')
-        .doc(municipalityID)
-        .collection('owners');
-    //getOwnerID
-    String ownerID = uuid.v1();
-
-    DocumentReference ownerDocRef = userRef
-        .collection('typhoons')
-        .doc(ongoingTyphoonID)
-        .collection('provinces')
-        .doc(provinceID)
-        .collection('municipalities')
-        .doc(municipalityID)
-        .collection('owners')
-        .doc(ownerID);
-
-    //populate each Day's typhoonID, provID, munID, and ownerID
-    forecast.forEach((day) {
-      day.typhoonID = ongoingTyphoonID;
-      day.provinceID = provinceID;
-      day.municipalityID = municipalityID;
-      day.ownerID = ownerID;
-    });
-
-    //In firestore, check provname and munname dupes.
-    //get all documents in the owners collection
-    QuerySnapshot ownerDocs = await ownerColRef.get();
-    int ownerDupeCount = 0;
-    for (DocumentSnapshot ownerDoc in ownerDocs.docs) {
-      Map<String, dynamic> docData = ownerDoc.data() as Map<String, dynamic>;
-
-      if (docData['provName'] == provName && docData['munName'] == munName) {
-        ownerDupeCount++;
+      //check if province with given provinceID already exists
+      CollectionReference provinceColRef = userRef
+          .collection('typhoons')
+          .doc(ongoingTyphoonID)
+          .collection('provinces');
+      DocumentSnapshot provinceDocSnapshot =
+          await provinceColRef.doc(provinceID).get();
+      //if it does not exist, add it to db.
+      if (!provinceDocSnapshot.exists) {
+        print("WALA PA GA EXIST ANG NAPILI NGA PROVINCE");
+        DocumentReference provDocRef = provinceColRef.doc(provinceID);
+        await provDocRef.set({
+          'color': getColorRGBList(),
+          'id': provinceID,
+          'provName': provName,
+          'totalDamageCost': 0, //to be updated later if ma add na ang days
+          'typhoonID': ongoingTyphoonID
+        });
+        print("ADDED NA ANG PROVINCE");
       }
-    }
 
-    String ownerName = '';
-    //if no dupes, set name as provname,munname. If has dupes, set as provname,munname (count)
-    if (ownerDupeCount == 0) {
-      ownerName = '${provName}, ${munName}';
-    } else {
-      ownerName = '${provName}, ${munName} (${ownerDupeCount + 1})';
-    }
+      //check if municipality with given munID already exists
+      CollectionReference munColRef = userRef
+          .collection('typhoons')
+          .doc(ongoingTyphoonID)
+          .collection('provinces')
+          .doc(provinceID)
+          .collection('municipalities');
+      DocumentSnapshot munDocSnapshot =
+          await provinceColRef.doc(municipalityID).get();
+      //if it does not exist, add it to db.
+      if (!munDocSnapshot.exists) {
+        print("WALA PA GA EXIST ANG NAPILI NGA MUNICIPALITY");
+        DocumentReference munDocRef = munColRef.doc(municipalityID);
+        await munDocRef.set({
+          'color': getColorRGBList(),
+          'id': municipalityID,
+          'munName': munName,
+          'provinceID': provinceID,
+          'totalDamageCost': 0, //to be updated later if ma add na ang days
+          'typhoonID': ongoingTyphoonID
+        });
+        print("NA ADD NA ANG MUNICIPALITY");
+      }
 
-    List<int> ownerColor = getColorRGBList();
+      //ownerColRef
+      CollectionReference ownerColRef = userRef
+          .collection('typhoons')
+          .doc(ongoingTyphoonID)
+          .collection('provinces')
+          .doc(provinceID)
+          .collection('municipalities')
+          .doc(municipalityID)
+          .collection('owners');
+      //getOwnerID
+      String ownerID = uuid.v1();
 
-    double total = 0;
-    for (Day day in forecast) {
-      total += day.damageCost!;
-    }
-    double totalDamageCost = total;
-
-    await ownerDocRef.set({
-      "color": ownerColor,
-      "dateRecorded":
-          currentDateTime, //get this first thing in the function. DateTime.now().toString()
-      "id":
-          ownerID, // NAHH, SCRATCH THAT, JUST USE UUID().V1() FOR OWNER ID, FOR PROPER ORGANIZATION.
-      "munName": munName,
-      "municipalityID": municipalityID,
-      "ownerName": ownerName,
-      "provName": provName,
-      "provinceID": provinceID,
-      "totalDamageCost": double.parse(totalDamageCost.toStringAsFixed(2)),
-      "typhoonID": ongoingTyphoonID,
-    });
-
-    for (Day day in forecast) {
-      String dayID = uuid.v1();
-      DocumentReference daysColRef = userRef
+      DocumentReference ownerDocRef = userRef
           .collection('typhoons')
           .doc(ongoingTyphoonID)
           .collection('provinces')
@@ -261,35 +201,215 @@ class FirestoreService2 {
           .collection('municipalities')
           .doc(municipalityID)
           .collection('owners')
-          .doc(ownerID)
-          .collection('days')
-          .doc(dayID);
+          .doc(ownerID);
 
-      await daysColRef.set({
-        "damageCost": day.damageCost,
-        "dayNum": day.dayNum,
-        "disTrackMin": day.distance,
-        "id": dayID,
-        "municipalityID": municipalityID,
-        "ownerID": ownerID,
-        "provinceID": provinceID,
-        "rainfall24": day.rainfall24,
-        "rainfall6": day.rainfall6,
-        "riceArea": day.riceArea,
-        "ricePrice": day.ricePrice,
-        "riceYield": day.riceYield,
-        "typhoonID": ongoingTyphoonID,
-        "windSpeed": day.windSpeed,
+      //populate each Day's typhoonID, provID, munID, and ownerID
+      forecast.forEach((day) {
+        day.typhoonID = ongoingTyphoonID;
+        day.provinceID = provinceID;
+        day.municipalityID = municipalityID;
+        day.ownerID = ownerID;
       });
+
+      //In firestore, check provname and munname dupes.
+      //get all documents in the owners collection
+      QuerySnapshot ownerDocs = await ownerColRef.get();
+      int ownerDupeCount = 0;
+      for (DocumentSnapshot ownerDoc in ownerDocs.docs) {
+        Map<String, dynamic> docData = ownerDoc.data() as Map<String, dynamic>;
+
+        if (docData['provName'] == provName && docData['munName'] == munName) {
+          ownerDupeCount++;
+        }
+      }
+
+      String ownerName = '';
+      //if no dupes, set name as provname,munname. If has dupes, set as provname,munname (count)
+      if (ownerDupeCount == 0) {
+        ownerName = '${provName}, ${munName}';
+      } else {
+        ownerName = '${provName}, ${munName} (${ownerDupeCount + 1})';
+      }
+
+      List<int> ownerColor = getColorRGBList();
+
+      double total = 0;
+      for (Day day in forecast) {
+        total += day.damageCost!;
+      }
+      double totalDamageCost = total;
+
+      await ownerDocRef.set({
+        "daysCount" : dayCount,
+        "color": ownerColor,
+        "dateRecorded":
+            currentDateTime, //get this first thing in the function. DateTime.now().toString()
+        "id":
+            ownerID, // NAHH, SCRATCH THAT, JUST USE UUID().V1() FOR OWNER ID, FOR PROPER ORGANIZATION.
+        "munName": munName,
+        "municipalityID": municipalityID,
+        "ownerName": ownerName,
+        "provName": provName,
+        "provinceID": provinceID,
+        "totalDamageCost": double.parse(totalDamageCost.toStringAsFixed(2)),
+        "typhoonID": ongoingTyphoonID,
+      });
+
+      for (Day day in forecast) {
+        String dayID = uuid.v1();
+        DocumentReference daysColRef = userRef
+            .collection('typhoons')
+            .doc(ongoingTyphoonID)
+            .collection('provinces')
+            .doc(provinceID)
+            .collection('municipalities')
+            .doc(municipalityID)
+            .collection('owners')
+            .doc(ownerID)
+            .collection('days')
+            .doc(dayID);
+
+        await daysColRef.set({
+          "damageCost": day.damageCost,
+          "dayNum": day.dayNum,
+          "disTrackMin": day.distance,
+          "id": dayID,
+          "municipalityID": municipalityID,
+          "ownerID": ownerID,
+          "provinceID": provinceID,
+          "rainfall24": day.rainfall24,
+          "rainfall6": day.rainfall6,
+          "riceArea": day.riceArea,
+          "ricePrice": day.ricePrice,
+          "riceYield": day.riceYield,
+          "typhoonID": ongoingTyphoonID,
+          "windSpeed": day.windSpeed,
+        });
+      }
+      await updateMunicipalityTotalDamageCost(
+          ongoingTyphoonID, provinceID!, municipalityID!);
+      await updateProvinceTotalDamageCost(ongoingTyphoonID, provinceID);
+      await updateTyphoonTotalDamageCost(ongoingTyphoonID);
+    } else {
+      String currentDateTime = DateTime.now().toString();
+      //UPDATE OWNER
+
+      //DELETE ALL DAYS IN THE OWNER
+      await deleteAllDaysOfOwner(ownerToUpdate);
+
+      //DELETE THE OWNER
+      await deleteOwner(ownerToUpdate);
+
+      //get new forecast
+      List<Day> forecast = await forecastModel().forecast(
+          initial_ws: windSpeed,
+          initial_rf24: rainfall24,
+          initial_rf6: rainfall6,
+          initial_area: riceArea,
+          initial_yield: riceYield,
+          initial_distance: distance,
+          rice_price: ricePrice,
+          days: dayCount);
+
+      //doesnt exist yet since bago ra gi delete
+      DocumentReference ownerDocRef = userRef
+          .collection('typhoons')
+          .doc(ownerToUpdate.typhoonID)
+          .collection('provinces')
+          .doc(ownerToUpdate.provinceID)
+          .collection('municipalities')
+          .doc(ownerToUpdate.municipalityID)
+          .collection('owners')
+          .doc(ownerToUpdate.id);
+
+      //populate each Day's typhoonID, provID, munID, and ownerID
+      forecast.forEach((day) {
+        day.typhoonID = ownerToUpdate.typhoonID;
+        day.provinceID = ownerToUpdate.provinceID;
+        day.municipalityID = ownerToUpdate.municipalityID;
+        day.ownerID = ownerToUpdate.id;
+      });
+
+      //getting totaldmgcost of all days
+      double total = 0;
+      for (Day day in forecast) {
+        total += day.damageCost!;
+      }
+      double totalDamageCost = total;
+
+      //adding owner to db
+      await ownerDocRef.set({
+        "daysCount" : dayCount,
+        "color": [ownerToUpdate.colorMarker.red, ownerToUpdate.colorMarker.green, ownerToUpdate.colorMarker.red],
+        "dateRecorded":
+            currentDateTime, //get this first thing in the function. DateTime.now().toString()
+        "id":
+            ownerToUpdate.id, // NAHH, SCRATCH THAT, JUST USE UUID().V1() FOR OWNER ID, FOR PROPER ORGANIZATION.
+        "munName": munName,
+        "municipalityID": municipalityID,
+        "ownerName": ownerToUpdate.ownerName,
+        "provName": provName,
+        "provinceID": provinceID,
+        "totalDamageCost": double.parse(totalDamageCost.toStringAsFixed(2)),
+        "typhoonID": ownerToUpdate.typhoonID,
+      });
+
+      for (Day day in forecast) {
+        String dayID = uuid.v1();
+        DocumentReference daysColRef = userRef
+            .collection('typhoons')
+            .doc(ownerToUpdate.typhoonID)
+            .collection('provinces')
+            .doc(ownerToUpdate.provinceID)
+            .collection('municipalities')
+            .doc(ownerToUpdate.municipalityID)
+            .collection('owners')
+            .doc(ownerToUpdate.id)
+            .collection('days')
+            .doc(dayID);
+
+        await daysColRef.set({
+          "damageCost": day.damageCost,
+          "dayNum": day.dayNum,
+          "disTrackMin": day.distance,
+          "id": dayID,
+          "municipalityID": ownerToUpdate.municipalityID,
+          "ownerID": ownerToUpdate.id,
+          "provinceID": ownerToUpdate.provinceID,
+          "rainfall24": day.rainfall24,
+          "rainfall6": day.rainfall6,
+          "riceArea": day.riceArea,
+          "ricePrice": day.ricePrice,
+          "riceYield": day.riceYield,
+          "typhoonID": ownerToUpdate.typhoonID,
+          "windSpeed": day.windSpeed,
+        });
+      }
+
+      await updateMunicipalityTotalDamageCost(
+          ownerToUpdate.typhoonID!, ownerToUpdate.provinceID!, ownerToUpdate.municipalityID!);
+      await updateProvinceTotalDamageCost(ownerToUpdate.typhoonID!, ownerToUpdate.provinceID!);
+      await updateTyphoonTotalDamageCost(ownerToUpdate.typhoonID!);
+
+      
+    }
+  }
+
+  Future<void> deleteAllDaysOfOwner(Owner owner)async{
+    CollectionReference daysColRef = userRef.collection('typhoons').doc(owner.typhoonID)
+    .collection('provinces').doc(owner.provinceID)
+    .collection('municipalities').doc(owner.municipalityID)
+    .collection('owners').doc(owner.id)
+    .collection('days');
+    QuerySnapshot daysSnapshot = await daysColRef.get();
+
+    for(DocumentSnapshot doc in daysSnapshot.docs){
+      Map<String,dynamic> data = doc.data() as Map<String,dynamic>;
+
+      await daysColRef.doc(data['id']).delete();
     }
 
-    //UPDATE TOTAL DAMAGES OF TYPHOON, PROVINCE, AND MUNICIPALITY.
-    //NOTE: THIS IS ONLY FOR FIRST TIME ADDING. // ON SECOND THOUGHT, IDK.
-
-    await updateMunicipalityTotalDamageCost(
-        ongoingTyphoonID, provinceID!, municipalityID!);
-    await updateProvinceTotalDamageCost(ongoingTyphoonID, provinceID);
-    await updateTyphoonTotalDamageCost(ongoingTyphoonID);
+    
   }
 
   Future<void> updateTyphoonTotalDamageCost(String typhoonID) async {
@@ -389,8 +509,8 @@ class FirestoreService2 {
         .collection('days')
         .get();
     List<Day> days = [];
-    for(DocumentSnapshot doc in firstDaySnapshot.docs){
-      Map<String,dynamic> data = doc.data() as Map<String,dynamic>;
+    for (DocumentSnapshot doc in firstDaySnapshot.docs) {
+      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
       // if(data['dayNum'] == 1){
       //   firstDay = Day.fromJson(data);
       // }
@@ -405,10 +525,24 @@ class FirestoreService2 {
 
     for (int i = 0; i < 3; i++) {
       int randomNumber =
-          random.nextInt(256); // Generates a random number between 0 and 255
+          random.nextInt(128) + 128; // Generates a random number between 0 and 255
       randomNumbers.add(randomNumber);
     }
 
     return randomNumbers;
   }
+
+  Future<void> deleteOwner(Owner ownerToDelete) async {
+    await userRef
+        .collection('typhoons')
+        .doc(ownerToDelete.typhoonID)
+        .collection('provinces')
+        .doc(ownerToDelete.provinceID)
+        .collection('municipalities')
+        .doc(ownerToDelete.municipalityID)
+        .collection('owners')
+        .doc(ownerToDelete.id)
+        .delete();
+  }
+
 }

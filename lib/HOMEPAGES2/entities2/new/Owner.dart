@@ -15,7 +15,7 @@ class Owner {
   Color colorMarker;
   String? dateRecorded;
 
-  // int? dayNum;
+  int? daysCount;
   // double? rainfall24;
   // double? rainfall6;
   // double? riceArea;
@@ -25,7 +25,7 @@ class Owner {
   // double? distance;
 
   Owner({
-  //   this. dayNum,
+    this. daysCount,
   // this. rainfall24,
   // this. rainfall6,
   // this. riceArea,
@@ -60,8 +60,8 @@ class Owner {
           munName == other.munName &&
           provName == other.provName &&
           dateRecorded == other.dateRecorded 
-          // &&
-          // dayNum == other.dayNum &&
+          &&
+          daysCount == other.daysCount 
           // rainfall24== other.rainfall24 &&
           // rainfall6 == other.rainfall6 &&
           // riceArea == other.riceArea &&
@@ -83,8 +83,8 @@ class Owner {
       munName.hashCode ^
       provName.hashCode ^
       dateRecorded.hashCode 
-  //     ^
-  //     dayNum.hashCode ^
+      ^
+      daysCount.hashCode 
   // rainfall24.hashCode ^
   // rainfall6.hashCode ^
   // riceArea.hashCode ^
@@ -116,7 +116,7 @@ class Owner {
         munName: json['munName'],
         provName: json['provName'],
         dateRecorded: json["dateRecorded"],
-        // dayNum : json["dayNum"],
+        daysCount : json["daysCount"],
         // rainfall24: json["rainfall24"],
         // rainfall6 : json["rainfall6"],
         // riceArea : json["riceArea"],
@@ -125,6 +125,6 @@ class Owner {
         // windSpeed : json["windSpeed"],
         // distance : json["distance"],
         colorMarker: Color.fromARGB(
-            255, json["color"][0], json["color"][1], json["color"][2]).withOpacity(0.3));
+            255, json["color"][0], json["color"][1], json["color"][2]));
   }
 }

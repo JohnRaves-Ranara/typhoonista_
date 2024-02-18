@@ -128,7 +128,7 @@ class _typhoon_forecastState extends State<typhoon_forecast> {
                                                 // ],
                                                 animationDuration: 200,
                                                 dataSource: owner.days,
-                                                color: owner.colorMarker,
+                                                color: owner.colorMarker.withOpacity(0.5),
                                                 xValueMapper: (Day data, _) =>
                                                     "Day ${data.dayNum}",
                                                 yValueMapper: (Day data, _) =>
@@ -141,7 +141,7 @@ class _typhoon_forecastState extends State<typhoon_forecast> {
                                                 animationDuration: 200,
                                                 dataSource: selectedOwner.days,
                                                 color:
-                                                    selectedOwner.colorMarker,
+                                                    selectedOwner.colorMarker.withOpacity(0.5),
                                                 xValueMapper: (Day data, _) =>
                                                     "Day ${data.dayNum}",
                                                 yValueMapper: (Day data, _) =>
@@ -247,7 +247,7 @@ class _typhoon_forecastState extends State<typhoon_forecast> {
                                     ),
                                     CircleAvatar(
                                       radius: 10,
-                                      backgroundColor: owner.colorMarker,
+                                      backgroundColor: owner.colorMarker.withOpacity(0.5),
                                     ),
                                     SizedBox(
                                       width: 10,
@@ -308,7 +308,7 @@ class _typhoon_forecastState extends State<typhoon_forecast> {
   //   int green = Random().nextInt(256);
   //   int blue = Random().nextInt(256);
   //   // Create a new random color
-  //   Color randomColor = Color.fromARGB(255, red, green, blue).withOpacity(0.3);
+  //   Color randomColor = Color.fromARGB(255, red, green, blue).withOpacity(0.5);
   //   return randomColor;
   // }
 }

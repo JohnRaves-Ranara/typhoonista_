@@ -19,12 +19,12 @@
 //     _shapeSource = const MapShapeSource.asset(
 //       // 'lib/philippines-with-regions_ (2).geojson',
 //       'lib/services/MuniCities.minimal.json',
-      
+
 //       shapeDataField: "NAME_2",
 //     );
 
 //     print(_shapeSource);
-    
+
 //   }
 
 //   Widget build(BuildContext context) {
@@ -33,8 +33,8 @@
 //         children: [
 //           Container(
 //             color: Colors.blue,
-//             child: 
-            
+//             child:
+
 //             SfMaps(
 //               layers: [
 //                 MapShapeLayer(
@@ -47,7 +47,6 @@
 //                 )
 //               ],
 //             ),
-            
 
 //           )
 //           // Text("hello world")
@@ -57,13 +56,64 @@
 //   }
 // }
 
+import '../entities2/new/Day.dart';
 
-void main(){
+void main() {
+  List<Day> alldays = [
+    Day(dayNum: 1, damageCost: 12),
+    Day(dayNum: 4, damageCost: 34),
+    Day(dayNum: 2, damageCost: 43),
+    Day(dayNum: 4, damageCost: 67),
+    Day(dayNum: 3,damageCost: 22),
+    Day(dayNum: 1,damageCost: 87),
+    Day(dayNum: 2,damageCost: 45),
+    Day(dayNum: 4,damageCost: 23),
+    Day(dayNum: 1,damageCost: 87),
+    Day(dayNum: 3,damageCost: 23),
+    Day(dayNum: 3,damageCost: 99),
+    Day(dayNum: 2,damageCost: 45),
+    Day(dayNum: 5, damageCost: 31),
+    Day(dayNum: 5, damageCost: 11),
+    Day(dayNum: 5, damageCost: 76),
+  ];
 
-  List<String> dateList = ["2024-02-17 23:09:35.503", "2024-02-17 23:12:10.887", "2024-02-17 21:02:21.568"];
+  double getAverageDamagePerDay(List<Day> alldays) {
+    Map<int, List<Day>> groupeddays = {};
+
+    for (Day day in alldays) {
+      groupeddays.putIfAbsent(day.dayNum!, () => []);
+      groupeddays[day.dayNum]!.add(day);
+    }
+
+    List<double> totalOfAllDaysEachGroup = [];
+    groupeddays.forEach((key, value) { 
+      double total = 0;
+      for(Day day in value){
+        total += day.damageCost!;
+      }
+      totalOfAllDaysEachGroup.add(total);
+    });
+    print(totalOfAllDaysEachGroup);
+    double total = 0;
+    for(double num in totalOfAllDaysEachGroup){
+      total += num;
+    }
+
+    return total / groupeddays.length;
+  }
+
+  double averageDamagePerDay = getAverageDamagePerDay(alldays);
+
+  print(averageDamagePerDay);
+
+  // groupeddays.forEach((key, value) {
+  //   print("Group $key: ${value}");
+  // });
+
+  // double averageOfAll(Map<int, List<Day>> groupedPersons){
+    
+  // }
   
-  print(dateList);
-  dateList.sort((a, b) => DateTime.parse(b).compareTo(DateTime.parse(a)));
-    print(dateList);
+
 
 }

@@ -758,119 +758,113 @@ class _add_estimationState extends State<add_estimation> {
                       SizedBox(
                         height: 10,
                       ),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: InkWell(
-                              onTap: (() async {
-                                setState(() {
-                                  isLoadingProvinces = true;
-                                });
-                                List<Location> provincesFromJSON =
-                                    await GetLocations().getLocations();
-                                setState(() {
-                                  isLoadingProvinces = false;
-                                });
-                                provincesFromJSON.forEach((prov) =>
-                                    provinces.add(Location(
-                                        provID: prov.provID,
-                                        provName: prov.provName)));
-                            
-                                provinces = provinces.toSet().toList();
-                            
-                                showSelectProvinceDialog(customState);
-                              }),
-                              child: Container(
-                                height: 48,
-                                decoration: BoxDecoration(
-                                    border: Border.all(
-                                        width: 1,
-                                        color: Colors.grey.shade600
-                                            .withOpacity(0.5),
-                                        style: BorderStyle.solid),
-                                    borderRadius: BorderRadius.circular(5)),
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 10),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        selectedProvince?.provName ?? "Select Province",
-                                        style: textStyles.lato_regular(
-                                            fontSize: 17),
-                                      ),
-                                      Icon(
-                                        Icons.arrow_drop_down,
-                                        size: 22,
-                                        color: Colors.black,
-                                      )
-                                    ],
-                                  ),
+                      InkWell(
+                        onTap: (() async {
+                          setState(() {
+                            isLoadingProvinces = true;
+                          });
+                          List<Location> provincesFromJSON =
+                              await GetLocations().getLocations();
+                          setState(() {
+                            isLoadingProvinces = false;
+                          });
+                          provincesFromJSON.forEach((prov) =>
+                              provinces.add(Location(
+                                  provID: prov.provID,
+                                  provName: prov.provName)));
+                      
+                          provinces = provinces.toSet().toList();
+                      
+                          showSelectProvinceDialog(customState);
+                        }),
+                        child: Container(
+                          height: 48,
+                          width: double.maxFinite,
+                          decoration: BoxDecoration(
+                              border: Border.all(
+                                  width: 1,
+                                  color: Colors.grey.shade600
+                                      .withOpacity(0.5),
+                                  style: BorderStyle.solid),
+                              borderRadius: BorderRadius.circular(5)),
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 10),
+                            child: Row(
+                              mainAxisAlignment:
+                                  MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment:
+                                  CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  selectedProvince?.provName ?? "Select Province",
+                                  style: textStyles.lato_regular(
+                                      fontSize: 17),
                                 ),
-                              ),
+                                Icon(
+                                  Icons.arrow_drop_down,
+                                  size: 22,
+                                  color: Colors.black,
+                                )
+                              ],
                             ),
                           ),
-                          SizedBox(width: 15,),
-                          Expanded(
-                            child: InkWell(
-                              onTap: (selectedProvince != null)
-                                  ? (() async {
-                                      setState(() {
-                                        isLoadingMunicipalities = true;
-                                      });
-                            
-                                      List<Location> municipalitiesFromJSON =
-                                          await GetLocations().getLocations();
-                                      setState(() {
-                                        isLoadingMunicipalities = false;
-                                      });
-                            
-                                      municipalities = municipalitiesFromJSON
-                                          .where((municipality) =>
-                                              municipality.provID ==
-                                              selectedProvince!.provID)
-                                          .toList();
-                            
-                                      showSelectMunicipalityDialog(customState);
-                                    })
-                                  : null,
-                              child: Container(
-                                height: 48,
-                                decoration: BoxDecoration(
-                                    border: Border.all(
-                                        width: 1,
-                                        color: Colors.grey.shade600
-                                            .withOpacity(0.5),
-                                        style: BorderStyle.solid),
-                                    borderRadius: BorderRadius.circular(5)),
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 10),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        selectedMunicipality?.munName ?? 'Select Municipality',
-                                        style: textStyles.lato_regular(
-                                            fontSize: 17),
-                                      ),
-                                      Icon(
-                                        Icons.arrow_drop_down,
-                                        size: 22,
-                                        color: Colors.black,
-                                      )
-                                    ],
-                                  ),
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      InkWell(
+                        onTap: (selectedProvince != null)
+                            ? (() async {
+                                setState(() {
+                                  isLoadingMunicipalities = true;
+                                });
+                      
+                                List<Location> municipalitiesFromJSON =
+                                    await GetLocations().getLocations();
+                                setState(() {
+                                  isLoadingMunicipalities = false;
+                                });
+                      
+                                municipalities = municipalitiesFromJSON
+                                    .where((municipality) =>
+                                        municipality.provID ==
+                                        selectedProvince!.provID)
+                                    .toList();
+                      
+                                showSelectMunicipalityDialog(customState);
+                              })
+                            : null,
+                        child: Container(
+                          height: 48,
+                          width: double.maxFinite,
+                          decoration: BoxDecoration(
+                              border: Border.all(
+                                  width: 1,
+                                  color: Colors.grey.shade600
+                                      .withOpacity(0.5),
+                                  style: BorderStyle.solid),
+                              borderRadius: BorderRadius.circular(5)),
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 10),
+                            child: Row(
+                              mainAxisAlignment:
+                                  MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment:
+                                  CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  selectedMunicipality?.munName ?? 'Select Municipality',
+                                  style: textStyles.lato_regular(
+                                      fontSize: 17),
                                 ),
-                              ),
+                                Icon(
+                                  Icons.arrow_drop_down,
+                                  size: 22,
+                                  color: Colors.black,
+                                )
+                              ],
                             ),
-                          )
-                        ],
+                          ),
+                        ),
                       ),
                       SizedBox(
                         height: 10,
@@ -889,7 +883,7 @@ class _add_estimationState extends State<add_estimation> {
                                   style: BorderStyle.solid),
                               borderRadius: BorderRadius.circular(5)),
                           child: Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 30),
+                            padding: EdgeInsets.symmetric(horizontal: 10),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               crossAxisAlignment: CrossAxisAlignment.center,
@@ -933,6 +927,7 @@ class _add_estimationState extends State<add_estimation> {
                     print("FETCHING PREDICTION START");
                   });
                   await FirestoreService2().addOwner(
+                    null,
                     selectedProvince!.provID,
                     selectedMunicipality!.munID,
                     selectedProvince!.provName,
