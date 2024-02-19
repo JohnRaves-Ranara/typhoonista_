@@ -20,25 +20,29 @@ class FirestoreService2 {
 
   Future<Typhoon?> getOngoingTyphoon() async {
     QuerySnapshot typhoons =
-        await userRef.collection('typhoons').limit(1).get();
+        await userRef.collection('typhoons').get();
     Typhoon? ongoingTyphoon;
     for (var typhoonDoc in typhoons.docs) {
       Map<String, dynamic> doc = typhoonDoc.data() as Map<String, dynamic>;
       if (doc['status'] == 'ongoing') {
+        print("YES KANI ONGOING NI SYA NGA TYPHOON");
         ongoingTyphoon = Typhoon(
             id: doc['id'],
             typhoonName: doc['typhoonName'],
+            status: doc['status'],
             totalDamageCost: doc['totalDamageCost']);
+        break;
+      }else{
+        print("NO KANI FINISHED NANI SYA");
       }
     }
     return ongoingTyphoon;
   }
 
-  Stream<List<Owner>> streamAllOwners() async* {
-    Typhoon? ongoingTyphoon = await getOngoingTyphoon();
+  Stream<List<Owner>> streamAllOwners(Typhoon ongoingTyphoon) {
     DocumentReference ongoingTyphoonDocRef =
-        userRef.collection('typhoons').doc(ongoingTyphoon!.id);
-    yield* FirebaseFirestore.instance
+        userRef.collection('typhoons').doc(ongoingTyphoon.id);
+    return FirebaseFirestore.instance
         .collectionGroup('owners')
         .orderBy(FieldPath.documentId)
         .startAt([ongoingTyphoonDocRef.path])
@@ -48,11 +52,10 @@ class FirestoreService2 {
             snapshot.docs.map((doc) => Owner.fromJson(doc.data())).toList());
   }
 
-  Stream<List<Day>> streamAllDays() async* {
-    Typhoon? ongoingTyphoon = await getOngoingTyphoon();
+  Stream<List<Day>> streamAllDays(Typhoon ongoingTyphoon) {
     DocumentReference ongoingTyphoonDocRef =
-        userRef.collection('typhoons').doc(ongoingTyphoon!.id);
-    yield* FirebaseFirestore.instance
+        userRef.collection('typhoons').doc(ongoingTyphoon.id);
+    return FirebaseFirestore.instance
         .collectionGroup('days')
         .orderBy(FieldPath.documentId)
         .startAt([ongoingTyphoonDocRef.path])
@@ -62,7 +65,81 @@ class FirestoreService2 {
             snapshot.docs.map((doc) => Day.fromJson(doc.data())).toList());
   }
 
-  Stream<List<Municipality>> streamAllMunicipalities() async* {
+  Future<List<Day>> getAllDaysBasedOnProvinceID(String provinceID) async {
+    Typhoon? ongoingTyphoon = await getOngoingTyphoon();
+    DocumentReference provinceDocRef = userRef
+        .collection('typhoons')
+        .doc(ongoingTyphoon!.id)
+        .collection('provinces')
+        .doc(provinceID);
+
+    QuerySnapshot allDays = await FirebaseFirestore.instance
+        .collectionGroup('days')
+        .orderBy(FieldPath.documentId)
+        .startAt([provinceDocRef.path]).endAt(
+            [provinceDocRef.path + "\uf8ff"]).get();
+
+    List<Day> daysReturn = [];
+    for (DocumentSnapshot doc in allDays.docs) {
+      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+      daysReturn.add(Day.fromJson(data));
+    }
+    return daysReturn;
+  }
+
+  Future<void> addTyphoon(String typhoonName)async{
+    var id = uuid.v1();
+    var b = userRef.collection('typhoons').doc(id);
+    
+    b.set({
+      "id" : id,
+      "status" : "ongoing",
+      "totalDamageCost" : 0,
+      "typhoonName" : typhoonName
+    });
+  }
+
+
+  Future<List<Day>> getAllDaysBasedOnMunicipalityID(Municipality mun) async {
+    Typhoon? ongoingTyphoon = await getOngoingTyphoon();
+    DocumentReference munDocRef = userRef
+        .collection('typhoons')
+        .doc(ongoingTyphoon!.id)
+        .collection('provinces')
+        .doc(mun.provinceID)
+        .collection('municipalities')
+        .doc(mun.id)
+        ;
+
+    QuerySnapshot allDays = await FirebaseFirestore.instance
+        .collectionGroup('days')
+        .orderBy(FieldPath.documentId)
+        .startAt([munDocRef.path]).endAt(
+            [munDocRef.path + "\uf8ff"]).get();
+
+    List<Day> daysReturn = [];
+    for (DocumentSnapshot doc in allDays.docs) {
+      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+      daysReturn.add(Day.fromJson(data));
+    }
+    return daysReturn;
+  }
+
+  Stream<List<Municipality>> streamAllMunicipalities(Typhoon ongoingTyphoon)async* {
+    DocumentReference ongoingTyphoonDocRef =
+        userRef.collection('typhoons').doc(ongoingTyphoon.id);
+    yield* FirebaseFirestore.instance
+        .collectionGroup('municipalities')
+        .orderBy(FieldPath.documentId)
+        .startAt([ongoingTyphoonDocRef.path])
+        .endAt([ongoingTyphoonDocRef.path + "\uf8ff"])
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map((doc) => Municipality.fromJson(doc.data()))
+            .toList());
+  }
+
+  Stream<List<Municipality>> streamAllMunicipalities2() async* {
     Typhoon? ongoingTyphoon = await getOngoingTyphoon();
     DocumentReference ongoingTyphoonDocRef =
         userRef.collection('typhoons').doc(ongoingTyphoon!.id);
@@ -77,8 +154,26 @@ class FirestoreService2 {
             .toList());
   }
 
-  Stream<List<Province>> streamAllProvinces() async* {
+  Stream<List<Province>> streamAllProvinces(Typhoon ongoingTyphoon)  {
+    // Typhoon? ongoingTyphoon = await getOngoingTyphoon();
+    DocumentReference ongoingTyphoonDocRef =
+        userRef.collection('typhoons').doc(ongoingTyphoon!.id);
+    return FirebaseFirestore.instance
+        .collectionGroup('provinces')
+        .orderBy(FieldPath.documentId)
+        .startAt([ongoingTyphoonDocRef.path])
+        .endAt([ongoingTyphoonDocRef.path + "\uf8ff"])
+        .snapshots()
+        .map((snapshot) => snapshot.docs.map((doc) {
+              return Province.fromJson(doc.data());
+            }).toList());
+  }
+
+
+  Stream<List<Province>> streamAllProvinces2() async* {
     Typhoon? ongoingTyphoon = await getOngoingTyphoon();
+    print("TYPHOON RNDEL????");
+    print(ongoingTyphoon!.typhoonName);
     DocumentReference ongoingTyphoonDocRef =
         userRef.collection('typhoons').doc(ongoingTyphoon!.id);
     yield* FirebaseFirestore.instance
@@ -92,6 +187,147 @@ class FirestoreService2 {
             }).toList());
   }
 
+
+  Future<List<Province>> futureAllProvinces() async {
+    Typhoon? ongoingTyphoon = await getOngoingTyphoon();
+    DocumentReference ongoingTyphoonDocRef =
+        userRef.collection('typhoons').doc(ongoingTyphoon!.id);
+    var v = await FirebaseFirestore.instance
+        .collectionGroup('provinces')
+        .orderBy(FieldPath.documentId)
+        .startAt([ongoingTyphoonDocRef.path]).endAt(
+            [ongoingTyphoonDocRef.path + "\uf8ff"]).get();
+
+    List<Province> returnProvince = [];
+    for (var x in v.docs) {
+      Map<String, dynamic> k = x.data() as Map<String, dynamic>;
+      returnProvince.add(Province.fromJson(k));
+    }
+    return returnProvince;
+  }
+
+  Future<List<Municipality>> futureAllMunicipality() async {
+    Typhoon? ongoingTyphoon = await getOngoingTyphoon();
+    DocumentReference ongoingTyphoonDocRef =
+        userRef.collection('typhoons').doc(ongoingTyphoon!.id);
+    var v = await FirebaseFirestore.instance
+        .collectionGroup('municipalities')
+        .orderBy(FieldPath.documentId)
+        .startAt([ongoingTyphoonDocRef.path]).endAt(
+            [ongoingTyphoonDocRef.path + "\uf8ff"]).get();
+
+    List<Municipality> returnMunicipality = [];
+    for (var x in v.docs) {
+      Map<String, dynamic> k = x.data() as Map<String, dynamic>;
+      returnMunicipality.add(Municipality.fromJson(k));
+    }
+    return returnMunicipality;
+  }
+
+  Future<List<Province>> setProvincesHighestAtts(
+      List<Province> provinces) async {
+    for(Province prov in provinces){
+      print(prov.provName);
+      List<Day> allDays =
+          await FirestoreService2().getAllDaysBasedOnProvinceID(prov.id);
+      Day dayWithHighestWs = allDays.reduce((currentMax, day) {
+        return day.windSpeed! > currentMax.windSpeed! ? day : currentMax;
+      });
+      prov.highestWs = dayWithHighestWs.windSpeed;
+
+      Day dayWithHighestRf24 = allDays.reduce((currentMax, day) {
+        return day.rainfall24! > currentMax.rainfall24! ? day : currentMax;
+      });
+      prov.highestRf24 = dayWithHighestRf24.rainfall24;
+
+      Day dayWithHighestRf6 = allDays.reduce((currentMax, day) {
+        return day.rainfall6! > currentMax.rainfall6! ? day : currentMax;
+      });
+      prov.highestRf6 = dayWithHighestRf6.rainfall6;
+
+      print("ws: ${prov.highestWs} rf24: ${prov.highestRf24} rf6: ${prov.highestRf6}");
+    }
+
+    return provinces;
+  }
+
+
+  Future<List<Municipality>> setMunicipalitiesHighestAtts(
+      List<Municipality> municipalities) async {
+    for(Municipality mun in municipalities){
+      print(mun.munName);
+      List<Day> allDays =
+          await FirestoreService2().getAllDaysBasedOnMunicipalityID(mun);
+      Day dayWithHighestWs = allDays.reduce((currentMax, day) {
+        return day.windSpeed! > currentMax.windSpeed! ? day : currentMax;
+      });
+      mun.highestWs = dayWithHighestWs.windSpeed;
+
+      Day dayWithHighestRf24 = allDays.reduce((currentMax, day) {
+        return day.rainfall24! > currentMax.rainfall24! ? day : currentMax;
+      });
+      mun.highestRf24 = dayWithHighestRf24.rainfall24;
+
+      Day dayWithHighestRf6 = allDays.reduce((currentMax, day) {
+        return day.rainfall6! > currentMax.rainfall6! ? day : currentMax;
+      });
+      mun.highestRf6 = dayWithHighestRf6.rainfall6;
+
+      print("ws: ${mun.highestWs} rf24: ${mun.highestRf24} rf6: ${mun.highestRf6}");
+    }
+
+    return municipalities;
+  }
+
+
+  Future<List<Province>> setProvincesAvgAtts(
+      List<Province> provinces) async {
+    for(Province prov in provinces){
+
+      List<Day> allDays =
+          await FirestoreService2().getAllDaysBasedOnProvinceID(prov.id);
+      double dayWithAvgWs = allDays.map((day) => day.windSpeed).reduce((a, b) => a! + b!)! / allDays.length;
+      prov.avgWs = dayWithAvgWs;
+
+      double dayWithAvgRf24 = allDays.map((day) => day.rainfall24).reduce((a, b) => a! + b!)! / allDays.length;
+      prov.avgRf24 = dayWithAvgRf24;
+
+      double dayWithAvgRf6 = allDays.map((day) => day.rainfall24).reduce((a, b) => a! + b!)! / allDays.length;
+      prov.avgRf6 = dayWithAvgRf6;
+
+    }
+
+    return provinces;
+  }
+
+
+  Future<List<Municipality>> setMunicipalitiesAvgAtts(
+      List<Municipality> municipalities) async {
+    for(Municipality mun in municipalities){
+      print(mun.munName);
+      List<Day> allDays =
+          await FirestoreService2().getAllDaysBasedOnMunicipalityID(mun);
+      double dayWithAvgWs = allDays.map((day) => day.windSpeed).reduce((a, b) => a! + b!)! / allDays.length;
+      mun.avgWs = dayWithAvgWs;
+
+      double dayWithAvgRf24 = allDays.map((day) => day.rainfall24).reduce((a, b) => a! + b!)! / allDays.length;
+      mun.avgRf24 = dayWithAvgRf24;
+
+      double dayWithAvgRf6 = allDays.map((day) => day.rainfall24).reduce((a, b) => a! + b!)! / allDays.length;
+      mun.avgRf6 = dayWithAvgRf6;
+    }
+
+    return municipalities;
+  }
+
+  Future<void> markTyphoonAsFinished()async{
+    Typhoon? ongoingTyphoon = await getOngoingTyphoon();
+
+    userRef.collection('typhoons').doc(ongoingTyphoon!.id).update({
+      'status' : 'finished'
+    });
+  }
+
   Stream<Typhoon> streamOngoingTyphoon() {
     return userRef
         .collection('typhoons')
@@ -101,10 +337,11 @@ class FirestoreService2 {
   }
 
   Future<void> addOwner(
+      String ongoingTyphoonID,
       Owner? ownerToUpdate,
       //geo
-      String? provinceID,
-      String? municipalityID,
+      // String? provinceID,
+      // String? municipalityID,
       String? provName,
       String? munName,
       //typhoon
@@ -117,9 +354,12 @@ class FirestoreService2 {
       double distance,
       //forecast
       int dayCount) async {
+    String provinceID = uuid.v1();
+    String municipalityID = uuid.v1();
+    String currentDateTime = DateTime.now().toString();
     if (ownerToUpdate == null) {
       //ADD OWNER
-      String currentDateTime = DateTime.now().toString();
+
       //get forecast
       List<Day> forecast = await forecastModel().forecast(
           initial_ws: windSpeed,
@@ -133,8 +373,8 @@ class FirestoreService2 {
 
       //get ongoing typhoon ID
 
-      Typhoon? ongoingTyphoon = await getOngoingTyphoon();
-      String ongoingTyphoonID = ongoingTyphoon!.id;
+      // Typhoon? ongoingTyphoon = await getOngoingTyphoon();
+      // String ongoingTyphoonID = ongoingTyphoon!.id;
 
       //check if province with given provinceID already exists
       CollectionReference provinceColRef = userRef
@@ -240,7 +480,7 @@ class FirestoreService2 {
       double totalDamageCost = total;
 
       await ownerDocRef.set({
-        "daysCount" : dayCount,
+        "daysCount": dayCount,
         "color": ownerColor,
         "dateRecorded":
             currentDateTime, //get this first thing in the function. DateTime.now().toString()
@@ -291,7 +531,6 @@ class FirestoreService2 {
       await updateProvinceTotalDamageCost(ongoingTyphoonID, provinceID);
       await updateTyphoonTotalDamageCost(ongoingTyphoonID);
     } else {
-      String currentDateTime = DateTime.now().toString();
       //UPDATE OWNER
 
       //DELETE ALL DAYS IN THE OWNER
@@ -339,17 +578,21 @@ class FirestoreService2 {
 
       //adding owner to db
       await ownerDocRef.set({
-        "daysCount" : dayCount,
-        "color": [ownerToUpdate.colorMarker.red, ownerToUpdate.colorMarker.green, ownerToUpdate.colorMarker.red],
+        "daysCount": dayCount,
+        "color": [
+          ownerToUpdate.colorMarker.red,
+          ownerToUpdate.colorMarker.green,
+          ownerToUpdate.colorMarker.red
+        ],
         "dateRecorded":
             currentDateTime, //get this first thing in the function. DateTime.now().toString()
-        "id":
-            ownerToUpdate.id, // NAHH, SCRATCH THAT, JUST USE UUID().V1() FOR OWNER ID, FOR PROPER ORGANIZATION.
+        "id": ownerToUpdate
+            .id, // NAHH, SCRATCH THAT, JUST USE UUID().V1() FOR OWNER ID, FOR PROPER ORGANIZATION.
         "munName": munName,
         "municipalityID": municipalityID,
         "ownerName": ownerToUpdate.ownerName,
-        "provName": provName,
-        "provinceID": provinceID,
+        "provName": ownerToUpdate.provName,
+        "provinceID": ownerToUpdate.provinceID,
         "totalDamageCost": double.parse(totalDamageCost.toStringAsFixed(2)),
         "typhoonID": ownerToUpdate.typhoonID,
       });
@@ -386,30 +629,32 @@ class FirestoreService2 {
         });
       }
 
-      await updateMunicipalityTotalDamageCost(
-          ownerToUpdate.typhoonID!, ownerToUpdate.provinceID!, ownerToUpdate.municipalityID!);
-      await updateProvinceTotalDamageCost(ownerToUpdate.typhoonID!, ownerToUpdate.provinceID!);
+      await updateMunicipalityTotalDamageCost(ownerToUpdate.typhoonID!,
+          ownerToUpdate.provinceID!, ownerToUpdate.municipalityID!);
+      await updateProvinceTotalDamageCost(
+          ownerToUpdate.typhoonID!, ownerToUpdate.provinceID!);
       await updateTyphoonTotalDamageCost(ownerToUpdate.typhoonID!);
-
-      
     }
   }
 
-  Future<void> deleteAllDaysOfOwner(Owner owner)async{
-    CollectionReference daysColRef = userRef.collection('typhoons').doc(owner.typhoonID)
-    .collection('provinces').doc(owner.provinceID)
-    .collection('municipalities').doc(owner.municipalityID)
-    .collection('owners').doc(owner.id)
-    .collection('days');
+  Future<void> deleteAllDaysOfOwner(Owner owner) async {
+    CollectionReference daysColRef = userRef
+        .collection('typhoons')
+        .doc(owner.typhoonID)
+        .collection('provinces')
+        .doc(owner.provinceID)
+        .collection('municipalities')
+        .doc(owner.municipalityID)
+        .collection('owners')
+        .doc(owner.id)
+        .collection('days');
     QuerySnapshot daysSnapshot = await daysColRef.get();
 
-    for(DocumentSnapshot doc in daysSnapshot.docs){
-      Map<String,dynamic> data = doc.data() as Map<String,dynamic>;
+    for (DocumentSnapshot doc in daysSnapshot.docs) {
+      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
 
       await daysColRef.doc(data['id']).delete();
     }
-
-    
   }
 
   Future<void> updateTyphoonTotalDamageCost(String typhoonID) async {
@@ -524,8 +769,8 @@ class FirestoreService2 {
     List<int> randomNumbers = [];
 
     for (int i = 0; i < 3; i++) {
-      int randomNumber =
-          random.nextInt(128) + 128; // Generates a random number between 0 and 255
+      int randomNumber = random.nextInt(128) +
+          128; // Generates a random number between 0 and 255
       randomNumbers.add(randomNumber);
     }
 
@@ -544,5 +789,4 @@ class FirestoreService2 {
         .doc(ownerToDelete.id)
         .delete();
   }
-
 }

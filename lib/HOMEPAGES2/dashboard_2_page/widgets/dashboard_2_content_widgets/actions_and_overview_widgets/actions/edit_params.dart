@@ -5,6 +5,7 @@ import 'package:typhoonista_thesis/HOMEPAGES2/entities2/new/GetLocations.dart';
 import 'package:typhoonista_thesis/HOMEPAGES2/entities2/new/Location.dart';
 import 'package:typhoonista_thesis/HOMEPAGES2/entities2/new/Owner.dart';
 import 'package:typhoonista_thesis/HOMEPAGES2/entities2/new/Province.dart';
+import 'package:typhoonista_thesis/HOMEPAGES2/entities2/new/Typhoon.dart';
 import 'package:typhoonista_thesis/HOMEPAGES2/services2/FirestoreService2.dart';
 import 'package:typhoonista_thesis/assets/themes/textStyles.dart';
 
@@ -46,77 +47,117 @@ class _edit_paramsState extends State<edit_params> {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: InkWell(
-        onTap: (() {
-          showDialog(
-              // barrierDismissible: false,
-              //todo barrierdismissable, add close button, and when clost button is clicked, clear selectedloc.
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  backgroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
-                  content: StatefulBuilder(
-                    builder: (context, customState) {
-                      return Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20)),
-                              width: (isFetchingPrediction == true)
-                                  ? MediaQuery.of(context).size.width * 0.4
-                                  : MediaQuery.of(context).size.width * 0.7,
-                              child: (isFetchingPrediction == true)
-                                  ? fetchingPrediction()
-                                  //     : (isAddingTyphoon)
-                                  //         ? addingToDatabase()
-                                  //         : (isEstimationError)
-                                  //             ? estimationError(
-                                  //                 errorMessage!, customState)
-                                  // : (isEstimationSuccess)
-                                  //     ? Information(customState)
-                                  //                 :
-                                  : add_day(
-                                      // recentEstimation,
-                                      customState)),
-                        ],
-                      );
-                    },
+      child: StreamBuilder<Typhoon>(
+        stream: FirestoreService2().streamOngoingTyphoon(),
+        builder: (context, snapshot) {
+          if(snapshot.hasData){
+            return InkWell(
+            onTap: (() {
+              showDialog(
+                  // barrierDismissible: false,
+                  //todo barrierdismissable, add close button, and when clost button is clicked, clear selectedloc.
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      backgroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                      content: StatefulBuilder(
+                        builder: (context, customState) {
+                          return Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(20)),
+                                  width: (isFetchingPrediction == true)
+                                      ? MediaQuery.of(context).size.width * 0.4
+                                      : MediaQuery.of(context).size.width * 0.7,
+                                  child: (isFetchingPrediction == true)
+                                      ? fetchingPrediction()
+                                      //     : (isAddingTyphoon)
+                                      //         ? addingToDatabase()
+                                      //         : (isEstimationError)
+                                      //             ? estimationError(
+                                      //                 errorMessage!, customState)
+                                      // : (isEstimationSuccess)
+                                      //     ? Information(customState)
+                                      //                 :
+                                      : add_day(
+                                          // recentEstimation,
+                                          customState, snapshot.data!)),
+                            ],
+                          );
+                        },
+                      ),
+                    );
+                  });
+            }),
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Container(
+                      // color: Colors.red,
+                      child: Image.asset('lib/assets/images/Vector (1).png',
+                          height: 20)),
+                  Text(
+                    'Edit Parameters',
+                    style: textStyles.lato_bold(fontSize: 16),
                   ),
-                );
-              });
-        }),
-        child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 20),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Container(
-                  // color: Colors.red,
-                  child: Image.asset('lib/assets/images/Vector (1).png',
-                      height: 20)),
-              Text(
-                'Edit Parameters',
-                style: textStyles.lato_bold(fontSize: 16),
+                ],
               ),
-            ],
-          ),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.2),
-                offset: Offset(0, 3),
-                blurRadius: 2,
-                spreadRadius: 1,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    offset: Offset(0, 3),
+                    blurRadius: 2,
+                    spreadRadius: 1,
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
+            ),
+          );
+          }else{
+            return InkWell(
+            onTap: null,
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Container(
+                      // color: Colors.red,
+                      child: Image.asset('lib/assets/images/Vector (1).png',
+                          height: 20)),
+                  Text(
+                    'Edit Parameters',
+                    style: textStyles.lato_bold(fontSize: 16),
+                  ),
+                ],
+              ),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: Colors.grey[300],
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    offset: Offset(0, 3),
+                    blurRadius: 2,
+                    spreadRadius: 1,
+                  ),
+                ],
+              ),
+            ),
+          );
+          }
+        }
       ),
     );
   }
@@ -204,7 +245,7 @@ class _edit_paramsState extends State<edit_params> {
     });
   }
 
-  showAllOwners(Function customState) {
+  showAllOwners(Function customState, Typhoon ongoingTyphoonID) {
     showDialog(
         context: context,
         builder: (context) {
@@ -213,7 +254,7 @@ class _edit_paramsState extends State<edit_params> {
               width: MediaQuery.of(context).size.width * 0.53,
               padding: EdgeInsets.all(10),
               child: StreamBuilder<List<Owner>>(
-                stream: FirestoreService2().streamAllOwners(),
+                stream: FirestoreService2().streamAllOwners(ongoingTyphoonID),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     List<Owner> allOwners = snapshot.data!;
@@ -312,7 +353,7 @@ class _edit_paramsState extends State<edit_params> {
 
   Widget add_day(
       // Typhoon recentEstimation,
-      Function customState) {
+      Function customState, Typhoon ongoingTyphoon) {
     return Container(
       // color: Colors.amber,
       padding: EdgeInsets.symmetric(horizontal: 20),
@@ -335,7 +376,7 @@ class _edit_paramsState extends State<edit_params> {
                 Expanded(
                   child: InkWell(
                     onTap: (() {
-                      showAllOwners(customState);
+                      showAllOwners(customState, ongoingTyphoon);
                     }),
                     child: Container(
                       height: 48,
@@ -690,9 +731,8 @@ class _edit_paramsState extends State<edit_params> {
                         });
 
                         await FirestoreService2().addOwner(
+                            ongoingTyphoon.id,
                             selectedOwner,
-                            selectedProvince!.provID,
-                            selectedMunicipality!.munID,
                             selectedProvince!.provName,
                             selectedMunicipality!.munName,
                             double.parse(windspeedCtlr.text.trim()),

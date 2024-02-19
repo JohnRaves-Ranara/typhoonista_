@@ -73,15 +73,16 @@ class _typhoon_averages_overviewState extends State<typhoon_averages_overview> {
                               children: [
                                 Text(
                                   "No data.",
-                                  style: textStyles.lato_bold(fontSize: 30),
+                                  style: textStyles.lato_bold(fontSize: 30
+                                  ),
                                 ),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Text(
-                                  "Total Rice Crop Damage Cost of Typhoon Hevabi",
-                                  style: textStyles.lato_bold(fontSize: 14),
-                                )
+                                // SizedBox(
+                                //   height: 10,
+                                // ),
+                                // Text(
+                                //   "Total Rice Crop Damage Cost of Typhoon Hevabi",
+                                //   style: textStyles.lato_bold(fontSize: 14),
+                                // )
                               ],
                             );
                           }
@@ -99,36 +100,47 @@ class _typhoon_averages_overviewState extends State<typhoon_averages_overview> {
                   children: [
                     Expanded(
                         child: Container(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              StreamBuilder<List<Day>>(
-                                stream: FirestoreService2().streamAllDays(),
-                                builder: (context, snapshot) {
-                                  if(snapshot.hasData){
-                                  List<Day> allDays = snapshot.data!;
-                                  double avgDamageIncreasePerDay = averages().avgDamageIncreasePerDay(allDays);
-                                  return Text(
-                                    "₱ ${NumberFormat('#,##0.00', 'en_US').format(avgDamageIncreasePerDay)}",
-                                    style: textStyles.lato_bold(fontSize: 22),
-                                  );
-                                  }else{
-                                    return Text(
-                                    "No data.",
-                                    style: textStyles.lato_bold(fontSize: 22),
-                                  );
-                                  }
-                                }
-                              ),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              Text(
-                                "Avg. Increase/Day",
-                                style: textStyles.lato_bold(fontSize: 11),
-                              )
-                            ],
+                          child: StreamBuilder<Typhoon>(
+                            stream: FirestoreService2().streamOngoingTyphoon(),
+                            builder: (context, snapshot) {
+                              if(snapshot.hasData){
+                                return Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  StreamBuilder<List<Day>>(
+                                    stream: FirestoreService2().streamAllDays(snapshot.data!),
+                                    builder: (context, snapshot) {
+                                      if(snapshot.hasData){
+                                      List<Day> allDays = snapshot.data!;
+                                      print(allDays.length);
+                                      double avgDamageIncreasePerDay = averages().avgDamageIncreasePerDay(allDays);
+                                      print("AVG DAMAGE INCREASE : ${avgDamageIncreasePerDay}");
+                                      return Text(
+                                        (avgDamageIncreasePerDay <= 0 )? "₱ 0.00" : "₱ ${NumberFormat('#,##0.00', 'en_US').format(avgDamageIncreasePerDay.abs())}",
+                                        style: textStyles.lato_bold(fontSize: 22),
+                                      );
+                                      }else{
+                                        return Text(
+                                        "No data.",
+                                        style: textStyles.lato_bold(fontSize: 22),
+                                      );
+                                      }
+                                    }
+                                  ),
+                                  SizedBox(
+                                    height: 8,
+                                  ),
+                                  Text(
+                                    "Avg. Increase/Day",
+                                    style: textStyles.lato_bold(fontSize: 11),
+                                  )
+                                ],
+                              );
+                              }else{
+                                return Center(child: Text("No data", style: textStyles.lato_bold(fontSize: 22),),);
+                              }
+                            }
                           ),
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(15),
@@ -158,42 +170,51 @@ class _typhoon_averages_overviewState extends State<typhoon_averages_overview> {
                                 spreadRadius: 1,
                               ),
                             ]),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            StreamBuilder<List<Owner>>(
-                                stream: FirestoreService2().streamAllOwners(),
-                                builder: (context, snapshot) {
-                                  if (snapshot.hasData) {
-                                    final List<Owner> allOwners =
-                                        snapshot.data!;
-
-                                    allOwners.forEach((element) {
-                                      print(element.daysCount);
-                                    });
-                                    double averageDamagePerDay = averages()
-                                        .avgDamagePerDayFormulaNiGerome(
-                                            allOwners);
-                                    return Text(
-                                      "₱ ${NumberFormat('#,##0.00', 'en_US').format(averageDamagePerDay)}",
-                                      style: textStyles.lato_bold(fontSize: 22),
-                                    );
-                                  } else {
-                                    return Text(
-                                      "No data.",
-                                      style: textStyles.lato_bold(fontSize: 22),
-                                    );
-                                  }
-                                }),
-                            SizedBox(
-                              height: 8,
-                            ),
-                            Text(
-                              "Avg. Damage/Day",
-                              style: textStyles.lato_bold(fontSize: 11),
-                            )
-                          ],
+                        child: StreamBuilder<Typhoon>(
+                          stream: FirestoreService2().streamOngoingTyphoon(),
+                          builder: (context, snapshot) {
+                            if(snapshot.hasData){
+                              return Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                StreamBuilder<List<Owner>>(
+                                    stream: FirestoreService2().streamAllOwners(snapshot.data!),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.hasData) {
+                                        final List<Owner> allOwners =
+                                            snapshot.data!;
+                            
+                                        allOwners.forEach((element) {
+                                          print(element.daysCount);
+                                        });
+                                        double averageDamagePerDay = averages()
+                                            .avgDamagePerDayFormulaNiGerome(
+                                                allOwners);
+                                        return Text(
+                                          (averageDamagePerDay.isNaN || averageDamagePerDay <= 0) ? "₱ 0.00" : "₱ ${NumberFormat('#,##0.00', 'en_US').format(averageDamagePerDay)}",
+                                          style: textStyles.lato_bold(fontSize: 22),
+                                        );
+                                      } else {
+                                        return Text(
+                                          "No data.",
+                                          style: textStyles.lato_bold(fontSize: 22),
+                                        );
+                                      }
+                                    }),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                Text(
+                                  "Avg. Damage/Day",
+                                  style: textStyles.lato_bold(fontSize: 11),
+                                )
+                              ],
+                            );
+                            }else{
+                              return Center(child: Text("No data", style: textStyles.lato_bold(fontSize: 22),),);
+                            }
+                          }
                         ),
                       ),
                     )

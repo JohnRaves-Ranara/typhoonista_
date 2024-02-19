@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:typhoonista_thesis/HOMEPAGES2/entities2/new/Typhoon.dart';
 import 'package:typhoonista_thesis/HOMEPAGES2/services2/FirestoreService2.dart';
 import 'package:typhoonista_thesis/assets/themes/textStyles.dart';
 import '../../../../../entities2/new/Location.dart';
@@ -372,84 +373,128 @@ class _add_estimationState extends State<add_estimation> {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-        child: InkWell(
-      onTap: (() {
-        showDialog(
-            // barrierDismissible: false,
-            //todo barrierdismissable, add close button, and when clost button is clicked, clear selectedloc.
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                backgroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)),
-                content: StatefulBuilder(
-                  builder: (context, customState) {
-                    return Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20)),
-                            width:
-                                (isFetchingPrediction==true)
-                                    ? MediaQuery.of(context).size.width * 0.4
+        child: StreamBuilder<Typhoon>(
+          stream: FirestoreService2().streamOngoingTyphoon(),
+          builder: (context, snapshot) {
+            if(snapshot.hasData){
+              Typhoon ongoingTyphoon = snapshot.data!;
+              return InkWell(
+                  onTap: (() {
+            showDialog(
+                // barrierDismissible: false,
+                //todo barrierdismissable, add close button, and when clost button is clicked, clear selectedloc.
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    backgroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                    content: StatefulBuilder(
+                      builder: (context, customState) {
+                        return Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20)),
+                                width:
+                                    (isFetchingPrediction==true)
+                                        ? MediaQuery.of(context).size.width * 0.4
+                                        :
+                                    MediaQuery.of(context).size.width * 0.7,
+                                child:
+                                    (isFetchingPrediction==true)
+                                        ? fetchingPrediction()
+                                    //     : (isAddingTyphoon)
+                                    //         ? addingToDatabase()
+                                    //         : (isEstimationError)
+                                    //             ? estimationError(
+                                    //                 errorMessage!, customState)
+                                                // : (isEstimationSuccess)
+                                                //     ? Information(customState)
+                                    //                 :
                                     :
-                                MediaQuery.of(context).size.width * 0.7,
-                            child:
-                                (isFetchingPrediction==true)
-                                    ? fetchingPrediction()
-                                //     : (isAddingTyphoon)
-                                //         ? addingToDatabase()
-                                //         : (isEstimationError)
-                                //             ? estimationError(
-                                //                 errorMessage!, customState)
-                                            // : (isEstimationSuccess)
-                                            //     ? Information(customState)
-                                //                 :
-                                :
-                                add_day(
-                                    // recentEstimation,
-                                    customState)),
-                      ],
-                    );
-                  },
+                                    add_day(
+                                        ongoingTyphoon,
+                                        // recentEstimation,
+                                        customState)),
+                          ],
+                        );
+                      },
+                    ),
+                  );
+                });
+                  }),
+                  child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Container(
+                    // color: Colors.red,
+                    child: Image.asset(
+                  'lib/assets/images/basil_add-outline.png',
+                  height: 24,
+                )),
+                Text(
+                  'Add Estimation',
+                  style: textStyles.lato_bold(fontSize: 16),
                 ),
-              );
-            });
-      }),
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 20),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Container(
-                // color: Colors.red,
-                child: Image.asset(
-              'lib/assets/images/basil_add-outline.png',
-              height: 24,
-            )),
-            Text(
-              'Add Estimation',
-              style: textStyles.lato_bold(fontSize: 16),
+              ],
             ),
-          ],
-        ),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.2),
-              offset: Offset(0, 3),
-              blurRadius: 2,
-              spreadRadius: 1,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  offset: Offset(0, 3),
+                  blurRadius: 2,
+                  spreadRadius: 1,
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
-    ));
+                  ),
+                );
+            }else{
+              return InkWell(
+                  onTap: null,
+                  child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Container(
+                    // color: Colors.red,
+                    child: Image.asset(
+                  'lib/assets/images/basil_add-outline.png',
+                  height: 24,
+                )),
+                Text(
+                  'Add Estimation',
+                  style: textStyles.lato_bold(fontSize: 16),
+                ),
+              ],
+            ),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: Colors.grey[300],
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  offset: Offset(0, 3),
+                  blurRadius: 2,
+                  spreadRadius: 1,
+                ),
+              ],
+            ),
+                  ),
+                );
+            }
+          }
+        ));
   }
 
   Widget fetchingPrediction(){
@@ -499,6 +544,7 @@ class _add_estimationState extends State<add_estimation> {
 
   Widget add_day(
       // Typhoon recentEstimation,
+      Typhoon ongoingTyphoon,
       Function customState) {
     return Container(
       // color: Colors.amber,
@@ -927,9 +973,8 @@ class _add_estimationState extends State<add_estimation> {
                     print("FETCHING PREDICTION START");
                   });
                   await FirestoreService2().addOwner(
+                    ongoingTyphoon.id,
                     null,
-                    selectedProvince!.provID,
-                    selectedMunicipality!.munID,
                     selectedProvince!.provName,
                     selectedMunicipality!.munName,
                     double.parse(windspeedCtlr.text.trim()),
@@ -943,6 +988,17 @@ class _add_estimationState extends State<add_estimation> {
                     );
                   customState(() {
                     isFetchingPrediction = false;
+                    windspeedCtlr.clear();
+                    rainfall24Ctlr.clear();
+                    rainfall6Ctlr.clear();
+                    ricePriceCtlr.clear();
+                    daysCountCtrlr.clear();
+                    riceAreaCtrlr.clear();
+                    yieldCtrlr.clear();
+                    selectedProvince = null;
+                    selectedMunicipality = null;
+                    distanceCtrlr.clear();
+                    distrackminfinal = null;
                     print("FETCHED PREDICTION FINISHED");
                   });
                   Navigator.pop(context);

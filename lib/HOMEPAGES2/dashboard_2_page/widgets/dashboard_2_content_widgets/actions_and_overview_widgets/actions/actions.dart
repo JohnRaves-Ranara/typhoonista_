@@ -61,7 +61,7 @@ class _actionsState extends State<actions> {
               SizedBox(
                 height: 15,
               ),
-              generate_doc()
+              stats()
             ],
           ))
         ]));

@@ -77,8 +77,8 @@ class _add_typhoonState extends State<add_typhoon> {
                 Container(
                     // color: Colors.red,
                     child: Image.asset(
-                  'lib/assets/images/basil_add-outline.png',
-                  height: 24,
+                  'lib/assets/images/adtyphon.png',
+                  height: 20,
                 )),
                 Text(
                   'Add Typhoon',
@@ -116,8 +116,8 @@ class _add_typhoonState extends State<add_typhoon> {
                 Container(
                     // color: Colors.red,
                     child: Image.asset(
-                  'lib/assets/images/basil_add-outline.png',
-                  height: 24,
+                  'lib/assets/images/adtyphon.png',
+                  height: 20,
                 )),
                 Text(
                   'Add Typhoon',
@@ -198,7 +198,7 @@ class _add_typhoonState extends State<add_typhoon> {
               child: InkWell(
                 borderRadius: BorderRadius.circular(8),
                 onTap: (() async{
-                  // await FirestoreService2().addTyphoon(typhoonNameCtrlr.text.trim());
+                  await FirestoreService2().addTyphoon(typhoonNameCtrlr.text.trim());
                   typhoonNameCtrlr.clear();
                   Navigator.pop(context);
                 }),

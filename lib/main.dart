@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:typhoonista_thesis/HOMEPAGES2/statistics_page/statistics.dart';
 import 'package:typhoonista_thesis/HOMEPAGES2/tests/demo.dart';
 import 'package:typhoonista_thesis/HOMEPAGES2/tests/test5.dart';
 import 'package:typhoonista_thesis/HOMEPAGES2/tests/test6.dart';

@@ -1,7 +1,4 @@
 // import 'package:flutter/material.dart';
-// import 'package:syncfusion_flutter_maps/maps.dart';
-// import 'package:flutter/services.dart' show rootBundle;
-// import 'package:vector_map/vector_map.dart';
 
 // class test5 extends StatefulWidget {
 //   const test5({super.key});
@@ -11,109 +8,85 @@
 // }
 
 // class _test5State extends State<test5> {
-//   late MapShapeSource _shapeSource;
-//   // VectorMapController? _controller;
 //   @override
-//   void initState() {
-//     super.initState();
-//     _shapeSource = const MapShapeSource.asset(
-//       // 'lib/philippines-with-regions_ (2).geojson',
-//       'lib/services/MuniCities.minimal.json',
-
-//       shapeDataField: "NAME_2",
-//     );
-
-//     print(_shapeSource);
-
-//   }
-
 //   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: Column(
-//         children: [
-//           Container(
-//             color: Colors.blue,
-//             child:
-
-//             SfMaps(
-//               layers: [
-//                 MapShapeLayer(
-//                   source: _shapeSource,
-//                   showDataLabels: true,
-//                   dataLabelSettings: const MapDataLabelSettings(
-//                     overflowMode: MapLabelOverflow.hide,
-//                     textStyle: TextStyle(color: Colors.black, fontSize: 9),
+//     return Row(
+//       children: [
+//         Column(
+//           children: owners
+//               .map(
+//                 (owner) => Padding(
+//                   padding: const EdgeInsets.only(bottom: 10.0),
+//                   child: 
+//                   Row(
+//                     children: [
+//                       Consumer<SampleProvider>(
+//                         builder: (context, prov, _) {
+//                           Set<Owner> selectedOwners = prov.selectedOwners;
+//                           return Container(
+//                             child: (!selectedOwners.contains(owner))
+//                                 ? GestureDetector(
+//                                     onTap: (() {
+//                                       prov.addSelectedOwner(owner);
+//                                     }),
+//                                     child: Icon(Icons.visibility_outlined))
+//                                 : GestureDetector(
+//                                     onTap: (() {
+//                                       prov.removeSelectedOwner(owner);
+//                                     }),
+//                                     child: Icon(Icons.visibility)),
+//                           );
+//                         },
+//                       ),
+//                       SizedBox(
+//                         width: 10,
+//                       ),
+//                       CircleAvatar(
+//                         radius: 10,
+//                         backgroundColor: owner.colorMarker.withOpacity(0.5),
+//                       ),
+//                       SizedBox(
+//                         width: 10,
+//                       ),
+//                     ],
 //                   ),
-//                 )
-//               ],
-//             ),
-
-//           )
-//           // Text("hello world")
-//         ],
-//       ),
+//                 ),
+//               )
+//               .toList(),
+//         ),
+//         Spacer(),
+//         Column(
+//           crossAxisAlignment: CrossAxisAlignment.start,
+//           children: owners
+//               .map(
+//                 (owner) => Padding(
+//                   padding: const EdgeInsets.only(bottom: 10.0),
+//                   child: 
+//                   Text(
+//                     owner.ownerName,
+//                     style: textStyles.lato_light(fontSize: 16),
+//                   ),
+//                 ),
+//               )
+//               .toList(),
+//         ),
+//         Spacer(),
+//         Column(
+//           crossAxisAlignment: CrossAxisAlignment.end,
+//           children: owners
+//               .map(
+//                 (owner) => Padding(
+//                   padding: const EdgeInsets.only(bottom: 10),
+//                   child: 
+//                   Text(
+//                     "${NumberFormat('#,##0.00', 'en_US').format(owner.totalDamageCost)}",
+//                     style: textStyles.lato_light(fontSize: 16),
+//                   ),
+//                 ),
+//               )
+//               .toList(),
+//         ),
+//       ],
 //     );
 //   }
 // }
-
-import '../entities2/new/Day.dart';
-
-void main() {
-  List<Day> alldays = [
-    Day(dayNum: 1, damageCost: 12),
-    Day(dayNum: 4, damageCost: 34),
-    Day(dayNum: 2, damageCost: 43),
-    Day(dayNum: 4, damageCost: 67),
-    Day(dayNum: 3,damageCost: 22),
-    Day(dayNum: 1,damageCost: 87),
-    Day(dayNum: 2,damageCost: 45),
-    Day(dayNum: 4,damageCost: 23),
-    Day(dayNum: 1,damageCost: 87),
-    Day(dayNum: 3,damageCost: 23),
-    Day(dayNum: 3,damageCost: 99),
-    Day(dayNum: 2,damageCost: 45),
-    Day(dayNum: 5, damageCost: 31),
-    Day(dayNum: 5, damageCost: 11),
-    Day(dayNum: 5, damageCost: 76),
-  ];
-
-  double getAverageDamagePerDay(List<Day> alldays) {
-    Map<int, List<Day>> groupeddays = {};
-
-    for (Day day in alldays) {
-      groupeddays.putIfAbsent(day.dayNum!, () => []);
-      groupeddays[day.dayNum]!.add(day);
-    }
-
-    List<double> totalOfAllDaysEachGroup = [];
-    groupeddays.forEach((key, value) { 
-      double total = 0;
-      for(Day day in value){
-        total += day.damageCost!;
-      }
-      totalOfAllDaysEachGroup.add(total);
-    });
-    print(totalOfAllDaysEachGroup);
-    double total = 0;
-    for(double num in totalOfAllDaysEachGroup){
-      total += num;
-    }
-
-    return total / groupeddays.length;
-  }
-
-  double averageDamagePerDay = getAverageDamagePerDay(alldays);
-
-  print(averageDamagePerDay);
-
-  // groupeddays.forEach((key, value) {
-  //   print("Group $key: ${value}");
-  // });
-
-  // double averageOfAll(Map<int, List<Day>> groupedPersons){
-    
-  // }
-  
-
-
-}
