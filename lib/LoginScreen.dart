@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:typhoonista_thesis/Home.dart';
+import 'package:typhoonista_thesis/Home_2.dart';
 import 'package:typhoonista_thesis/providers/page_provider.dart';
 import 'assets/themes/textStyles.dart';
 
@@ -155,7 +156,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           if (usercontroller.text.trim() == "admin" &&
                               passController.text.trim() == "admin") {
                             // Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => Home()), (route) => route.isFirst);
-                            context.read<page_provider>().changeMainPage(1);
+                            // context.read<page_provider>().changeMainPage(1);
+                            Navigator.push(context, MaterialPageRoute(builder: (context)=> Home_2()));
                           }
                         }),
                         child: Container(

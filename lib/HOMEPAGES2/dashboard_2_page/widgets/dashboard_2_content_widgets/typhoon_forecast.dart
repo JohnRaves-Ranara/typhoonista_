@@ -85,7 +85,7 @@ class _typhoon_forecastState extends State<typhoon_forecast> {
                                                         fontSize: 22),
                                                   ),
                                                   Text(
-                                                    '6-Day Rice Crop Damage Forecast',
+                                                    'Rice Crop Damage Forecast',
                                                     style: textStyles.lato_bold(
                                                         fontSize: 22),
                                                   ),
@@ -124,6 +124,7 @@ class _typhoon_forecastState extends State<typhoon_forecast> {
                                                 ? owners
                                                     .map((owner) =>
                                                         AreaSeries<Day, String>(
+                                                          
                                                           //todo
                                                           // trendlines: <Trendline>[
                                                           //   Trendline(

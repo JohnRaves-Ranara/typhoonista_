@@ -206,6 +206,7 @@ class _edit_paramsState extends State<edit_params> {
   }
 
   Future<void> _setSelectedOwner(Function customState, Owner owner) async {
+    print(owner.ownerName);
     //SET SELECTEDOWNER, SET INPUTS TO SELECTEDOWNER'S ATTRIBUTES
     customState(() {
       isSettingSelectedOwner = true;
@@ -213,6 +214,11 @@ class _edit_paramsState extends State<edit_params> {
     selectedOwner = owner;
     List<Day> allDaysOfSelectedOwner = await FirestoreService2().getAllDays(
         owner.typhoonID!, owner.provinceID!, owner.municipalityID!, owner.id);
+    
+    allDaysOfSelectedOwner.forEach((element) {
+      print(element.windSpeed);
+    });
+    
     Day selectedOwnerDay1 =
         allDaysOfSelectedOwner.firstWhere((day) => day.dayNum == 1);
 
@@ -258,6 +264,8 @@ class _edit_paramsState extends State<edit_params> {
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     List<Owner> allOwners = snapshot.data!;
+                    print("BADSTATE DIAY HA");
+                    print(allOwners.length);
 
                     allOwners.sort((a, b) => DateTime.parse(b.dateRecorded!)
                         .compareTo(DateTime.parse(a.dateRecorded!)));
