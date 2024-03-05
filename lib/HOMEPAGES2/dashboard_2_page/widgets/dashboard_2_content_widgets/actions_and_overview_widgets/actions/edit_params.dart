@@ -58,6 +58,7 @@ class _edit_paramsState extends State<edit_params> {
                   //todo barrierdismissable, add close button, and when clost button is clicked, clear selectedloc.
                   context: context,
                   builder: (context) {
+                    selectedOwner = null;
                     return AlertDialog(
                       backgroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
@@ -206,22 +207,29 @@ class _edit_paramsState extends State<edit_params> {
   }
 
   Future<void> _setSelectedOwner(Function customState, Owner owner) async {
+    print("BADSTATE DAW???");
     print(owner.ownerName);
+    print("${owner.typhoonID} ${owner.provinceID} ${owner.municipalityID} ${owner.id} ");
     //SET SELECTEDOWNER, SET INPUTS TO SELECTEDOWNER'S ATTRIBUTES
     customState(() {
       isSettingSelectedOwner = true;
     });
+    print("1232312");
     selectedOwner = owner;
     List<Day> allDaysOfSelectedOwner = await FirestoreService2().getAllDays(
         owner.typhoonID!, owner.provinceID!, owner.municipalityID!, owner.id);
+
+    print(allDaysOfSelectedOwner);
     
     allDaysOfSelectedOwner.forEach((element) {
       print(element.windSpeed);
     });
     
+    print("MARIKIT SA DILIM");
     Day selectedOwnerDay1 =
         allDaysOfSelectedOwner.firstWhere((day) => day.dayNum == 1);
 
+    print("SELECTING??? ${selectedOwnerDay1}");
     //DAY
     windspeedCtlr.text = selectedOwnerDay1.windSpeed.toString();
     rainfall24Ctlr.text = selectedOwnerDay1.rainfall24.toString();
@@ -232,6 +240,7 @@ class _edit_paramsState extends State<edit_params> {
     distrackminfinal = selectedOwnerDay1.distance.toString();
     manualDistanceCtrlr.text = distrackminfinal!;
 
+    print("MARIKIT SA DILIM part 2");
     //OWNER
     int totalNumberOfDays = allDaysOfSelectedOwner.length;
     daysCountCtrlr.text = totalNumberOfDays.toString();
@@ -246,6 +255,7 @@ class _edit_paramsState extends State<edit_params> {
         munID: owner.municipalityID,
         munName: owner.munName);
 
+    print("BAKIT LABIS KITANG MAHAL");
     customState(() {
       isSettingSelectedOwner = false;
     });
@@ -264,6 +274,10 @@ class _edit_paramsState extends State<edit_params> {
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     List<Owner> allOwners = snapshot.data!;
+                    var owner = allOwners.first;
+                    print("${owner.typhoonID} ${owner.provinceID} ${owner.municipalityID} ${owner.id} ");
+                    print(ongoingTyphoonID);
+                    print(allOwners.first.munName); 
                     print("BADSTATE DIAY HA");
                     print(allOwners.length);
 
@@ -750,7 +764,9 @@ class _edit_paramsState extends State<edit_params> {
                             double.parse(riceAreaCtrlr.text.trim()),
                             double.parse(yieldCtrlr.text.trim()),
                             double.parse(distrackminfinal!),
-                            int.parse(daysCountCtrlr.text.trim()));
+                            int.parse(daysCountCtrlr.text.trim()),
+                            null
+                            );
                         customState(() {
                           isFetchingPrediction = false;
                         });

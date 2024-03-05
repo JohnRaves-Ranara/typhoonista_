@@ -55,11 +55,11 @@ class _typhoon_donutchartState extends State<typhoon_donutchart> {
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
                         List<Municipality> municipalities = snapshot.data!;
-                        List<int> damagePercentages =
+                        List<double> damagePercentages =
                             municipalConvertToPercentages(municipalities);
                         for (int i = 0; i < municipalities.length; i++) {
                           municipalities[i].damageCostInPercentage =
-                              damagePercentages[i];
+                              double.parse(damagePercentages[i].toStringAsFixed(0));
                         }
                         return Row(children: [
                           Expanded(
@@ -170,8 +170,6 @@ class _typhoon_donutchartState extends State<typhoon_donutchart> {
                                     child: ListView(
                                       children: municipalities
                                           .map((municipality) => Container(
-                                                padding: EdgeInsets.symmetric(
-                                                    horizontal: 10),
                                                 margin: const EdgeInsets.only(
                                                     bottom: 7),
                                                 child: Row(
@@ -237,11 +235,11 @@ class _typhoon_donutchartState extends State<typhoon_donutchart> {
                         List<Province> provinces = snapshot.data!;
                         print(provinces.isEmpty);
                         print("XAXAXAXA ${provinces}");
-                        List<int> damagePercentages =
+                        List<double> damagePercentages =
                             provincialConvertToPercentages(provinces);
                         for (int i = 0; i < provinces.length; i++) {
                           provinces[i].damageCostInPercentage =
-                              damagePercentages[i];
+                              double.parse(damagePercentages[i].toStringAsFixed(0));
                         }
                         return Row(children: [
                           Expanded(
@@ -346,8 +344,7 @@ class _typhoon_donutchartState extends State<typhoon_donutchart> {
                                     child: ListView(
                                       children: provinces
                                           .map((provinces) => Container(
-                                                padding: EdgeInsets.symmetric(
-                                                    horizontal: 10),
+                                                padding: EdgeInsets.symmetric(),
                                                 margin: const EdgeInsets.only(
                                                     bottom: 7),
                                                 child: Row(
@@ -404,23 +401,15 @@ class _typhoon_donutchartState extends State<typhoon_donutchart> {
         ));
   }
 
-  List<int> municipalConvertToPercentages(List<Municipality> municipalities) {
-    List<double> damageCosts =
-        municipalities.map((mun) => mun.totalDamageCost).toList();
-    double sum = damageCosts.reduce((value, element) => value + element);
-    List<int> percentages =
-        damageCosts.map((number) => (number * 100) ~/ sum).toList();
-
+  List<double> municipalConvertToPercentages(List<Municipality> municipalities) {
+    double dmgCosts = municipalities.map((mun) => mun.totalDamageCost).fold(0, (a, b) => a + b);
+    List<double> percentages = municipalities.map((mun) => (mun.totalDamageCost / dmgCosts) * 100).toList();
     return percentages;
   }
 
-  List<int> provincialConvertToPercentages(List<Province> provinces) {
-    List<double> damageCosts =
-        provinces.map((mun) => mun.totalDamageCost).toList();
-    double sum = damageCosts.reduce((value, element) => value + element);
-    List<int> percentages =
-        damageCosts.map((number) => (number * 100) ~/ sum).toList();
-
+  List<double> provincialConvertToPercentages(List<Province> provinces) {
+    double dmgCosts = provinces.map((prov) => prov.totalDamageCost).fold(0, (a, b) => a + b);
+    List<double> percentages = provinces.map((prov) => (prov.totalDamageCost / dmgCosts) * 100).toList();
     return percentages;
   }
 }

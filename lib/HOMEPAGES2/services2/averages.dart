@@ -54,6 +54,21 @@ class averages {
     return totalDamageIncrease / (allDays.length - 1);
   }
 
+  double calculateAverageDamageIncrease(List<Day> days) {
+  double totalDamageIncrease = 0;
+  int totalDays = days.length;
+
+  for(int i=1; i< days.length;i++){
+    double damageIncrease = days[i].damageCost! - days[i - 1].damageCost!;
+    totalDamageIncrease += damageIncrease;
+  }
+  
+  print("DASDA DSSS ${totalDamageIncrease}");
+  print("DASDA DSSS ${totalDays}");
+  double averageDamageIncrease = totalDamageIncrease / totalDays;
+  return averageDamageIncrease;
+}
+
   //streamallowners
   double avgDamagePerDayFormulaNiGerome(List<Owner> owners) {
     double allOwnersAvgDamagePerDayTotal = 0;

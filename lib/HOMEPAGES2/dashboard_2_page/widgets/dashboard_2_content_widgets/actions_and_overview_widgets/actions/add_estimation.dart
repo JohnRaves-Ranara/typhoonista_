@@ -984,7 +984,8 @@ class _add_estimationState extends State<add_estimation> {
                     double.parse(riceAreaCtrlr.text.trim()),
                     double.parse(yieldCtrlr.text.trim()),
                     double.parse(distrackminfinal!),
-                    int.parse(daysCountCtrlr.text.trim())
+                    int.parse(daysCountCtrlr.text.trim()),
+                    null
                     );
                   customState(() {
                     isFetchingPrediction = false;

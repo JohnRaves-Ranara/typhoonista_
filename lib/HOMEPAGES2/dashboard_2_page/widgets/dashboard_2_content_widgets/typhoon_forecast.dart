@@ -30,7 +30,10 @@ class _typhoon_forecastState extends State<typhoon_forecast> {
                   stream: FirestoreService2().streamAllOwners(ongoingTyphoon),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
+                      print("YES NAAY OWNERS!!!!!!!!");
+                      
                       List<Owner> owners = snapshot.data!;
+                      print(owners.length);
                       owners.sort((a, b) => DateTime.parse(b.dateRecorded!)
                           .compareTo(DateTime.parse(a.dateRecorded!)));
                       print("REBUILD");
@@ -102,7 +105,7 @@ class _typhoon_forecastState extends State<typhoon_forecast> {
                                                         fontSize: 22),
                                                   ),
                                                   Text(
-                                                    '6-Day Rice Crop Damage Forecast',
+                                                    'Rice Crop Damage Forecast',
                                                     style: textStyles.lato_bold(
                                                         fontSize: 22),
                                                   ),
@@ -193,66 +196,74 @@ class _typhoon_forecastState extends State<typhoon_forecast> {
                                     ),
                                   ]),
                               child: ListView(
-                                children: owners
-                                    .map((owner) => Container(
-                                          margin: EdgeInsets.only(bottom: 11),
-                                          child: Row(
-                                            children: [
-                                              Row(
+                                
+                                children: [
+                                  Container(height: 50, child: Text("Estimation History", style: textStyles.lato_bold(fontSize: 22),),),
+                                  
+                                  ListView(
+                                    shrinkWrap: true,
+                                    children: owners
+                                        .map((owner) => Container(
+                                              margin: EdgeInsets.only(bottom: 11),
+                                              child: Row(
                                                 children: [
-                                                  Consumer<SampleProvider>(
-                                                    builder: (context, prov, _) {
-                                                      Set<Owner> selectedOwners =
-                                                          prov.selectedOwners;
-                                                      return Container(
-                                                        child: (!selectedOwners
-                                                                .contains(owner))
-                                                            ? GestureDetector(
-                                                                onTap: (() {
-                                                                  prov.addSelectedOwner(
-                                                                      owner);
-                                                                }),
-                                                                child: Icon(Icons
-                                                                    .visibility_outlined))
-                                                            : GestureDetector(
-                                                                onTap: (() {
-                                                                  prov.removeSelectedOwner(
-                                                                      owner);
-                                                                }),
-                                                                child: Icon(
-                                                                    Icons.visibility)),
-                                                      );
-                                                    },
+                                                  Row(
+                                                    children: [
+                                                      Consumer<SampleProvider>(
+                                                        builder: (context, prov, _) {
+                                                          Set<Owner> selectedOwners =
+                                                              prov.selectedOwners;
+                                                          return Container(
+                                                            child: (!selectedOwners
+                                                                    .contains(owner))
+                                                                ? GestureDetector(
+                                                                    onTap: (() {
+                                                                      prov.addSelectedOwner(
+                                                                          owner);
+                                                                    }),
+                                                                    child: Icon(Icons
+                                                                        .visibility_outlined))
+                                                                : GestureDetector(
+                                                                    onTap: (() {
+                                                                      prov.removeSelectedOwner(
+                                                                          owner);
+                                                                    }),
+                                                                    child: Icon(
+                                                                        Icons.visibility)),
+                                                          );
+                                                        },
+                                                      ),
+                                                      SizedBox(
+                                                        width: 10,
+                                                      ),
+                                                      CircleAvatar(
+                                                        radius: 10,
+                                                        backgroundColor: owner.colorMarker
+                                                            .withOpacity(0.5),
+                                                      ),
+                                                      SizedBox(
+                                                        width: 10,
+                                                      ),
+                                                    ],
                                                   ),
-                                                  SizedBox(
-                                                    width: 10,
+                                                  SizedBox(width: 45,),
+                                                  Text(
+                                                    owner.ownerName,
+                                                    style:
+                                                        textStyles.lato_light(fontSize: 16),
                                                   ),
-                                                  CircleAvatar(
-                                                    radius: 10,
-                                                    backgroundColor: owner.colorMarker
-                                                        .withOpacity(0.5),
-                                                  ),
-                                                  SizedBox(
-                                                    width: 10,
+                                                  Spacer(),
+                                                  Text(
+                                                    "${NumberFormat('#,##0.00', 'en_US').format(owner.totalDamageCost)}",
+                                                    style:
+                                                        textStyles.lato_light(fontSize: 16),
                                                   ),
                                                 ],
                                               ),
-                                              SizedBox(width: 45,),
-                                              Text(
-                                                owner.ownerName,
-                                                style:
-                                                    textStyles.lato_light(fontSize: 16),
-                                              ),
-                                              Spacer(),
-                                              Text(
-                                                "${NumberFormat('#,##0.00', 'en_US').format(owner.totalDamageCost)}",
-                                                style:
-                                                    textStyles.lato_light(fontSize: 16),
-                                              ),
-                                            ],
-                                          ),
-                                        ))
-                                    .toList(),
+                                            ))
+                                        .toList(),
+                                  ),
+                                ],
                               )
                               ),
                         )
@@ -271,4 +282,3 @@ class _typhoon_forecastState extends State<typhoon_forecast> {
   }
 
 }
-

@@ -31,7 +31,10 @@ class _ath_statsState extends State<ath_stats> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text("Additional Graphs", style: textStyles.lato_black(fontSize: 26),),
+              Padding(
+                padding: const EdgeInsets.only(left: 10),
+                child: Text((selectedGraphOption == "Highest") ? "All-Time Highs" : "Averages", style: textStyles.lato_black(fontSize: 26),),
+              ),
               Row(
                 children: [
                   Container(

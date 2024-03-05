@@ -10,7 +10,7 @@ class Municipality {
   double totalDamageCost;
   List<Owner> owners = [];
   Color colorMarker;
-  int? damageCostInPercentage;
+  double? damageCostInPercentage;
 
   double? highestWs;
   double? highestRf24;

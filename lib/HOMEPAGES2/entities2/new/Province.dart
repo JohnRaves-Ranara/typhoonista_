@@ -8,7 +8,7 @@ class Province {
   String provName;
   double totalDamageCost;
   List<Municipality> owners = [];
-  int? damageCostInPercentage;
+  double? damageCostInPercentage;
   Color? colorMarker;
 
   double? highestWs;

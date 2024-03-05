@@ -62,16 +62,6 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
         ),
         home: Home_2(),
-        // home: Consumer<page_provider>(
-        //   builder: (context, prov, child){
-        //     if(prov.mainpage == 0){
-        //       return LoginScreen();
-        //     }
-        //     else{
-        //       return Home();
-        //     }
-        //   }
-        //   ),
       ),
     );
   }

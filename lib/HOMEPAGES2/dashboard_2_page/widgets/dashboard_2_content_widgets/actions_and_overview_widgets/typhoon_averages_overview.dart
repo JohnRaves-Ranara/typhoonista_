@@ -100,6 +100,17 @@ class _typhoon_averages_overviewState extends State<typhoon_averages_overview> {
                   children: [
                     Expanded(
                         child: Container(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(15),
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.2),
+                                  offset: Offset(0, 3),
+                                  blurRadius: 2,
+                                  spreadRadius: 1,
+                                ),
+                              ]),
                           child: StreamBuilder<Typhoon>(
                             stream: FirestoreService2().streamOngoingTyphoon(),
                             builder: (context, snapshot) {
@@ -112,14 +123,15 @@ class _typhoon_averages_overviewState extends State<typhoon_averages_overview> {
                                     stream: FirestoreService2().streamAllDays(snapshot.data!),
                                     builder: (context, snapshot) {
                                       if(snapshot.hasData){
-                                      List<Day> allDays = snapshot.data!;
-                                      print(allDays.length);
-                                      double avgDamageIncreasePerDay = averages().avgDamageIncreasePerDay(allDays);
+                                      List<Day> days = snapshot.data!;
+                                      print("ARAWRARAR ${days.length}");
+                                      //todo
+                                      double avgDamageIncreasePerDay = averages().avgDamageIncreasePerDay(days);
                                       print("AVG DAMAGE INCREASE : ${avgDamageIncreasePerDay}");
                                       return Text(
-                                        (avgDamageIncreasePerDay <= 0 )? "₱ 0.00" : "₱ ${NumberFormat('#,##0.00', 'en_US').format(avgDamageIncreasePerDay.abs())}",
+                                        (avgDamageIncreasePerDay.isNaN )? "₱ 0.00" : "₱ ${NumberFormat('#,##0.00', 'en_US').format(avgDamageIncreasePerDay.abs())}",
                                         style: textStyles.lato_bold(fontSize: 22),
-                                      );
+                                      );  
                                       }else{
                                         return Text(
                                         "No data.",
@@ -142,17 +154,6 @@ class _typhoon_averages_overviewState extends State<typhoon_averages_overview> {
                               }
                             }
                           ),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15),
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.2),
-                                  offset: Offset(0, 3),
-                                  blurRadius: 2,
-                                  spreadRadius: 1,
-                                ),
-                              ]),
                         )),
                     SizedBox(
                       width: 15,

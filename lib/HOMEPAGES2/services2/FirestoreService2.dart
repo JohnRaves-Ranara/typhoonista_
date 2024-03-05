@@ -87,7 +87,7 @@ class FirestoreService2 {
     return daysReturn;
   }
 
-  Future<void> addTyphoon(String typhoonName)async{
+  Future<String> addTyphoon(String typhoonName)async{
     var id = uuid.v1();
     var b = userRef.collection('typhoons').doc(id);
     
@@ -97,6 +97,8 @@ class FirestoreService2 {
       "totalDamageCost" : 0,
       "typhoonName" : typhoonName
     });
+
+    return id;
   }
 
 
@@ -339,6 +341,7 @@ class FirestoreService2 {
   Future<void> addOwner(
       String ongoingTyphoonID,
       Owner? ownerToUpdate,
+      
       //geo
       // String? provinceID,
       // String? municipalityID,
@@ -353,12 +356,194 @@ class FirestoreService2 {
       double riceYield,
       double distance,
       //forecast
-      int dayCount) async {
+      int dayCount,
+      String? typhoonName,
+      ) async {
     String provinceID = uuid.v1();
     String municipalityID = uuid.v1();
     String currentDateTime = DateTime.now().toString();
+    if(typhoonName!=null){
+      //ADD OWNER
+
+      String ongoingTyphoonID = await addTyphoon(typhoonName);
+
+      //get forecast
+      List<Day> forecast = await forecastModel().forecast(
+          initial_ws: windSpeed,
+          initial_rf24: rainfall24,
+          initial_rf6: rainfall6,
+          initial_area: riceArea,
+          initial_yield: riceYield,
+          initial_distance: distance,
+          rice_price: ricePrice,
+          days: dayCount);
+
+      //get ongoing typhoon ID
+
+      // Typhoon? ongoingTyphoon = await getOngoingTyphoon();
+      // String ongoingTyphoonID = ongoingTyphoon!.id;
+
+      //check if province with given provinceID already exists
+      CollectionReference provinceColRef = userRef
+          .collection('typhoons')
+          .doc(ongoingTyphoonID)
+          .collection('provinces');
+      DocumentSnapshot provinceDocSnapshot =
+          await provinceColRef.doc(provinceID).get();
+      //if it does not exist, add it to db.
+      if (!provinceDocSnapshot.exists) {
+        print("WALA PA GA EXIST ANG NAPILI NGA PROVINCE");
+        DocumentReference provDocRef = provinceColRef.doc(provinceID);
+        await provDocRef.set({
+          'color': getColorRGBList(),
+          'id': provinceID,
+          'provName': provName,
+          'totalDamageCost': 0, //to be updated later if ma add na ang days
+          'typhoonID': ongoingTyphoonID
+        });
+        print("ADDED NA ANG PROVINCE");
+      }
+
+      //check if municipality with given munID already exists
+      CollectionReference munColRef = userRef
+          .collection('typhoons')
+          .doc(ongoingTyphoonID)
+          .collection('provinces')
+          .doc(provinceID)
+          .collection('municipalities');
+      DocumentSnapshot munDocSnapshot =
+          await provinceColRef.doc(municipalityID).get();
+      //if it does not exist, add it to db.
+      if (!munDocSnapshot.exists) {
+        print("WALA PA GA EXIST ANG NAPILI NGA MUNICIPALITY");
+        DocumentReference munDocRef = munColRef.doc(municipalityID);
+        await munDocRef.set({
+          'color': getColorRGBList(),
+          'id': municipalityID,
+          'munName': munName,
+          'provinceID': provinceID,
+          'totalDamageCost': 0, //to be updated later if ma add na ang days
+          'typhoonID': ongoingTyphoonID
+        });
+        print("NA ADD NA ANG MUNICIPALITY");
+      }
+
+      //ownerColRef
+      CollectionReference ownerColRef = userRef
+          .collection('typhoons')
+          .doc(ongoingTyphoonID)
+          .collection('provinces')
+          .doc(provinceID)
+          .collection('municipalities')
+          .doc(municipalityID)
+          .collection('owners');
+      //getOwnerID
+      String ownerID = uuid.v1();
+
+      DocumentReference ownerDocRef = userRef
+          .collection('typhoons')
+          .doc(ongoingTyphoonID)
+          .collection('provinces')
+          .doc(provinceID)
+          .collection('municipalities')
+          .doc(municipalityID)
+          .collection('owners')
+          .doc(ownerID);
+
+      //populate each Day's typhoonID, provID, munID, and ownerID
+      forecast.forEach((day) {
+        day.typhoonID = ongoingTyphoonID;
+        day.provinceID = provinceID;
+        day.municipalityID = municipalityID;
+        day.ownerID = ownerID;
+      });
+
+      //In firestore, check provname and munname dupes.
+      //get all documents in the owners collection
+      QuerySnapshot ownerDocs = await ownerColRef.get();
+      int ownerDupeCount = 0;
+      for (DocumentSnapshot ownerDoc in ownerDocs.docs) {
+        Map<String, dynamic> docData = ownerDoc.data() as Map<String, dynamic>;
+
+        if (docData['provName'] == provName && docData['munName'] == munName) {
+          ownerDupeCount++;
+        }
+      }
+
+      String ownerName = '';
+      //if no dupes, set name as provname,munname. If has dupes, set as provname,munname (count)
+      if (ownerDupeCount == 0) {
+        ownerName = '${provName}, ${munName}';
+      } else {
+        ownerName = '${provName}, ${munName} (${ownerDupeCount + 1})';
+      }
+
+      List<int> ownerColor = getColorRGBList();
+
+      double total = 0;
+      for (Day day in forecast) {
+        total += day.damageCost!;
+      }
+      double totalDamageCost = total;
+
+      await ownerDocRef.set({
+        "daysCount": dayCount,
+        "color": ownerColor,
+        "dateRecorded":
+            currentDateTime, //get this first thing in the function. DateTime.now().toString()
+        "id":
+            ownerID, // NAHH, SCRATCH THAT, JUST USE UUID().V1() FOR OWNER ID, FOR PROPER ORGANIZATION.
+        "munName": munName,
+        "municipalityID": municipalityID,
+        "ownerName": ownerName,
+        "provName": provName,
+        "provinceID": provinceID,
+        "totalDamageCost": double.parse(totalDamageCost.toStringAsFixed(2)),
+        "typhoonID": ongoingTyphoonID,
+      });
+
+      for (Day day in forecast) {
+        String dayID = uuid.v1();
+        DocumentReference daysColRef = userRef
+            .collection('typhoons')
+            .doc(ongoingTyphoonID)
+            .collection('provinces')
+            .doc(provinceID)
+            .collection('municipalities')
+            .doc(municipalityID)
+            .collection('owners')
+            .doc(ownerID)
+            .collection('days')
+            .doc(dayID);
+
+        await daysColRef.set({
+          "damageCost": day.damageCost,
+          "dayNum": day.dayNum,
+          "disTrackMin": day.distance,
+          "id": dayID,
+          "municipalityID": municipalityID,
+          "ownerID": ownerID,
+          "provinceID": provinceID,
+          "rainfall24": day.rainfall24,
+          "rainfall6": day.rainfall6,
+          "riceArea": day.riceArea,
+          "ricePrice": day.ricePrice,
+          "riceYield": day.riceYield,
+          "typhoonID": ongoingTyphoonID,
+          "windSpeed": day.windSpeed,
+        });
+      }
+      await updateMunicipalityTotalDamageCost(
+          ongoingTyphoonID, provinceID!, municipalityID!);
+      await updateProvinceTotalDamageCost(ongoingTyphoonID, provinceID);
+      await updateTyphoonTotalDamageCost(ongoingTyphoonID);
+
+      return;
+    }
     if (ownerToUpdate == null) {
       //ADD OWNER
+
+      
 
       //get forecast
       List<Day> forecast = await forecastModel().forecast(
@@ -589,7 +774,7 @@ class FirestoreService2 {
         "id": ownerToUpdate
             .id, // NAHH, SCRATCH THAT, JUST USE UUID().V1() FOR OWNER ID, FOR PROPER ORGANIZATION.
         "munName": munName,
-        "municipalityID": municipalityID,
+        "municipalityID": ownerToUpdate.municipalityID,
         "ownerName": ownerToUpdate.ownerName,
         "provName": ownerToUpdate.provName,
         "provinceID": ownerToUpdate.provinceID,
@@ -769,8 +954,7 @@ class FirestoreService2 {
     List<int> randomNumbers = [];
 
     for (int i = 0; i < 3; i++) {
-      int randomNumber = random.nextInt(128) +
-          128; // Generates a random number between 0 and 255
+      int randomNumber = random.nextInt(255);
       randomNumbers.add(randomNumber);
     }
 
