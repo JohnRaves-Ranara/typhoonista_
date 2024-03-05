@@ -18,20 +18,292 @@ class typhoon_forecast extends StatefulWidget {
 
 class _typhoon_forecastState extends State<typhoon_forecast> {
   @override
+  showEstimationInfo(Owner owner) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            content: Container(
+              decoration:
+                  BoxDecoration(borderRadius: BorderRadius.circular(10)),
+              width: MediaQuery.of(context).size.width * 0.5,
+              height: MediaQuery.of(context).size.height * 0.5,
+              padding: EdgeInsets.all(10),
+              child: FutureBuilder<List<Day>?>(
+                  future: FirestoreService2().getAllDaysBasedOnOwner(owner),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      owner.days = snapshot.data!;
+                      Day firstDay =
+                          owner.days.firstWhere((day) => day.dayNum == 1);
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                owner.ownerName,
+                                style: textStyles.lato_black(fontSize: 24),
+                              ),
+                              Row(
+                                children: [
+                                  Text(
+                                    "Date Recorded:",
+                                    style: textStyles.lato_bold(fontSize: 15),
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Text(
+                                    "${DateTime.parse(owner.dateRecorded!).month}/${DateTime.parse(owner.dateRecorded!).day}/${DateTime.parse(owner.dateRecorded!).year} ${DateTime.parse(owner.dateRecorded!).hour.toString().padLeft(2, '0')}:${DateTime.parse(owner.dateRecorded!).minute.toString().padLeft(2, '0')}:${DateTime.parse(owner.dateRecorded!).second.toString().padLeft(2, '0')}",
+                                    style:
+                                        textStyles.lato_regular(fontSize: 15),
+                                  )
+                                ],
+                              )
+                            ],
+                          ),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          Expanded(
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "Windspeed (km/h)",
+                                            style: textStyles.lato_bold(
+                                                fontSize: 15),
+                                          ),
+                                          Text(
+                                            firstDay.windSpeed.toString(),
+                                            style: textStyles.lato_regular(
+                                                fontSize: 15),
+                                          )
+                                        ],
+                                      ),
+                                      SizedBox(
+                                        height: 10,
+                                      ),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "24-hour rainfall (mm)",
+                                            style: textStyles.lato_bold(
+                                                fontSize: 15),
+                                          ),
+                                          Text(
+                                            firstDay.rainfall24.toString(),
+                                            style: textStyles.lato_regular(
+                                                fontSize: 15),
+                                          )
+                                        ],
+                                      ),
+                                      SizedBox(
+                                        height: 10,
+                                      ),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "6-hour rainfall (mm)",
+                                            style: textStyles.lato_bold(
+                                                fontSize: 15),
+                                          ),
+                                          Text(
+                                            firstDay.rainfall6.toString(),
+                                            style: textStyles.lato_regular(
+                                                fontSize: 15),
+                                          )
+                                        ],
+                                      ),
+                                      SizedBox(
+                                        height: 10,
+                                      ),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "Rice Price (PHP)",
+                                            style: textStyles.lato_bold(
+                                                fontSize: 15),
+                                          ),
+                                          Text(
+                                            firstDay.ricePrice.toString(),
+                                            style: textStyles.lato_regular(
+                                                fontSize: 15),
+                                          )
+                                        ],
+                                      ),
+                                      SizedBox(
+                                        height: 10,
+                                      ),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "Days Count",
+                                            style: textStyles.lato_bold(
+                                                fontSize: 15),
+                                          ),
+                                          Text(
+                                            owner.days.length.toString(),
+                                            style: textStyles.lato_regular(
+                                                fontSize: 15),
+                                          )
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "Rice Area (ha)",
+                                            style: textStyles.lato_bold(
+                                                fontSize: 15),
+                                          ),
+                                          Text(
+                                            firstDay.riceArea.toString(),
+                                            style: textStyles.lato_regular(
+                                                fontSize: 15),
+                                          )
+                                        ],
+                                      ),
+                                      SizedBox(
+                                        height: 10,
+                                      ),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "Yield (ton/ha)",
+                                            style: textStyles.lato_bold(
+                                                fontSize: 15),
+                                          ),
+                                          Text(
+                                            firstDay.riceYield.toString(),
+                                            style: textStyles.lato_regular(
+                                                fontSize: 15),
+                                          )
+                                        ],
+                                      ),
+                                      SizedBox(
+                                        height: 10,
+                                      ),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "Province",
+                                            style: textStyles.lato_bold(
+                                                fontSize: 15),
+                                          ),
+                                          Text(
+                                            owner.provName!,
+                                            style: textStyles.lato_regular(
+                                                fontSize: 15),
+                                          )
+                                        ],
+                                      ),
+                                      SizedBox(
+                                        height: 10,
+                                      ),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "Municipality",
+                                            style: textStyles.lato_bold(
+                                                fontSize: 15),
+                                          ),
+                                          Text(
+                                            owner.munName!,
+                                            style: textStyles.lato_regular(
+                                                fontSize: 15),
+                                          )
+                                        ],
+                                      ),
+                                      SizedBox(
+                                        height: 10,
+                                      ),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "Distance of Typhoon to Location (km)",
+                                            style: textStyles.lato_bold(
+                                                fontSize: 15),
+                                          ),
+                                          Text(
+                                            firstDay.distance.toString(),
+                                            style: textStyles.lato_regular(
+                                                fontSize: 15),
+                                          )
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        ],
+                      );
+                    } else {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                  }),
+            ),
+          );
+        });
+  }
+
   Widget build(BuildContext context) {
     return Expanded(
-          flex: 55,
-          child: StreamBuilder(
+        flex: 55,
+        child: StreamBuilder(
             stream: FirestoreService2().streamOngoingTyphoon(),
-            builder: (context,snapshot){
-              if(snapshot.hasData){
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
                 Typhoon ongoingTyphoon = snapshot.data!;
                 return StreamBuilder<List<Owner>>(
                   stream: FirestoreService2().streamAllOwners(ongoingTyphoon),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       print("YES NAAY OWNERS!!!!!!!!");
-                      
+
                       List<Owner> owners = snapshot.data!;
                       print(owners.length);
                       owners.sort((a, b) => DateTime.parse(b.dateRecorded!)
@@ -56,7 +328,8 @@ class _typhoon_forecastState extends State<typhoon_forecast> {
                                   ),
                                 ]),
                             child: StreamBuilder<List<Day>>(
-                              stream: FirestoreService2().streamAllDays(ongoingTyphoon),
+                              stream: FirestoreService2()
+                                  .streamAllDays(ongoingTyphoon),
                               builder: (context, snapshot) {
                                 if (snapshot.hasData) {
                                   List<Day> days = snapshot.data!;
@@ -66,21 +339,24 @@ class _typhoon_forecastState extends State<typhoon_forecast> {
                                         owner.days.add(day);
                                       }
                                     }
-                                    owner.days
-                                        .sort((a, b) => a.dayNum!.compareTo(b.dayNum!));
+                                    owner.days.sort((a, b) =>
+                                        a.dayNum!.compareTo(b.dayNum!));
                                   }
-                        
+
                                   return Column(
                                     children: [
                                       //todo ibutang diri tong typhoon name og 6 day forecast shi
                                       StreamBuilder<Typhoon?>(
-                                          stream: FirestoreService2().streamOngoingTyphoon(),
+                                          stream: FirestoreService2()
+                                              .streamOngoingTyphoon(),
                                           builder: (context, snapshot) {
                                             if (snapshot.hasData) {
-                                              Typhoon ongoingTyphoon = snapshot.data!;
+                                              Typhoon ongoingTyphoon =
+                                                  snapshot.data!;
                                               return Row(
                                                 mainAxisAlignment:
-                                                    MainAxisAlignment.spaceBetween,
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
                                                 children: [
                                                   Text(
                                                     "Typhoon ${ongoingTyphoon.typhoonName}",
@@ -97,7 +373,8 @@ class _typhoon_forecastState extends State<typhoon_forecast> {
                                             } else {
                                               return Row(
                                                 mainAxisAlignment:
-                                                    MainAxisAlignment.spaceBetween,
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
                                                 children: [
                                                   Text(
                                                     "",
@@ -118,16 +395,19 @@ class _typhoon_forecastState extends State<typhoon_forecast> {
                                       ),
                                       Expanded(child: Consumer<SampleProvider>(
                                         builder: (context, prov, _) {
-                                          Set<Owner> selectedOwners = prov.selectedOwners;
+                                          Set<Owner> selectedOwners =
+                                              prov.selectedOwners;
                                           return SfCartesianChart(
-                                            trackballBehavior: TrackballBehavior(
-                                                enable: true,
-                                                activationMode: ActivationMode.singleTap),
+                                            trackballBehavior:
+                                                TrackballBehavior(
+                                                    enable: true,
+                                                    activationMode:
+                                                        ActivationMode
+                                                            .singleTap),
                                             series: (selectedOwners.isEmpty)
                                                 ? owners
                                                     .map((owner) =>
                                                         AreaSeries<Day, String>(
-                                                          
                                                           //todo
                                                           // trendlines: <Trendline>[
                                                           //   Trendline(
@@ -135,34 +415,51 @@ class _typhoon_forecastState extends State<typhoon_forecast> {
                                                           //     forwardForecast: 3,
                                                           //   )
                                                           // ],
-                                                          animationDuration: 200,
-                                                          dataSource: owner.days,
-                                                          color: owner.colorMarker
+                                                          animationDuration:
+                                                              200,
+                                                          dataSource:
+                                                              owner.days,
+                                                          color: owner
+                                                              .colorMarker
                                                               .withOpacity(0.5),
-                                                          xValueMapper: (Day data, _) =>
+                                                          xValueMapper: (Day
+                                                                      data,
+                                                                  _) =>
                                                               "Day ${data.dayNum}",
-                                                          yValueMapper: (Day data, _) =>
+                                                          yValueMapper: (Day
+                                                                      data,
+                                                                  _) =>
                                                               data.damageCost,
                                                         ))
                                                     .toList()
                                                 : selectedOwners
                                                     .map((selectedOwner) =>
                                                         AreaSeries<Day, String>(
-                                                          animationDuration: 200,
-                                                          dataSource: selectedOwner.days,
-                                                          color: selectedOwner.colorMarker
+                                                          animationDuration:
+                                                              200,
+                                                          dataSource:
+                                                              selectedOwner
+                                                                  .days,
+                                                          color: selectedOwner
+                                                              .colorMarker
                                                               .withOpacity(0.5),
-                                                          xValueMapper: (Day data, _) =>
+                                                          xValueMapper: (Day
+                                                                      data,
+                                                                  _) =>
                                                               "Day ${data.dayNum}",
-                                                          yValueMapper: (Day data, _) =>
+                                                          yValueMapper: (Day
+                                                                      data,
+                                                                  _) =>
                                                               data.damageCost,
                                                         ))
                                                     .toList(),
                                             primaryXAxis: CategoryAxis(
-                                              labelStyle: textStyles.lato_regular(),
+                                              labelStyle:
+                                                  textStyles.lato_regular(),
                                               edgeLabelPlacement:
                                                   EdgeLabelPlacement.shift,
-                                              labelPlacement: LabelPlacement.onTicks,
+                                              labelPlacement:
+                                                  LabelPlacement.onTicks,
                                             ),
                                           );
                                         },
@@ -196,89 +493,121 @@ class _typhoon_forecastState extends State<typhoon_forecast> {
                                     ),
                                   ]),
                               child: ListView(
-                                
                                 children: [
-                                  Container(height: 50, child: Text("Estimation History", style: textStyles.lato_bold(fontSize: 22),),),
-                                  
+                                  Container(
+                                    height: 50,
+                                    child: Text(
+                                      "Estimation History",
+                                      style: textStyles.lato_bold(fontSize: 22),
+                                    ),
+                                  ),
                                   ListView(
                                     shrinkWrap: true,
                                     children: owners
-                                        .map((owner) => Container(
-                                              margin: EdgeInsets.only(bottom: 11),
-                                              child: Row(
-                                                children: [
-                                                  Row(
+                                        .map((owner) => Material(
+                                          color: Colors.transparent,
+                                          child: InkWell(
+                                                onTap: (() {
+                                                  showEstimationInfo(owner);
+                                                }),
+                                                child: Container(
+                                                  margin:
+                                                      EdgeInsets.only(bottom: 11),
+                                                  child: Row(
+                                                    
                                                     children: [
-                                                      Consumer<SampleProvider>(
-                                                        builder: (context, prov, _) {
-                                                          Set<Owner> selectedOwners =
-                                                              prov.selectedOwners;
-                                                          return Container(
-                                                            child: (!selectedOwners
-                                                                    .contains(owner))
-                                                                ? GestureDetector(
-                                                                    onTap: (() {
-                                                                      prov.addSelectedOwner(
-                                                                          owner);
-                                                                    }),
-                                                                    child: Icon(Icons
-                                                                        .visibility_outlined))
-                                                                : GestureDetector(
-                                                                    onTap: (() {
-                                                                      prov.removeSelectedOwner(
-                                                                          owner);
-                                                                    }),
-                                                                    child: Icon(
-                                                                        Icons.visibility)),
-                                                          );
-                                                        },
+                                                      Row(
+                                                        
+                                                        children: [
+                                                          Consumer<
+                                                              SampleProvider>(
+                                                            builder: (context,
+                                                                prov, _) {
+                                                              Set<Owner>
+                                                                  selectedOwners =
+                                                                  prov.selectedOwners;
+                                                              return Container(
+                                                                child: (!selectedOwners
+                                                                        .contains(
+                                                                            owner))
+                                                                    ? GestureDetector(
+                                                                        onTap:
+                                                                            (() {
+                                                                          prov.addSelectedOwner(
+                                                                              owner);
+                                                                        }),
+                                                                        child: Icon(
+                                                                            Icons
+                                                                                .visibility_outlined))
+                                                                    : GestureDetector(
+                                                                        onTap:
+                                                                            (() {
+                                                                          prov.removeSelectedOwner(
+                                                                              owner);
+                                                                        }),
+                                                                        child: Icon(
+                                                                            Icons
+                                                                                .visibility)),
+                                                              );
+                                                            },
+                                                          ),
+                                                          SizedBox(
+                                                            width: 10,
+                                                          ),
+                                                          CircleAvatar(
+                                                            radius: 10,
+                                                            backgroundColor: owner
+                                                                .colorMarker
+                                                                .withOpacity(0.5),
+                                                          ),
+                                                          SizedBox(
+                                                            width: 10,
+                                                          ),
+                                                        ],
                                                       ),
                                                       SizedBox(
-                                                        width: 10,
+                                                        width: 45,
                                                       ),
-                                                      CircleAvatar(
-                                                        radius: 10,
-                                                        backgroundColor: owner.colorMarker
-                                                            .withOpacity(0.5),
+                                                      Text(
+                                                        owner.ownerName,
+                                                        style:
+                                                            textStyles.lato_light(
+                                                                fontSize: 16),
                                                       ),
-                                                      SizedBox(
-                                                        width: 10,
+                                                      Spacer(),
+                                                      Text(
+                                                        "${NumberFormat('#,##0.00', 'en_US').format(owner.totalDamageCost)}",
+                                                        style:
+                                                            textStyles.lato_light(
+                                                                fontSize: 16),
                                                       ),
                                                     ],
                                                   ),
-                                                  SizedBox(width: 45,),
-                                                  Text(
-                                                    owner.ownerName,
-                                                    style:
-                                                        textStyles.lato_light(fontSize: 16),
-                                                  ),
-                                                  Spacer(),
-                                                  Text(
-                                                    "${NumberFormat('#,##0.00', 'en_US').format(owner.totalDamageCost)}",
-                                                    style:
-                                                        textStyles.lato_light(fontSize: 16),
-                                                  ),
-                                                ],
+                                                ),
                                               ),
-                                            ))
+                                        ))
                                         .toList(),
                                   ),
                                 ],
-                              )
-                              ),
+                              )),
                         )
                       ]);
                     } else {
-                      return Center(child: Text("No data.", style: textStyles.lato_bold(fontSize: 22),),);
+                      return Center(
+                        child: Text(
+                          "No data.",
+                          style: textStyles.lato_bold(fontSize: 22),
+                        ),
+                      );
                     }
                   },
                 );
-              }else{
-                return Center(child: Text("No data.", style: textStyles.lato_bold(fontSize: 22)),);
+              } else {
+                return Center(
+                  child: Text("No data.",
+                      style: textStyles.lato_bold(fontSize: 22)),
+                );
               }
-            }) 
-
-        );
+            }));
   }
-
 }

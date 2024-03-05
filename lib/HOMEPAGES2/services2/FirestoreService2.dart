@@ -87,6 +87,29 @@ class FirestoreService2 {
     return daysReturn;
   }
 
+  Future<List<Day>?> getAllDaysBasedOnOwner(Owner owner) async {
+    CollectionReference daysColRef = userRef
+        .collection('typhoons')
+        .doc(owner.typhoonID)
+        .collection('provinces')
+        .doc(owner.provinceID)
+        .collection('municipalities')
+        .doc(owner.municipalityID)
+        .collection('owners')
+        .doc(owner.id)
+        .collection('days');
+
+    List<Day> allDays = [];
+
+    QuerySnapshot daysSnapshot = await daysColRef.get();
+
+    for(DocumentSnapshot doc in daysSnapshot.docs){
+      var data = doc.data() as Map<String,dynamic>;
+      allDays.add(Day.fromJson(data));
+    }
+    return allDays;
+  }
+
   Future<String> addTyphoon(String typhoonName)async{
     var id = uuid.v1();
     var b = userRef.collection('typhoons').doc(id);
